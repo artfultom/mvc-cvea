@@ -8,12 +8,15 @@ import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 public class TransportTest {
 
     @Test
     public void manyClients() {
         Server server = new Server();
+        MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
+        server.register(handler);
         server.start(5550);
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -23,10 +26,13 @@ public class TransportTest {
                     Client client = new Client();
                     client.startConnection("127.0.0.1", 5550);
                     for (int j = 0; j < 100; j++) {
-                        String msg = "test" + j;
-                        String resp = client.sendMessage(msg);
+                        String param1 = "param1" + j;
+                        String param2 = "param2" + j;
+                        Response resp = client.send(new Request("echo", List.of(param1, param2)));
 
-                        Assert.assertEquals(msg, resp);
+                        Assert.assertEquals(2, resp.getParams().size());
+                        Assert.assertEquals(param1, resp.getParams().get(0));
+                        Assert.assertEquals(param2, resp.getParams().get(1));
                     }
                     client.stopConnection();
                 } catch (IOException e) {
@@ -47,6 +53,8 @@ public class TransportTest {
     @Test
     public void timeoutClients() {
         Server server = new Server();
+        MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
+        server.register(handler);
         server.start(5551);
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -57,10 +65,11 @@ public class TransportTest {
                     client.startConnection("127.0.0.1", 5551);
 
                     for (int j = 0; j < 3; j++) {
-                        String msg = "test" + j;
-                        String resp = client.sendMessage(msg);
+                        String param = "param" + j;
+                        Response resp = client.send(new Request("echo", List.of(param)));
 
-                        Assert.assertEquals(msg, resp);
+                        Assert.assertEquals(1, resp.getParams().size());
+                        Assert.assertEquals(param, resp.getParams().get(0));
 
                         try {
                             Thread.sleep(1500);
@@ -88,6 +97,8 @@ public class TransportTest {
     @Test
     public void error1Clients() {
         Server server = new Server();
+        MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
+        server.register(handler);
         server.start(5552);
 
         server.stop();
@@ -106,6 +117,8 @@ public class TransportTest {
     @Test
     public void error2Clients() {
         Server server = new Server();
+        MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
+        server.register(handler);
         server.start(5553);
 
         try {
@@ -114,7 +127,7 @@ public class TransportTest {
 
             server.stop();
 
-            client.sendMessage("fail");
+            client.send(new Request("echo", new ArrayList<>()));
 
             Assert.fail();
         } catch (ConnectException ignored) {
