@@ -13,7 +13,6 @@ import java.util.concurrent.TimeoutException;
 
 public class Server {
     private AsynchronousServerSocketChannel listener = null;
-    private boolean stop = false;
     private long timeout = 1;
 
     public void start(int port) {
@@ -24,25 +23,21 @@ public class Server {
 
                 @Override
                 public void completed(AsynchronousSocketChannel ch, Void att) {
-                    if (stop) {
+                    if (listener.isOpen()) {
+                        listener.accept(null, this);
+                    } else {
                         return;
                     }
-
-                    listener.accept(null, this);
 
                     int bufferSize = 4096;
                     ByteBuffer byteBuffer = ByteBuffer.allocate(bufferSize);
 
-                    while (true) {
+                    while (listener.isOpen()) {
                         try {
                             int cursor = 0;
 
                             while (byteBuffer.position() != cursor + 4) {
-                                while (byteBuffer.position() < cursor + 4) {
-                                    if (stop) {
-                                        return;
-                                    }
-
+                                while (listener.isOpen() && byteBuffer.position() < cursor + 4) {
                                     int bytesRead = ch.read(byteBuffer).get(timeout, TimeUnit.SECONDS);
                                     if (bytesRead == -1) {
                                         break;
@@ -51,21 +46,18 @@ public class Server {
 
                                 int count = byteBuffer.getInt(cursor);
 
-                                while (byteBuffer.position() < cursor + 4 + count) {
-                                    if (stop) {
-                                        return;
-                                    }
-
+                                while (listener.isOpen() && byteBuffer.position() < cursor + 4 + count) {
                                     int bytesRead = ch.read(byteBuffer).get(timeout, TimeUnit.SECONDS);
                                     if (bytesRead == -1) {
                                         break;
                                     }
                                 }
 
-                                if (stop) {
+                                if (!listener.isOpen()) {
                                     return;
                                 }
 
+                                // logic
                                 byte[] resp = Arrays.copyOfRange(byteBuffer.array(), cursor, cursor + 4 + count);
                                 ch.write(ByteBuffer.wrap(resp));
 
@@ -103,7 +95,6 @@ public class Server {
 
                 @Override
                 public void failed(Throwable e, Void att) {
-                    System.out.println("!!! ops");
                 }
             });
         } catch (IOException e) {
@@ -119,7 +110,5 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        stop = true;
     }
 }
