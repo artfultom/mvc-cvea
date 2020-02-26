@@ -8,7 +8,6 @@ import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 public class TransportTest {
 
@@ -55,14 +54,14 @@ public class TransportTest {
         Server server = new Server();
         MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
         server.register(handler);
-        server.start(5551);
+        server.start(5550);
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 try {
                     Client client = new Client();
-                    client.startConnection("127.0.0.1", 5551);
+                    client.startConnection("127.0.0.1", 5550);
 
                     for (int j = 0; j < 3; j++) {
                         String param = "param" + j;
@@ -99,14 +98,14 @@ public class TransportTest {
         Server server = new Server();
         MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
         server.register(handler);
-        server.start(5552);
+        server.start(5550);
 
         server.stop();
 
         for (int i = 0; i < 10; i++) {
             try {
                 Client client = new Client();
-                client.startConnection("127.0.0.1", 5552);
+                client.startConnection("127.0.0.1", 5550);
 
                 Assert.fail();
             } catch (ConnectException ignored) {
@@ -119,11 +118,11 @@ public class TransportTest {
         Server server = new Server();
         MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
         server.register(handler);
-        server.start(5553);
+        server.start(5550);
 
         try {
             Client client = new Client();
-            client.startConnection("127.0.0.1", 5553);
+            client.startConnection("127.0.0.1", 5550);
 
             server.stop();
 
@@ -132,5 +131,41 @@ public class TransportTest {
             Assert.fail();
         } catch (ConnectException ignored) {
         }
+    }
+
+    @Test
+    public void error1Handler() throws ConnectException {
+        Server server = new Server();
+        server.start(5550);
+
+        Client client = new Client();
+        client.startConnection("127.0.0.1", 5550);
+
+        Response response = client.send(new Request("echo", new ArrayList<>()));
+
+        Assert.assertNotNull(response);
+        Assert.assertNotNull(response.getErrorCode());
+        Assert.assertNull(response.getParams());
+
+        server.stop();
+    }
+
+    @Test
+    public void error2Handler() throws ConnectException {
+        Server server = new Server();
+        MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
+        server.register(handler);
+        server.start(5550);
+
+        Client client = new Client();
+        client.startConnection("127.0.0.1", 5550);
+
+        Response response = client.send(new Request("wrong", new ArrayList<>()));
+
+        Assert.assertNotNull(response);
+        Assert.assertNotNull(response.getErrorCode());
+        Assert.assertNull(response.getParams());
+
+        server.stop();
     }
 }

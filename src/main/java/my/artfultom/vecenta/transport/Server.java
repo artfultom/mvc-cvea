@@ -82,7 +82,17 @@ public class Server {
 
         MethodHandler handler = handlerMap.get(method);
         if (handler == null) {
-            // TODO ругнуться
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            DataOutputStream dataStream = new DataOutputStream(out);
+
+            try {
+                dataStream.writeByte(1);
+                dataStream.writeInt(666); // TODO code
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return out.toByteArray();
         }
 
         Response response = handler.execute(new Request(method, params));

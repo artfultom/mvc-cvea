@@ -81,23 +81,27 @@ public class Client {
     }
 
     private Response convertToResponse(byte[] in) {
-        List<String> params = new ArrayList<>();
-
         ByteBuffer buf = ByteBuffer.wrap(in);
 
-        byte flag = buf.get(0); // TODO +error
+        byte flag = buf.get(0);
 
-        for (int i = 1; i < buf.capacity(); ) {
-            byte[] rawSize = Arrays.copyOfRange(in, i, i + 4);
-            int size = ByteBuffer.wrap(rawSize).getInt();
-            byte[] rawParam = Arrays.copyOfRange(in, i + 4, i + 4 + size);
+        if (flag == 0) {
+            List<String> params = new ArrayList<>();
 
-            params.add(new String(rawParam, StandardCharsets.UTF_8));
+            for (int i = 1; i < buf.capacity(); ) {
+                byte[] rawSize = Arrays.copyOfRange(in, i, i + 4);
+                int size = ByteBuffer.wrap(rawSize).getInt();
+                byte[] rawParam = Arrays.copyOfRange(in, i + 4, i + 4 + size);
 
-            i += size + 4;
+                params.add(new String(rawParam, StandardCharsets.UTF_8));
+
+                i += size + 4;
+            }
+
+            return new Response(params);
+        } else {
+            return new Response(1); // TODO code
         }
-
-        return new Response(params);
     }
 
     public void stopConnection() throws IOException {
