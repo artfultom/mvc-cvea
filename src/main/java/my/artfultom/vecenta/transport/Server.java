@@ -68,14 +68,14 @@ public class Server {
         byte[] rawMethod = Arrays.copyOfRange(in, 4, methodSize + 4);
         String method = new String(rawMethod, StandardCharsets.UTF_8);
 
-        List<String> params = new ArrayList<>();
+        List<byte[]> params = new ArrayList<>();
         for (int i = methodSize + 4; i < buf.capacity(); ) {
             byte[] rawSize = Arrays.copyOfRange(in, i, i + 4);
             int paramSize = ByteBuffer.wrap(rawSize).getInt();
 
-            byte[] rawParam = Arrays.copyOfRange(in, i + 4, paramSize + i + 4);
+            byte[] param = Arrays.copyOfRange(in, i + 4, paramSize + i + 4);
 
-            params.add(new String(rawParam, StandardCharsets.UTF_8));
+            params.add(param);
 
             i += paramSize + 4;
         }
@@ -102,9 +102,9 @@ public class Server {
 
         try {
             dataStream.writeByte(0);
-            for (String param : response.getParams()) {
-                dataStream.writeInt(param.length());
-                dataStream.writeBytes(param);
+            for (byte[] param : response.getParams()) {
+                dataStream.writeInt(param.length);
+                dataStream.write(param);
             }
         } catch (IOException e) {
             e.printStackTrace();

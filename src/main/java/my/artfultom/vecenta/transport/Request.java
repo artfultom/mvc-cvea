@@ -4,9 +4,9 @@ import java.util.List;
 
 public class Request {
     private final String methodName;
-    private final List<String> params; // TODO
+    private final List<byte[]> params;
 
-    public Request(String methodName, List<String> params) {
+    public Request(String methodName, List<byte[]> params) {
         this.methodName = methodName;
         this.params = params;
     }
@@ -15,7 +15,7 @@ public class Request {
         return methodName;
     }
 
-    public List<String> getParams() {
+    public List<byte[]> getParams() {
         return params;
     }
 }

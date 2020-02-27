@@ -5,7 +5,6 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -68,10 +67,10 @@ public class Client {
             dataStream.writeInt(methodLength);
             dataStream.writeBytes(in.getMethodName());
 
-            for (String param : in.getParams()) {
-                int paramLength = param.length();
+            for (byte[] param : in.getParams()) {
+                int paramLength = param.length;
                 dataStream.writeInt(paramLength);
-                dataStream.writeBytes(param);
+                dataStream.write(param);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -86,14 +85,14 @@ public class Client {
         byte flag = buf.get(0);
 
         if (flag == 0) {
-            List<String> params = new ArrayList<>();
+            List<byte[]> params = new ArrayList<>();
 
             for (int i = 1; i < buf.capacity(); ) {
                 byte[] rawSize = Arrays.copyOfRange(in, i, i + 4);
                 int size = ByteBuffer.wrap(rawSize).getInt();
-                byte[] rawParam = Arrays.copyOfRange(in, i + 4, i + 4 + size);
+                byte[] param = Arrays.copyOfRange(in, i + 4, i + 4 + size);
 
-                params.add(new String(rawParam, StandardCharsets.UTF_8));
+                params.add(param);
 
                 i += size + 4;
             }

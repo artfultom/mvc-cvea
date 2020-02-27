@@ -3,10 +3,10 @@ package my.artfultom.vecenta.transport;
 import java.util.List;
 
 public class Response {
-    private final List<String> params;
+    private final List<byte[]> params;
     private final Integer errorCode;
 
-    public Response(List<String> params) {
+    public Response(List<byte[]> params) {
         this.params = params;
         this.errorCode = null;
     }
@@ -16,7 +16,7 @@ public class Response {
         this.errorCode = errorCode;
     }
 
-    public List<String> getParams() {
+    public List<byte[]> getParams() {
         return params;
     }
 

@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,13 +26,13 @@ public class TransportTest {
                     Client client = new Client();
                     client.startConnection("127.0.0.1", 5550);
                     for (int j = 0; j < 100; j++) {
-                        String param1 = "param1" + j;
-                        String param2 = "param2" + j;
+                        byte[] param1 = ("param1" + j).getBytes();
+                        byte[] param2 = ("param2" + j).getBytes();
                         Response resp = client.send(new Request("echo", List.of(param1, param2)));
 
                         Assert.assertEquals(2, resp.getParams().size());
-                        Assert.assertEquals(param1, resp.getParams().get(0));
-                        Assert.assertEquals(param2, resp.getParams().get(1));
+                        Assert.assertArrayEquals(param1, resp.getParams().get(0));
+                        Assert.assertArrayEquals(param2, resp.getParams().get(1));
                     }
                     client.stopConnection();
                 } catch (IOException e) {
@@ -64,11 +65,11 @@ public class TransportTest {
                     client.startConnection("127.0.0.1", 5550);
 
                     for (int j = 0; j < 3; j++) {
-                        String param = "param" + j;
+                        byte[] param = ("param" + j).getBytes();
                         Response resp = client.send(new Request("echo", List.of(param)));
 
                         Assert.assertEquals(1, resp.getParams().size());
-                        Assert.assertEquals(param, resp.getParams().get(0));
+                        Assert.assertArrayEquals(param, resp.getParams().get(0));
 
                         try {
                             Thread.sleep(1500);
