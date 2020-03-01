@@ -14,9 +14,6 @@ public class MessageStream {
     private AsynchronousSocketChannel channel;
     private final long timeout;
 
-    private ByteBuffer byteBuffer = ByteBuffer.allocate(4096);
-    private int cursor = 0;
-
     public MessageStream(AsynchronousSocketChannel channel, long timeout) {
         this.channel = channel;
         this.timeout = timeout;
@@ -24,45 +21,33 @@ public class MessageStream {
 
     public byte[] getNextMessage() {
         int size;
+        ByteBuffer sizeBuf = ByteBuffer.allocate(4);
 
         try {
-            while (byteBuffer.position() < cursor + 4) {
-                int bytesRead = channel.read(byteBuffer).get(timeout, TimeUnit.MILLISECONDS);
+            while (sizeBuf.position() < 4) {
+                int bytesRead = channel.read(sizeBuf).get(timeout, TimeUnit.MILLISECONDS);
                 if (bytesRead == -1) {
                     return null;
                 }
             }
 
-            size = byteBuffer.getInt(cursor);
+            size = sizeBuf.getInt(0);
             if (size == 0) {
                 return null;
             }
 
-            while (byteBuffer.position() < cursor + 4 + size) {
-                int bytesRead = channel.read(byteBuffer).get(timeout, TimeUnit.MILLISECONDS);
+            ByteBuffer messageBuf = ByteBuffer.allocate(size);
+
+            while (messageBuf.position() < messageBuf.capacity()) {
+                int bytesRead = channel.read(messageBuf).get(timeout, TimeUnit.MILLISECONDS);
                 if (bytesRead == -1) {
                     return null;
                 }
             }
 
-            byte[] message = Arrays.copyOfRange(byteBuffer.array(), cursor + 4, cursor + 4 + size);
-
-            if (cursor > byteBuffer.capacity() * 0.8) {
-                for (int i = 0, j = byteBuffer.position(); j < byteBuffer.capacity(); i++, j++) {
-                    byteBuffer.put(i, byteBuffer.get(j));
-                    byteBuffer.clear();
-                    cursor = 0;
-                }
-            } else {
-                cursor += size + 4;
-            }
-
-            return message;
+            return messageBuf.array();
         } catch (InterruptedException ignored) {
         } catch (ExecutionException | TimeoutException e) {
-            cursor = 0;
-            byteBuffer.clear();
-
             try {
                 if (channel.isOpen()) {
                     channel.shutdownInput();
