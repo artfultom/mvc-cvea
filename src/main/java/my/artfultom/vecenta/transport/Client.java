@@ -37,7 +37,7 @@ public class Client {
     }
 
     public Response send(Request request) throws ConnectException { // TODO выбор сериализации
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {  // TODO settings
             try {
                 byte[] b = convertToBytes(request);
                 out.writeInt(b.length);

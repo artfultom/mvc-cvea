@@ -55,16 +55,17 @@ public class TransportTest {
         Server server = new Server();
         MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
         server.register(handler);
+        server.setTimeout(100);
         server.start(5550);
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 1; i++) {
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 try {
                     Client client = new Client();
                     client.startConnection("127.0.0.1", 5550);
 
-                    for (int j = 0; j < 3; j++) {
+                    for (int j = 0; j < 5; j++) {
                         byte[] param = ("param" + j).getBytes();
                         Response resp = client.send(new Request("echo", List.of(param)));
 
@@ -72,7 +73,7 @@ public class TransportTest {
                         Assert.assertArrayEquals(param, resp.getParams().get(0));
 
                         try {
-                            Thread.sleep(1500);
+                            Thread.sleep(150);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }

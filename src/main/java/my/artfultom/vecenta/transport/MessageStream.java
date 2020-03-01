@@ -12,13 +12,14 @@ import java.util.concurrent.TimeoutException;
 
 public class MessageStream {
     private AsynchronousSocketChannel channel;
-    private final long TIMEOUT = 1;
+    private final long timeout;
 
     private ByteBuffer byteBuffer = ByteBuffer.allocate(4096);
     private int cursor = 0;
 
-    public MessageStream(AsynchronousSocketChannel channel) {
+    public MessageStream(AsynchronousSocketChannel channel, long timeout) {
         this.channel = channel;
+        this.timeout = timeout;
     }
 
     public byte[] getNextMessage() {
@@ -26,7 +27,7 @@ public class MessageStream {
 
         try {
             while (byteBuffer.position() < cursor + 4) {
-                int bytesRead = channel.read(byteBuffer).get(TIMEOUT, TimeUnit.SECONDS);
+                int bytesRead = channel.read(byteBuffer).get(timeout, TimeUnit.MILLISECONDS);
                 if (bytesRead == -1) {
                     return null;
                 }
@@ -38,7 +39,7 @@ public class MessageStream {
             }
 
             while (byteBuffer.position() < cursor + 4 + size) {
-                int bytesRead = channel.read(byteBuffer).get(TIMEOUT, TimeUnit.SECONDS);
+                int bytesRead = channel.read(byteBuffer).get(timeout, TimeUnit.MILLISECONDS);
                 if (bytesRead == -1) {
                     return null;
                 }

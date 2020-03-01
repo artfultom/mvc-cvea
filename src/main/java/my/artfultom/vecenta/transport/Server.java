@@ -15,6 +15,12 @@ public class Server {
     private AsynchronousServerSocketChannel listener = null;
     private Map<String, MethodHandler> handlerMap = new HashMap<>();
 
+    private long timeout = 5000;
+
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
     public void start(int port) {
         try {
             listener = AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(port));
@@ -28,7 +34,7 @@ public class Server {
                         return;
                     }
 
-                    MessageStream stream = new MessageStream(ch);
+                    MessageStream stream = new MessageStream(ch, timeout);
 
                     while (listener.isOpen()) {
                         byte[] req = stream.getNextMessage();
