@@ -1,14 +1,14 @@
 package my.artfultom.vecenta.controller;
 
-import my.artfultom.vecenta.matcher.ControllerMatcher;
+import my.artfultom.vecenta.matcher.ServerMatcher;
 import my.artfultom.vecenta.transport.Client;
 import my.artfultom.vecenta.transport.Request;
 import my.artfultom.vecenta.transport.Response;
 import my.artfultom.vecenta.transport.Server;
-import my.artfultom.vecenta.util.RpcMethod;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.net.ConnectException;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -19,23 +19,52 @@ public class ControllerTest {
     public void test() throws ConnectException {
         Server server = new Server();
         server.start(5550);
-        ControllerMatcher matcher = new ControllerMatcher(server);
-        matcher.registerController(ServerController.class);
+        ServerMatcher serverMatcher = new ServerMatcher(server);
+        serverMatcher.register(ServerController.class); // TODO one or many?
 
         Client client = new Client();
         client.startConnection("127.0.0.1", 5550);
-        Request req = new Request(
-                "ServerController.sum(java.lang.Integer,int)",
-                List.of(ByteBuffer.allocate(4).putInt(2).array(), ByteBuffer.allocate(4).putInt(3).array())
-        );
-        Response resp = client.send(req);
+        ClientConnector clientConnector = new ClientConnector(client);
+        int result = clientConnector.sum(3, 4);
 
-        Assert.assertEquals(5, ByteBuffer.wrap(resp.getParams().get(0)).getInt());
+        Assert.assertEquals(5, result);
+
+        try {
+            client.stopConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        server.stop();
+    }
+
+    public static class ClientConnector {
+        private Client client;
+
+        public ClientConnector(Client client) {
+            this.client = client;
+        }
+
+        // TODO must be generated
+        public Integer sum(Integer a, int b) {
+            Request req = new Request(
+                    "ServerController.sum(java.lang.Integer,int)",
+                    List.of(ByteBuffer.allocate(4).putInt(2).array(), ByteBuffer.allocate(4).putInt(3).array())
+            );
+            Response resp = null;
+
+            try {
+                resp = client.send(req);
+            } catch (ConnectException e) {
+                e.printStackTrace();
+                return null;
+            }
+
+            return ByteBuffer.wrap(resp.getParams().get(0)).getInt();
+        }
     }
 
     public static class ServerController {
 
-        @RpcMethod
         public Integer sum(Integer a, int b) {
             return a + b;
         }

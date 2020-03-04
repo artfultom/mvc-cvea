@@ -11,15 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-public class ControllerMatcher {
+public class ServerMatcher {
 
     private final Server server;
 
-    public ControllerMatcher(Server server) {
+    public ServerMatcher(Server server) {
         this.server = server;
     }
 
-    public boolean registerController(Class<?> controllerClass) {
+    public boolean register(Class<?> controllerClass) {
         for (Method method : controllerClass.getDeclaredMethods()) {
             MethodHandler handler = new MethodHandler(getName(method), (request) -> {
                 try {
