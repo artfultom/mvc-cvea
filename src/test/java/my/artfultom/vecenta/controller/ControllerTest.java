@@ -1,10 +1,7 @@
 package my.artfultom.vecenta.controller;
 
 import my.artfultom.vecenta.matcher.ServerMatcher;
-import my.artfultom.vecenta.transport.Client;
-import my.artfultom.vecenta.transport.Request;
-import my.artfultom.vecenta.transport.Response;
-import my.artfultom.vecenta.transport.Server;
+import my.artfultom.vecenta.transport.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,7 +14,7 @@ public class ControllerTest {
 
     @Test
     public void test() throws ConnectException {
-        Server server = new Server();
+        Server server = new TcpServer();
         server.start(5550);
         ServerMatcher serverMatcher = new ServerMatcher(server);
         serverMatcher.register(ServerController.class); // TODO one or many?

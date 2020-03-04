@@ -13,7 +13,7 @@ public class TransportTest {
 
     @Test
     public void manyClients() {
-        Server server = new Server();
+        Server server = new TcpServer();
         MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
         server.register(handler);
         server.start(5550);
@@ -51,7 +51,7 @@ public class TransportTest {
 
     @Test
     public void timeoutClients() {
-        Server server = new Server();
+        TcpServer server = new TcpServer();
         MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
         server.register(handler);
         server.setTimeout(100);
@@ -96,7 +96,7 @@ public class TransportTest {
 
     @Test
     public void error1Clients() {
-        Server server = new Server();
+        Server server = new TcpServer();
         MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
         server.register(handler);
         server.start(5550);
@@ -116,7 +116,7 @@ public class TransportTest {
 
     @Test
     public void error2Clients() {
-        Server server = new Server();
+        Server server = new TcpServer();
         MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
         server.register(handler);
         server.start(5550);
@@ -136,7 +136,7 @@ public class TransportTest {
 
     @Test
     public void error1Handler() throws ConnectException {
-        Server server = new Server();
+        Server server = new TcpServer();
         server.start(5550);
 
         Client client = new Client();
@@ -153,7 +153,7 @@ public class TransportTest {
 
     @Test
     public void error2Handler() throws ConnectException {
-        Server server = new Server();
+        Server server = new TcpServer();
         MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
         server.register(handler);
         server.start(5550);
