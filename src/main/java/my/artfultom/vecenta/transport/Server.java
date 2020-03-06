@@ -1,10 +1,10 @@
 package my.artfultom.vecenta.transport;
 
+import my.artfultom.vecenta.matcher.ServerMatcher;
+
 public interface Server {
 
-    void start(int port);
-
-    boolean register(MethodHandler handler);
+    void start(int port, ServerMatcher matcher);
 
     void stop();
 }

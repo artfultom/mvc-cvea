@@ -1,25 +1,30 @@
 package my.artfultom.vecenta.matcher;
 
+import my.artfultom.vecenta.transport.ConvertStrategy;
+import my.artfultom.vecenta.transport.DefaultConvertStrategy;
 import my.artfultom.vecenta.transport.MethodHandler;
-import my.artfultom.vecenta.transport.Server;
+import my.artfultom.vecenta.transport.message.Request;
 import my.artfultom.vecenta.transport.message.Response;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 public class ServerMatcher {
 
-    private final Server server;
+    private ConvertStrategy strategy;
+    private Map<String, MethodHandler> handlerMap = new HashMap<>();
 
-    public ServerMatcher(Server server) {
-        this.server = server;
+    public ServerMatcher() {
+        this.strategy = new DefaultConvertStrategy();
     }
 
-    public boolean register(Class<?> controllerClass) {
+    public ServerMatcher(ConvertStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    public void register(Class<?> controllerClass) {
         for (Method method : controllerClass.getDeclaredMethods()) {
             MethodHandler handler = new MethodHandler(getName(method), (request) -> {
                 try {
@@ -50,13 +55,28 @@ public class ServerMatcher {
                     e.printStackTrace();
                 }
 
-                return new Response(1);
+                return new Response(1); // TODO code
             });
 
-            server.register(handler);
+            register(handler);
+        }
+    }
+
+    public void register(MethodHandler handler) { // TODO bool?
+        handlerMap.put(handler.getName(), handler);
+    }
+
+    public byte[] process(byte[] in) {
+        Request request = strategy.convertToRequest(in);
+
+        MethodHandler handler = handlerMap.get(request.getMethodName());
+        if (handler == null) {
+            return strategy.convertToBytes(new Response(666));
         }
 
-        return true;
+        Response response = handler.execute(request);
+
+        return strategy.convertToBytes(response);
     }
 
     private byte[] convertToByteArray(Class<?> clazz, Object in) {

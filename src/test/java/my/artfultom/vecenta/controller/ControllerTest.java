@@ -18,10 +18,11 @@ public class ControllerTest {
 
     @Test
     public void test() throws ConnectException {
+        ServerMatcher matcher = new ServerMatcher();
+        matcher.register(ServerController.class); // TODO one or many?
+
         Server server = new TcpServer();
-        server.start(5550);
-        ServerMatcher serverMatcher = new ServerMatcher(server);
-        serverMatcher.register(ServerController.class); // TODO one or many?
+        server.start(5550, matcher);
 
         Client client = new TcpClient();
         client.startConnection("127.0.0.1", 5550);

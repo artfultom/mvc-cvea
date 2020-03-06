@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.net.SocketException;
 
 public class TcpClient implements Client {
+
     private String host;
     private int port;
 

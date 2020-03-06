@@ -1,5 +1,6 @@
 package my.artfultom.vecenta.transport;
 
+import my.artfultom.vecenta.matcher.ServerMatcher;
 import my.artfultom.vecenta.transport.message.Request;
 import my.artfultom.vecenta.transport.message.Response;
 import my.artfultom.vecenta.transport.tcp.TcpClient;
@@ -17,10 +18,11 @@ public class TransportTest {
 
     @Test
     public void manyClients() {
+        ServerMatcher matcher = new ServerMatcher();
+        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams()))); // TODO one or many?
+
         Server server = new TcpServer();
-        MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
-        server.register(handler);
-        server.start(5550);
+        server.start(5550, matcher);
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         for (int i = 0; i < 1000; i++) {
@@ -55,11 +57,12 @@ public class TransportTest {
 
     @Test
     public void timeoutClients() {
+        ServerMatcher matcher = new ServerMatcher();
+        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams()))); // TODO one or many?
+
         TcpServer server = new TcpServer();
-        MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
-        server.register(handler);
         server.setTimeout(100);
-        server.start(5550);
+        server.start(5550, matcher);
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         for (int i = 0; i < 1; i++) {
@@ -100,10 +103,11 @@ public class TransportTest {
 
     @Test
     public void error1Clients() {
-        Server server = new TcpServer();
-        MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
-        server.register(handler);
-        server.start(5550);
+        ServerMatcher matcher = new ServerMatcher();
+        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams()))); // TODO one or many?
+
+        TcpServer server = new TcpServer();
+        server.start(5550, matcher);
 
         server.stop();
 
@@ -120,10 +124,11 @@ public class TransportTest {
 
     @Test
     public void error2Clients() {
-        Server server = new TcpServer();
-        MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
-        server.register(handler);
-        server.start(5550);
+        ServerMatcher matcher = new ServerMatcher();
+        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams()))); // TODO one or many?
+
+        TcpServer server = new TcpServer();
+        server.start(5550, matcher);
 
         try {
             Client client = new TcpClient();
@@ -140,13 +145,16 @@ public class TransportTest {
 
     @Test
     public void error1Handler() throws ConnectException {
-        Server server = new TcpServer();
-        server.start(5550);
+        ServerMatcher matcher = new ServerMatcher();
+        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams()))); // TODO one or many?
+
+        TcpServer server = new TcpServer();
+        server.start(5550, matcher);
 
         Client client = new TcpClient();
         client.startConnection("127.0.0.1", 5550);
 
-        Response response = client.send(new Request("echo", new ArrayList<>()));
+        Response response = client.send(new Request("wrong", new ArrayList<>()));
 
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getErrorCode());
@@ -157,10 +165,11 @@ public class TransportTest {
 
     @Test
     public void error2Handler() throws ConnectException {
+        ServerMatcher matcher = new ServerMatcher();
+        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams()))); // TODO one or many?
+
         Server server = new TcpServer();
-        MethodHandler handler = new MethodHandler("echo", (request) -> new Response(request.getParams()));
-        server.register(handler);
-        server.start(5550);
+        server.start(5550, matcher);
 
         Client client = new TcpClient();
         client.startConnection("127.0.0.1", 5550);
