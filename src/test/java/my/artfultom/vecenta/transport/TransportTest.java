@@ -22,7 +22,7 @@ public class TransportTest {
         for (int i = 0; i < 1000; i++) {
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 try {
-                    Client client = new Client();
+                    TcpClient client = new TcpClient();
                     client.startConnection("127.0.0.1", 5550);
                     for (int j = 0; j < 100; j++) {
                         byte[] param1 = ("param1" + j).getBytes();
@@ -61,7 +61,7 @@ public class TransportTest {
         for (int i = 0; i < 1; i++) {
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 try {
-                    Client client = new Client();
+                    Client client = new TcpClient();
                     client.startConnection("127.0.0.1", 5550);
 
                     for (int j = 0; j < 5; j++) {
@@ -105,7 +105,7 @@ public class TransportTest {
 
         for (int i = 0; i < 10; i++) {
             try {
-                Client client = new Client();
+                Client client = new TcpClient();
                 client.startConnection("127.0.0.1", 5550);
 
                 Assert.fail();
@@ -122,7 +122,7 @@ public class TransportTest {
         server.start(5550);
 
         try {
-            Client client = new Client();
+            Client client = new TcpClient();
             client.startConnection("127.0.0.1", 5550);
 
             server.stop();
@@ -139,7 +139,7 @@ public class TransportTest {
         Server server = new TcpServer();
         server.start(5550);
 
-        Client client = new Client();
+        Client client = new TcpClient();
         client.startConnection("127.0.0.1", 5550);
 
         Response response = client.send(new Request("echo", new ArrayList<>()));
@@ -158,7 +158,7 @@ public class TransportTest {
         server.register(handler);
         server.start(5550);
 
-        Client client = new Client();
+        Client client = new TcpClient();
         client.startConnection("127.0.0.1", 5550);
 
         Response response = client.send(new Request("wrong", new ArrayList<>()));

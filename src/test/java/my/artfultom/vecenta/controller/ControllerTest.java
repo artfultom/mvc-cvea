@@ -19,7 +19,7 @@ public class ControllerTest {
         ServerMatcher serverMatcher = new ServerMatcher(server);
         serverMatcher.register(ServerController.class); // TODO one or many?
 
-        Client client = new Client();
+        Client client = new TcpClient();
         client.startConnection("127.0.0.1", 5550);
         ClientConnector clientConnector = new ClientConnector(client);
         int result = clientConnector.sum(3, 4);

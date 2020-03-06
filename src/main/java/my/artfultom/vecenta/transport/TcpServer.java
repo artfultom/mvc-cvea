@@ -35,6 +35,8 @@ public class TcpServer implements Server {
                         return;
                     }
 
+                    // TODO handshake
+
                     MessageStream stream = new MessageStream(ch, timeout);
 
                     while (listener.isOpen()) {
