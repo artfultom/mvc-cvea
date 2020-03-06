@@ -1,5 +1,9 @@
 package my.artfultom.vecenta.transport;
 
+import my.artfultom.vecenta.transport.message.Request;
+import my.artfultom.vecenta.transport.message.Response;
+import my.artfultom.vecenta.transport.tcp.TcpClient;
+import my.artfultom.vecenta.transport.tcp.TcpServer;
 import org.junit.Assert;
 import org.junit.Test;
 

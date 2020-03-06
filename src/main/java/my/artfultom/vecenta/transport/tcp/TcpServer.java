@@ -1,4 +1,12 @@
-package my.artfultom.vecenta.transport;
+package my.artfultom.vecenta.transport.tcp;
+
+import my.artfultom.vecenta.transport.ConvertStrategy;
+import my.artfultom.vecenta.transport.DefaultConvertStrategy;
+import my.artfultom.vecenta.transport.MethodHandler;
+import my.artfultom.vecenta.transport.Server;
+import my.artfultom.vecenta.transport.message.MessageStream;
+import my.artfultom.vecenta.transport.message.Request;
+import my.artfultom.vecenta.transport.message.Response;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -10,7 +18,7 @@ import java.util.Map;
 
 public class TcpServer implements Server {
     private AsynchronousServerSocketChannel listener = null;
-    private Map<String, MethodHandler> handlerMap = new HashMap<>();
+    private Map<String, MethodHandler> handlerMap = new HashMap<>(); // TODO here?
 
     private long timeout = 5000;
 

@@ -1,5 +1,8 @@
 package my.artfultom.vecenta.transport;
 
+import my.artfultom.vecenta.transport.message.Request;
+import my.artfultom.vecenta.transport.message.Response;
+
 import java.util.function.Function;
 
 public class MethodHandler {

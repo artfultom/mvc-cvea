@@ -1,4 +1,10 @@
-package my.artfultom.vecenta.transport;
+package my.artfultom.vecenta.transport.tcp;
+
+import my.artfultom.vecenta.transport.Client;
+import my.artfultom.vecenta.transport.ConvertStrategy;
+import my.artfultom.vecenta.transport.DefaultConvertStrategy;
+import my.artfultom.vecenta.transport.message.Request;
+import my.artfultom.vecenta.transport.message.Response;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

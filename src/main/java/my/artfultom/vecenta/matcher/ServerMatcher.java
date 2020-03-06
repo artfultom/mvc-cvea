@@ -1,8 +1,8 @@
 package my.artfultom.vecenta.matcher;
 
 import my.artfultom.vecenta.transport.MethodHandler;
-import my.artfultom.vecenta.transport.Response;
 import my.artfultom.vecenta.transport.Server;
+import my.artfultom.vecenta.transport.message.Response;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

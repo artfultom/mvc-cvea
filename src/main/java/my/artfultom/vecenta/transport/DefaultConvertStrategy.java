@@ -1,5 +1,8 @@
 package my.artfultom.vecenta.transport;
 
+import my.artfultom.vecenta.transport.message.Request;
+import my.artfultom.vecenta.transport.message.Response;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -40,7 +43,7 @@ public class DefaultConvertStrategy implements ConvertStrategy {
 
         try {
             if (in.getErrorCode() == null) {
-                dataStream.writeByte(0);
+                dataStream.writeByte(0); // TODO too much
                 for (byte[] param : in.getParams()) {
                     dataStream.writeInt(param.length);
                     dataStream.write(param);
@@ -70,13 +73,13 @@ public class DefaultConvertStrategy implements ConvertStrategy {
             List<byte[]> params = new ArrayList<>();
 
             for (int i = 1; i < buf.capacity(); ) {
-                byte[] rawSize = Arrays.copyOfRange(in, i, i + 4);
+                byte[] rawSize = Arrays.copyOfRange(in, i, i + Integer.BYTES);
                 int size = ByteBuffer.wrap(rawSize).getInt();
-                byte[] param = Arrays.copyOfRange(in, i + 4, i + 4 + size);
+                byte[] param = Arrays.copyOfRange(in, i + Integer.BYTES, i + Integer.BYTES + size);
 
                 params.add(param);
 
-                i += size + 4;
+                i += size + Integer.BYTES;
             }
 
             return new Response(params);
@@ -91,19 +94,19 @@ public class DefaultConvertStrategy implements ConvertStrategy {
 
         int methodSize = buf.getInt(0);
 
-        byte[] rawMethod = Arrays.copyOfRange(in, 4, methodSize + 4);
+        byte[] rawMethod = Arrays.copyOfRange(in, Integer.BYTES, methodSize + Integer.BYTES);
         String method = new String(rawMethod, StandardCharsets.UTF_8);
 
         List<byte[]> params = new ArrayList<>();
-        for (int i = methodSize + 4; i < buf.capacity(); ) {
-            byte[] rawSize = Arrays.copyOfRange(in, i, i + 4);
+        for (int i = methodSize + Integer.BYTES; i < buf.capacity(); ) {
+            byte[] rawSize = Arrays.copyOfRange(in, i, i + Integer.BYTES);
             int paramSize = ByteBuffer.wrap(rawSize).getInt();
 
-            byte[] param = Arrays.copyOfRange(in, i + 4, paramSize + i + 4);
+            byte[] param = Arrays.copyOfRange(in, i + Integer.BYTES, paramSize + i + Integer.BYTES);
 
             params.add(param);
 
-            i += paramSize + 4;
+            i += paramSize + Integer.BYTES;
         }
 
         return new Request(method, params);

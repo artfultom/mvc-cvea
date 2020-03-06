@@ -1,4 +1,4 @@
-package my.artfultom.vecenta.transport;
+package my.artfultom.vecenta.transport.message;
 
 import java.util.List;
 

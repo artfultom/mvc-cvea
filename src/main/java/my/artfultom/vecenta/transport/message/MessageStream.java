@@ -1,4 +1,4 @@
-package my.artfultom.vecenta.transport;
+package my.artfultom.vecenta.transport.message;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -20,10 +20,10 @@ public class MessageStream {
 
     public byte[] getNextMessage() {
         int size;
-        ByteBuffer sizeBuf = ByteBuffer.allocate(4);
+        ByteBuffer sizeBuf = ByteBuffer.allocate(Integer.BYTES);
 
         try {
-            while (sizeBuf.position() < 4) {
+            while (sizeBuf.position() < Integer.BYTES) {
                 int bytesRead = channel.read(sizeBuf).get(timeout, TimeUnit.MILLISECONDS);
                 if (bytesRead == -1) {
                     return null;
@@ -62,7 +62,7 @@ public class MessageStream {
     }
 
     public void sendMessage(byte[] resp) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream(resp.length + 4);
+        ByteArrayOutputStream out = new ByteArrayOutputStream(resp.length + Integer.BYTES);
         DataOutputStream dataStream = new DataOutputStream(out);
         try {
             dataStream.writeInt(resp.length);
