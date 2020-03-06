@@ -1,13 +1,12 @@
 package my.artfultom.vecenta.transport;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class TcpClient implements Client {
     private String host;
@@ -16,6 +15,16 @@ public class TcpClient implements Client {
     private Socket clientSocket;
     private DataOutputStream out;
     private DataInputStream in;
+
+    private ConvertStrategy strategy;
+
+    public TcpClient() {
+        this.strategy = new DefaultConvertStrategy();
+    }
+
+    public TcpClient(ConvertStrategy strategy) {
+        this.strategy = strategy;
+    }
 
     @Override
     public void startConnection(String host, int port) throws ConnectException {
@@ -40,16 +49,16 @@ public class TcpClient implements Client {
     }
 
     @Override
-    public Response send(Request request) throws ConnectException { // TODO выбор сериализации
+    public Response send(Request request) throws ConnectException {
         for (int i = 0; i < 10; i++) {  // TODO settings
             try {
-                byte[] b = convertToBytes(request);
+                byte[] b = strategy.convertToBytes(request);
                 out.writeInt(b.length);
                 out.write(b);
 
                 int size = in.readInt();
                 byte[] result = in.readNBytes(size);
-                return convertToResponse(result);
+                return strategy.convertToResponse(result);
             } catch (ConnectException e) {
                 throw e;
             } catch (SocketException | EOFException e) {
@@ -60,51 +69,6 @@ public class TcpClient implements Client {
         }
 
         return null;
-    }
-
-    private byte[] convertToBytes(Request in) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        DataOutputStream dataStream = new DataOutputStream(out);
-
-        try {
-            int methodLength = in.getMethodName().length();
-            dataStream.writeInt(methodLength);
-            dataStream.writeBytes(in.getMethodName());
-
-            for (byte[] param : in.getParams()) {
-                int paramLength = param.length;
-                dataStream.writeInt(paramLength);
-                dataStream.write(param);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return out.toByteArray();
-    }
-
-    private Response convertToResponse(byte[] in) {
-        ByteBuffer buf = ByteBuffer.wrap(in);
-
-        byte flag = buf.get(0);
-
-        if (flag == 0) {
-            List<byte[]> params = new ArrayList<>();
-
-            for (int i = 1; i < buf.capacity(); ) {
-                byte[] rawSize = Arrays.copyOfRange(in, i, i + 4);
-                int size = ByteBuffer.wrap(rawSize).getInt();
-                byte[] param = Arrays.copyOfRange(in, i + 4, i + 4 + size);
-
-                params.add(param);
-
-                i += size + 4;
-            }
-
-            return new Response(params);
-        } else {
-            return new Response(1); // TODO code
-        }
     }
 
     @Override
