@@ -1,7 +1,8 @@
 package my.artfultom.vecenta.controller;
 
 import my.artfultom.vecenta.matcher.ServerMatcher;
-import my.artfultom.vecenta.transport.*;
+import my.artfultom.vecenta.transport.Client;
+import my.artfultom.vecenta.transport.Server;
 import my.artfultom.vecenta.transport.message.Request;
 import my.artfultom.vecenta.transport.message.Response;
 import my.artfultom.vecenta.transport.tcp.TcpClient;
@@ -17,26 +18,21 @@ import java.util.List;
 public class ControllerTest {
 
     @Test
-    public void test() throws ConnectException {
+    public void test() {
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(ServerController.class); // TODO one or many?
 
-        Server server = new TcpServer();
-        server.start(5550, matcher);
+        try (Server server = new TcpServer(); Client client = new TcpClient()) {
+            server.start(5550, matcher);
 
-        Client client = new TcpClient();
-        client.startConnection("127.0.0.1", 5550);
-        ClientConnector clientConnector = new ClientConnector(client);
-        int result = clientConnector.sum(3, 4);
+            client.startConnection("127.0.0.1", 5550);
+            ClientConnector clientConnector = new ClientConnector(client);
+            int result = clientConnector.sum(3, 4);
 
-        Assert.assertEquals(5, result);
-
-        try {
-            client.stopConnection();
+            Assert.assertEquals(5, result);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        server.stop();
     }
 
     public static class ClientConnector {

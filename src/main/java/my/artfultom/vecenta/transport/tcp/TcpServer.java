@@ -60,13 +60,9 @@ public class TcpServer implements Server {
     }
 
     @Override
-    public void stop() {
-        try {
-            if (listener.isOpen()) {
-                listener.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void close() throws IOException {
+        if (listener.isOpen()) {
+            listener.close();
         }
     }
 }

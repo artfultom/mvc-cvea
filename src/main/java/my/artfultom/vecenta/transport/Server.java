@@ -2,9 +2,12 @@ package my.artfultom.vecenta.transport;
 
 import my.artfultom.vecenta.matcher.ServerMatcher;
 
-public interface Server {
+import java.io.IOException;
+
+public interface Server extends AutoCloseable, Cloneable {
 
     void start(int port, ServerMatcher matcher);
 
-    void stop();
+    @Override
+    void close() throws IOException;
 }

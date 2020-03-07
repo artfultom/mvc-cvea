@@ -79,7 +79,7 @@ public class TcpClient implements Client {
     }
 
     @Override
-    public void stopConnection() throws IOException {
+    public void close() throws IOException {
         if (clientSocket != null && !clientSocket.isClosed()) {
             if (in != null) {
                 in.close();
