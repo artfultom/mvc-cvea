@@ -1,8 +1,8 @@
 package my.artfultom.vecenta.transport.tcp;
 
 import my.artfultom.vecenta.transport.Client;
-import my.artfultom.vecenta.transport.ConvertStrategy;
-import my.artfultom.vecenta.transport.DefaultConvertStrategy;
+import my.artfultom.vecenta.transport.DefaultReadWriteStrategy;
+import my.artfultom.vecenta.transport.ReadWriteStrategy;
 import my.artfultom.vecenta.transport.message.Request;
 import my.artfultom.vecenta.transport.message.Response;
 
@@ -23,13 +23,13 @@ public class TcpClient implements Client {
     private DataOutputStream out;
     private DataInputStream in;
 
-    private ConvertStrategy strategy;
+    private ReadWriteStrategy strategy;
 
     public TcpClient() {
-        this.strategy = new DefaultConvertStrategy();
+        this.strategy = new DefaultReadWriteStrategy();
     }
 
-    public TcpClient(ConvertStrategy strategy) {
+    public TcpClient(ReadWriteStrategy strategy) {
         this.strategy = strategy;
     }
 

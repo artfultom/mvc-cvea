@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class DefaultConvertStrategy implements ConvertStrategy {
+public class DefaultReadWriteStrategy implements ReadWriteStrategy {
 
     @Override
     public byte[] convertToBytes(Request in) {

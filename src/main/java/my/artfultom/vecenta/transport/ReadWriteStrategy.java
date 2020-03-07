@@ -3,7 +3,7 @@ package my.artfultom.vecenta.transport;
 import my.artfultom.vecenta.transport.message.Request;
 import my.artfultom.vecenta.transport.message.Response;
 
-public interface ConvertStrategy {
+public interface ReadWriteStrategy {
 
     byte[] convertToBytes(Request in);
 
