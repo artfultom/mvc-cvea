@@ -12,6 +12,8 @@ import java.nio.channels.CompletionHandler;
 
 public class TcpServer implements Server {
 
+    private final int PROTOCOL_VERSION = 1;
+
     private AsynchronousServerSocketChannel listener;
 
     private long timeout = 5000;
@@ -34,19 +36,19 @@ public class TcpServer implements Server {
                         return;
                     }
 
-                    // TODO handshake
+                    try (MessageStream stream = new MessageStream(ch, timeout)) {
+                        while (listener.isOpen()) {
+                            byte[] req = stream.getNextMessage();
+                            if (req == null) {
+                                break;
+                            }
 
-                    MessageStream stream = new MessageStream(ch, timeout);
+                            byte[] resp = matcher.process(req);
 
-                    while (listener.isOpen()) {
-                        byte[] req = stream.getNextMessage();
-                        if (req == null) {
-                            break;
+                            stream.sendMessage(resp);
                         }
-
-                        byte[] resp = matcher.process(req);
-
-                        stream.sendMessage(resp);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
 

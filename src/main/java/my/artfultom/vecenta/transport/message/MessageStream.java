@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class MessageStream {
+public class MessageStream implements AutoCloseable {
     private AsynchronousSocketChannel channel;
     private final long timeout;
 
@@ -72,5 +72,10 @@ public class MessageStream {
         }
 
         channel.write(ByteBuffer.wrap(out.toByteArray()));
+    }
+
+    @Override
+    public void close() throws IOException {
+        channel.close();
     }
 }

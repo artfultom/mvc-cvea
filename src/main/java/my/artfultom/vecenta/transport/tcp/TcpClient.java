@@ -6,10 +6,7 @@ import my.artfultom.vecenta.transport.Client;
 import my.artfultom.vecenta.transport.message.Request;
 import my.artfultom.vecenta.transport.message.Response;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
+import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
@@ -39,14 +36,13 @@ public class TcpClient implements Client {
         this.port = port;
 
         connect();
-
-        // TODO handshake
     }
 
     private void connect() throws ConnectException {
         try {
             clientSocket = new Socket(host, port);
-            out = new DataOutputStream(clientSocket.getOutputStream());
+
+            out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
             in = new DataInputStream(clientSocket.getInputStream());
         } catch (ConnectException e) {
             throw e;
@@ -62,6 +58,7 @@ public class TcpClient implements Client {
                 byte[] b = strategy.convertToBytes(request);
                 out.writeInt(b.length);
                 out.write(b);
+                out.flush();
 
                 int size = in.readInt();
                 byte[] result = in.readNBytes(size);
