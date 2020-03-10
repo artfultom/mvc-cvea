@@ -57,7 +57,7 @@ public class ControllerTest {
                 return null;
             }
 
-            return ByteBuffer.wrap(resp.getParams().get(0)).getInt();
+            return ByteBuffer.wrap(resp.getResults().get(0)).getInt();
         }
     }
 

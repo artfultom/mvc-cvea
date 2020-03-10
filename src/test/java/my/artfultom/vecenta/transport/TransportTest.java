@@ -34,9 +34,9 @@ public class TransportTest {
                             byte[] param2 = ("param2" + j).getBytes();
                             Response resp = client.send(new Request("echo", List.of(param1, param2)));
 
-                            Assert.assertEquals(2, resp.getParams().size());
-                            Assert.assertArrayEquals(param1, resp.getParams().get(0));
-                            Assert.assertArrayEquals(param2, resp.getParams().get(1));
+                            Assert.assertEquals(2, resp.getResults().size());
+                            Assert.assertArrayEquals(param1, resp.getResults().get(0));
+                            Assert.assertArrayEquals(param2, resp.getResults().get(1));
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -73,8 +73,8 @@ public class TransportTest {
                             byte[] param = ("param" + j).getBytes();
                             Response resp = client.send(new Request("echo", List.of(param)));
 
-                            Assert.assertEquals(1, resp.getParams().size());
-                            Assert.assertArrayEquals(param, resp.getParams().get(0));
+                            Assert.assertEquals(1, resp.getResults().size());
+                            Assert.assertArrayEquals(param, resp.getResults().get(0));
 
                             try {
                                 Thread.sleep(150);
@@ -151,7 +151,7 @@ public class TransportTest {
 
             Assert.assertNotNull(response);
             Assert.assertNotNull(response.getErrorCode());
-            Assert.assertNull(response.getParams());
+            Assert.assertNull(response.getResults());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -170,7 +170,7 @@ public class TransportTest {
 
             Assert.assertNotNull(response);
             Assert.assertNotNull(response.getErrorCode());
-            Assert.assertNull(response.getParams());
+            Assert.assertNull(response.getResults());
         } catch (IOException e) {
             e.printStackTrace();
         }

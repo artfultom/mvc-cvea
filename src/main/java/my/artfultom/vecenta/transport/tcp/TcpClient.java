@@ -1,8 +1,8 @@
 package my.artfultom.vecenta.transport.tcp;
 
-import my.artfultom.vecenta.transport.Client;
 import my.artfultom.vecenta.matcher.DefaultReadWriteStrategy;
 import my.artfultom.vecenta.matcher.ReadWriteStrategy;
+import my.artfultom.vecenta.transport.Client;
 import my.artfultom.vecenta.transport.message.Request;
 import my.artfultom.vecenta.transport.message.Response;
 
