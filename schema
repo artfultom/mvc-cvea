@@ -1,0 +1,12 @@
+{
+  "type" : "record",
+  "name" : "A",
+  "namespace" : "my.artfultom.vecenta.controller",
+  "fields" : [ {
+    "name" : "a",
+    "type" : "int"
+  }, {
+    "name" : "b",
+    "type" : "string"
+  } ]
+}

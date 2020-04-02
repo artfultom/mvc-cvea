@@ -8,20 +8,15 @@ import my.artfultom.vecenta.transport.message.Response;
 import my.artfultom.vecenta.transport.tcp.TcpClient;
 import my.artfultom.vecenta.transport.tcp.TcpServer;
 import org.apache.avro.Schema;
-import org.apache.avro.SchemaBuilder;
-import org.apache.avro.file.CodecFactory;
-import org.apache.avro.file.DataFileReader;
-import org.apache.avro.file.DataFileWriter;
-import org.apache.avro.io.DatumReader;
-import org.apache.avro.io.DatumWriter;
+import org.apache.avro.io.*;
 import org.apache.avro.reflect.ReflectData;
 import org.apache.avro.reflect.ReflectDatumReader;
 import org.apache.avro.reflect.ReflectDatumWriter;
+import org.apache.avro.tool.Tool;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.ConnectException;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -29,28 +24,35 @@ import java.util.List;
 public class ControllerTest {
 
     @Test
+    public void testGenerate() {
+
+    }
+
+    @Test
     public void testAvro() throws IOException {
-        A a = new A(1, "qwe");
-
-        File f = new File("./A.avsc");
         Schema schema = ReflectData.get().getSchema(A.class);
+        BufferedWriter writer = new BufferedWriter(new FileWriter("./schema"));
+        writer.write(schema.toString(true));
+        writer.close();
 
-        DatumWriter<A> writer = new ReflectDatumWriter<>(A.class);
-        DataFileWriter<A> out = new DataFileWriter<>(writer)
-                .setCodec(CodecFactory.deflateCodec(9))
-                .create(schema, f);
+        A a1 = new A(1, "qwe");
 
-        out.append(a);
-        out.close();
-
-        DatumReader<A> reader = new ReflectDatumReader<>(A.class);
-        DataFileReader<A> in = new DataFileReader<>(f, reader);
-
-        for (A obj: in) {
-            System.out.println(ReflectData.get().toString(obj));
+        DatumWriter<A> employeeWriter = new ReflectDatumWriter<>(A.class);
+        byte[] data;
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            Encoder binaryEncoder = EncoderFactory.get().binaryEncoder(baos, null);
+            employeeWriter.write(a1, binaryEncoder);
+            binaryEncoder.flush();
+            data = baos.toByteArray();
         }
 
-        in.close();
+        DatumReader<A> employeeReader = new ReflectDatumReader<>(A.class);
+        Decoder binaryDecoder = DecoderFactory.get().binaryDecoder(data, null);
+
+        A a2 = employeeReader.read(null, binaryDecoder);
+
+        Assert.assertEquals(a1.getA(), a2.getA());
+        Assert.assertEquals(a1.getB(), a2.getB());
     }
 
     @Test
