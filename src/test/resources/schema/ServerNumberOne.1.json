@@ -1,0 +1,35 @@
+{
+  "client": "ClientNumberOne",
+  "entities": [
+    {
+      "name": "entity_name",
+      "methods": [
+        {
+          "name": "method_name",
+          "in": [
+            {
+              "name": "argument_name",
+              "type": "ArgumentType"
+            }
+          ],
+          "out": [
+            {
+              "name": "return_name",
+              "type": "int"
+            }
+          ],
+          "types": [
+            {
+              "name": "ArgumentType",
+              "body": {
+                "fiend_1": "int",
+                "fiend_2": "long",
+                "fiend_3": "String"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

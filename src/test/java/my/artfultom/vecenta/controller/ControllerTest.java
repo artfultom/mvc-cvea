@@ -1,5 +1,6 @@
 package my.artfultom.vecenta.controller;
 
+import my.artfultom.vecenta.generate.FileGenerator;
 import my.artfultom.vecenta.matcher.ServerMatcher;
 import my.artfultom.vecenta.transport.Client;
 import my.artfultom.vecenta.transport.Server;
@@ -12,20 +13,26 @@ import org.apache.avro.io.*;
 import org.apache.avro.reflect.ReflectData;
 import org.apache.avro.reflect.ReflectDatumReader;
 import org.apache.avro.reflect.ReflectDatumWriter;
-import org.apache.avro.tool.Tool;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.ConnectException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.List;
 
 public class ControllerTest {
 
     @Test
-    public void testGenerate() {
+    public void testGenerate() throws IOException, URISyntaxException {
+        URL schema = getClass().getResource("/schema");
 
+        FileGenerator.generateServerFiles(schema);
     }
 
     @Test
