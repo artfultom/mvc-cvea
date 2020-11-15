@@ -2,7 +2,7 @@ package my.artfultom.vecenta.transport.tcp;
 
 import my.artfultom.vecenta.matcher.DefaultReadWriteStrategy;
 import my.artfultom.vecenta.matcher.ReadWriteStrategy;
-import my.artfultom.vecenta.transport.Client;
+import my.artfultom.vecenta.transport.AbstractClient;
 import my.artfultom.vecenta.transport.message.Request;
 import my.artfultom.vecenta.transport.message.Response;
 
@@ -11,7 +11,7 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
 
-public class TcpClient implements Client {
+public class TcpClient extends AbstractClient {
 
     private String host;
     private int port;
@@ -44,6 +44,8 @@ public class TcpClient implements Client {
 
             out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
             in = new DataInputStream(clientSocket.getInputStream());
+
+            handshake(in, out);
         } catch (ConnectException e) {
             throw e;
         } catch (IOException e) {

@@ -1,5 +1,7 @@
 package my.artfultom.vecenta.transport.tcp;
 
+import my.artfultom.vecenta.transport.MessageStream;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,7 +11,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class TcpMessageStream implements AutoCloseable {
+public class TcpMessageStream implements MessageStream {
+
     private AsynchronousSocketChannel channel;
     private final long timeout;
 
@@ -18,6 +21,7 @@ public class TcpMessageStream implements AutoCloseable {
         this.timeout = timeout;
     }
 
+    @Override
     public byte[] getNextMessage() {
         int size;
         ByteBuffer sizeBuf = ByteBuffer.allocate(Integer.BYTES);
@@ -61,6 +65,7 @@ public class TcpMessageStream implements AutoCloseable {
         return null;
     }
 
+    @Override
     public void sendMessage(byte[] resp) {
         ByteArrayOutputStream out = new ByteArrayOutputStream(resp.length + Integer.BYTES);
         DataOutputStream dataStream = new DataOutputStream(out);

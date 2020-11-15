@@ -1,7 +1,7 @@
 package my.artfultom.vecenta.transport.tcp;
 
 import my.artfultom.vecenta.matcher.ServerMatcher;
-import my.artfultom.vecenta.transport.Server;
+import my.artfultom.vecenta.transport.AbstractServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -9,9 +9,7 @@ import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 
-public class TcpServer implements Server {
-
-    private final int PROTOCOL_VERSION = 1;
+public class TcpServer extends AbstractServer {
 
     private AsynchronousServerSocketChannel listener;
 
@@ -36,6 +34,10 @@ public class TcpServer implements Server {
                     }
 
                     try (TcpMessageStream stream = new TcpMessageStream(ch, timeout)) {
+                        if (listener.isOpen()) {
+                            handshake(stream);
+                        }
+
                         while (listener.isOpen()) {
                             byte[] req = stream.getNextMessage();
                             if (req == null) {
