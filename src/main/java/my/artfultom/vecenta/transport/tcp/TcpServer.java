@@ -2,7 +2,6 @@ package my.artfultom.vecenta.transport.tcp;
 
 import my.artfultom.vecenta.matcher.ServerMatcher;
 import my.artfultom.vecenta.transport.Server;
-import my.artfultom.vecenta.transport.message.MessageStream;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -36,7 +35,7 @@ public class TcpServer implements Server {
                         return;
                     }
 
-                    try (MessageStream stream = new MessageStream(ch, timeout)) {
+                    try (TcpMessageStream stream = new TcpMessageStream(ch, timeout)) {
                         while (listener.isOpen()) {
                             byte[] req = stream.getNextMessage();
                             if (req == null) {

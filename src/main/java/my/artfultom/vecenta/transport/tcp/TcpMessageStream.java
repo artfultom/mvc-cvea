@@ -1,4 +1,4 @@
-package my.artfultom.vecenta.transport.message;
+package my.artfultom.vecenta.transport.tcp;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -9,11 +9,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class MessageStream implements AutoCloseable {
+public class TcpMessageStream implements AutoCloseable {
     private AsynchronousSocketChannel channel;
     private final long timeout;
 
-    public MessageStream(AsynchronousSocketChannel channel, long timeout) {
+    public TcpMessageStream(AsynchronousSocketChannel channel, long timeout) {
         this.channel = channel;
         this.timeout = timeout;
     }
