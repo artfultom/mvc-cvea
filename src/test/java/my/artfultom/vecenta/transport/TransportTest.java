@@ -160,7 +160,7 @@ public class TransportTest {
     @Test
     public void error2Handler() {
         ServerMatcher matcher = new ServerMatcher();
-        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams()))); // TODO one or many?
+        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams())));
 
         try (TcpServer server = new TcpServer(); Client client = new TcpClient()) {
             server.start(5550, matcher);
@@ -171,6 +171,29 @@ public class TransportTest {
             Assert.assertNotNull(response);
             Assert.assertNotNull(response.getError());
             Assert.assertNull(response.getResults());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void manyResults() {
+        ServerMatcher matcher = new ServerMatcher();
+        matcher.register(new MethodHandler("double", (request) -> {
+            request.getParams().addAll(request.getParams());
+            return new Response(request.getParams());
+        }));
+
+        try (TcpServer server = new TcpServer(); Client client = new TcpClient()) {
+            server.start(5550, matcher);
+            client.startConnection("127.0.0.1", 5550);
+
+            Response response = client.send(new Request("double", List.of(new byte[]{1})));
+
+            Assert.assertNotNull(response);
+            Assert.assertNull(response.getError());
+            Assert.assertNotNull(response.getResults());
+            Assert.assertEquals(2, response.getResults().size());
         } catch (IOException e) {
             e.printStackTrace();
         }
