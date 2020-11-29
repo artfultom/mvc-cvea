@@ -12,7 +12,7 @@ public class ServerMatcher {
 
     private ReadWriteStrategy readWriteStrategy;
     private ConvertParamStrategy convertParamStrategy;
-    private Map<String, MethodHandler> handlerMap = new HashMap<>();
+    private final Map<String, MethodHandler> handlerMap = new HashMap<>();
 
     public ServerMatcher() {
         this.readWriteStrategy = new DefaultReadWriteStrategy();
