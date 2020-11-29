@@ -40,7 +40,7 @@ public class TcpServer extends AbstractServer {
 
                         while (listener.isOpen()) {
                             byte[] req = stream.getNextMessage();
-                            if (req == null) {
+                            if (req == null || !listener.isOpen()) {
                                 break;
                             }
 

@@ -42,8 +42,8 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
         DataOutputStream dataStream = new DataOutputStream(out);
 
         try {
-            if (in.getErrorCode() == null) {
-                dataStream.writeByte(0); // TODO too much
+            if (in.getErrorCode() == 0) {
+                dataStream.writeByte(0);
                 for (byte[] param : in.getResults()) {
                     dataStream.writeInt(param.length);
                     dataStream.write(param);

@@ -18,7 +18,5 @@ public abstract class AbstractClient implements Client {
         int result = bb.asIntBuffer().get();
 
         // TODO handshake logic
-
-        System.out.println(result);
     }
 }
