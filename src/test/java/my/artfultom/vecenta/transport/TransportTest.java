@@ -150,7 +150,7 @@ public class TransportTest {
             Response response = client.send(new Request("echo", new ArrayList<>()));
 
             Assert.assertNotNull(response);
-            Assert.assertNotNull(response.getErrorCode());
+            Assert.assertNotNull(response.getError());
             Assert.assertNull(response.getResults());
         } catch (IOException e) {
             e.printStackTrace();
@@ -169,7 +169,7 @@ public class TransportTest {
             Response response = client.send(new Request("wrong", new ArrayList<>()));
 
             Assert.assertNotNull(response);
-            Assert.assertNotNull(response.getErrorCode());
+            Assert.assertNotNull(response.getError());
             Assert.assertNull(response.getResults());
         } catch (IOException e) {
             e.printStackTrace();

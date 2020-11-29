@@ -1,6 +1,6 @@
 package my.artfultom.vecenta.transport;
 
-import my.artfultom.vecenta.transport.error.HandshakeError;
+import my.artfultom.vecenta.transport.error.MessageError;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -26,7 +26,7 @@ public abstract class AbstractServer implements Server {
                     stream.sendMessage(bb.array());
                 } else {
                     ByteBuffer bb = ByteBuffer.allocate(4);
-                    bb.putInt(HandshakeError.WRONG_PROTOCOL_VERSION.ordinal());
+                    bb.putInt(MessageError.WRONG_PROTOCOL_VERSION.ordinal());
 
                     stream.sendMessage(bb.array());
                 }
@@ -36,7 +36,7 @@ public abstract class AbstractServer implements Server {
         }
 
         ByteBuffer bb = ByteBuffer.allocate(4);
-        bb.putInt(HandshakeError.WRONG_PROTOCOL.ordinal());
+        bb.putInt(MessageError.WRONG_PROTOCOL.ordinal());
 
         stream.sendMessage(bb.array());
     }

@@ -1,6 +1,7 @@
 package my.artfultom.vecenta.matcher;
 
 import my.artfultom.vecenta.transport.MethodHandler;
+import my.artfultom.vecenta.transport.error.MessageError;
 import my.artfultom.vecenta.transport.message.Request;
 import my.artfultom.vecenta.transport.message.Response;
 
@@ -58,7 +59,7 @@ public class ServerMatcher {
                     e.printStackTrace();
                 }
 
-                return new Response(1); // TODO code
+                return new Response(MessageError.WRONG_METHOD_NAME);
             });
 
             register(handler);
@@ -74,7 +75,7 @@ public class ServerMatcher {
 
         MethodHandler handler = handlerMap.get(request.getMethodName());
         if (handler == null) {
-            return readWriteStrategy.convertToBytes(new Response(666));
+            return readWriteStrategy.convertToBytes(new Response(MessageError.WRONG_METHOD_NAME));
         }
 
         Response response = handler.execute(request);

@@ -1,5 +1,6 @@
 package my.artfultom.vecenta.matcher;
 
+import my.artfultom.vecenta.transport.error.MessageError;
 import my.artfultom.vecenta.transport.message.Request;
 import my.artfultom.vecenta.transport.message.Response;
 
@@ -42,7 +43,7 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
         DataOutputStream dataStream = new DataOutputStream(out);
 
         try {
-            if (in.getErrorCode() == 0) {
+            if (in.getError() == null) {
                 dataStream.writeByte(0);
                 for (byte[] param : in.getResults()) {
                     dataStream.writeInt(param.length);
@@ -51,7 +52,7 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
             } else {
                 try {
                     dataStream.writeByte(1);
-                    dataStream.writeInt(666); // TODO code
+                    dataStream.writeInt(in.getError().ordinal());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -67,9 +68,9 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
     public Response convertToResponse(byte[] in) {
         ByteBuffer buf = ByteBuffer.wrap(in);
 
-        byte flag = buf.get(0);
+        byte errorFlag = buf.get();
 
-        if (flag == 0) {
+        if (errorFlag == 0) {
             List<byte[]> params = new ArrayList<>();
 
             for (int i = 1; i < buf.capacity(); ) {
@@ -84,7 +85,9 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
 
             return new Response(params);
         } else {
-            return new Response(1); // TODO code
+            int errorCode = buf.getInt();
+
+            return new Response(MessageError.values()[errorCode]);
         }
     }
 

@@ -1,26 +1,28 @@
 package my.artfultom.vecenta.transport.message;
 
+import my.artfultom.vecenta.transport.error.MessageError;
+
 import java.util.List;
 
 public class Response {
     private final List<byte[]> results;
-    private final int errorCode;
+    private final MessageError error;
 
     public Response(List<byte[]> results) {
         this.results = results;
-        this.errorCode = 0;
+        this.error = null;
     }
 
-    public Response(int errorCode) {
+    public Response(MessageError error) {
         this.results = null;
-        this.errorCode = errorCode;
+        this.error = error;
     }
 
     public List<byte[]> getResults() {
         return results;
     }
 
-    public Integer getErrorCode() {
-        return errorCode;
+    public MessageError getError() {
+        return error;
     }
 }
