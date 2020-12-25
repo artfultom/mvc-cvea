@@ -1,4 +1,4 @@
-package my.artfultom.vecenta.controller;
+package my.artfultom.vecenta.controller.v1;
 
 public class A {
     private int a;

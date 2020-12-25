@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 public class JsonFormatDto implements Serializable {
 
@@ -71,9 +70,6 @@ public class JsonFormatDto implements Serializable {
             @JsonProperty("out")
             List<Param> out;
 
-            @JsonProperty("types")
-            List<Type> types;
-
             public Method() {
             }
 
@@ -101,14 +97,6 @@ public class JsonFormatDto implements Serializable {
                 this.out = out;
             }
 
-            public List<Type> getTypes() {
-                return types;
-            }
-
-            public void setTypes(List<Type> types) {
-                this.types = types;
-            }
-
             public static class Param implements Serializable {
 
                 @JsonProperty("name")
@@ -134,34 +122,6 @@ public class JsonFormatDto implements Serializable {
 
                 public void setType(String type) {
                     this.type = type;
-                }
-            }
-
-            public static class Type implements Serializable {
-
-                @JsonProperty("name")
-                String name;
-
-                @JsonProperty("body")
-                Map<String, String> body;
-
-                public Type() {
-                }
-
-                public String getName() {
-                    return name;
-                }
-
-                public void setName(String name) {
-                    this.name = name;
-                }
-
-                public Map<String, String> getBody() {
-                    return body;
-                }
-
-                public void setBody(Map<String, String> body) {
-                    this.body = body;
                 }
             }
         }

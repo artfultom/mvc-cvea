@@ -12,8 +12,6 @@ repositories {
 
 dependencies {
 //    api ''
-    api 'org.apache.avro:avro:1.9.2'
-    api 'org.apache.avro:avro-tools:1.9.2'
     api 'com.fasterxml.jackson.core:jackson-databind:2.10.3'
 
     testImplementation 'junit:junit:4.12'

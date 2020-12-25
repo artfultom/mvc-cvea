@@ -8,17 +8,9 @@ import my.artfultom.vecenta.transport.message.Request;
 import my.artfultom.vecenta.transport.message.Response;
 import my.artfultom.vecenta.transport.tcp.TcpClient;
 import my.artfultom.vecenta.transport.tcp.TcpServer;
-import org.apache.avro.Schema;
-import org.apache.avro.io.*;
-import org.apache.avro.reflect.ReflectData;
-import org.apache.avro.reflect.ReflectDatumReader;
-import org.apache.avro.reflect.ReflectDatumWriter;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URISyntaxException;
@@ -33,33 +25,6 @@ public class ControllerTest {
         URL schema = getClass().getResource("/schema");
 
         FileGenerator.generateServerFiles(schema);
-    }
-
-    @Test
-    public void testAvro() throws IOException {
-        Schema schema = ReflectData.get().getSchema(A.class);
-        BufferedWriter writer = new BufferedWriter(new FileWriter("./schema"));
-        writer.write(schema.toString(true));
-        writer.close();
-
-        A a1 = new A(1, "qwe");
-
-        DatumWriter<A> employeeWriter = new ReflectDatumWriter<>(A.class);
-        byte[] data;
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            Encoder binaryEncoder = EncoderFactory.get().binaryEncoder(baos, null);
-            employeeWriter.write(a1, binaryEncoder);
-            binaryEncoder.flush();
-            data = baos.toByteArray();
-        }
-
-        DatumReader<A> employeeReader = new ReflectDatumReader<>(A.class);
-        Decoder binaryDecoder = DecoderFactory.get().binaryDecoder(data, null);
-
-        A a2 = employeeReader.read(null, binaryDecoder);
-
-        Assert.assertEquals(a1.getA(), a2.getA());
-        Assert.assertEquals(a1.getB(), a2.getB());
     }
 
     @Test

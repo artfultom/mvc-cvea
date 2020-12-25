@@ -34,7 +34,8 @@ public class FileGenerator {
                     JsonFormatDto dto = mapper.readValue(p.toFile(), JsonFormatDto.class);
 
                     StringBuilder sb = new StringBuilder();
-                    sb.append("package my.artfultom.vecenta.controller.v" + version + ";").append("\n").append("\n");
+                    sb.append("package my.artfultom.vecenta.controller.v" + version + ";").append("\n")
+                            .append("\n");
                     sb.append("public interface " + serverName + " {").append("\n");
 
                     for (JsonFormatDto.Entity entity : dto.getEntities()) {
@@ -44,13 +45,17 @@ public class FileGenerator {
                                 args.add(param.getType() + " " + param.getName());
                             }
 
-                            sb.append("    ").append(method.getOut().get(0).getType() + " " + method.getName() + "(" + String.join(", ", args) + ");").append("\n");
+                            sb.append("    ").append(method.getOut().get(0).getType()).append(" ")
+                                    .append(method.getName())
+                                    .append("(")
+                                    .append(String.join(", ", args))
+                                    .append(");").append("\n");
                         }
                     }
 
                     sb.append("}\n");
 
-                    Files.writeString(Paths.get(serverName + ".java"), sb.toString());
+                    Files.writeString(Paths.get("/Users/artfultom/Documents/IdeaProjects/vecenta/src/main/java/my/artfultom/vecenta/controller/v1/" + serverName + ".java"), sb.toString());
                 }
             }
         }
