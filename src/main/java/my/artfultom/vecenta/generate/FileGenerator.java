@@ -1,61 +1,37 @@
 package my.artfultom.vecenta.generate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FileGenerator {
 
-    private FileGenerator() {
+    private final static int MAX_DEPTH = 5;
+
+    private final CodeGenerateStrategy strategy;
+
+    public FileGenerator(CodeGenerateStrategy strategy) {
+        this.strategy = strategy;
     }
 
-    public static void generateServerFiles(URL schema) throws URISyntaxException, IOException {
-        ObjectMapper mapper = new ObjectMapper();
-
+    public void generateServerFiles(URL schemaDir) throws URISyntaxException, IOException {
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.json");
 
-        Path path = Paths.get(schema.toURI());
+        Path path = Paths.get(schemaDir.toURI());
 
-        try (Stream<Path> walk = Files.walk(path, 5)) {
+        try (Stream<Path> walk = Files.walk(path, MAX_DEPTH)) {
             for (Path p : walk.collect(Collectors.toList())) {
                 if (Files.isRegularFile(p) && matcher.matches(p)) {
                     String fileName = p.getFileName().toString();
+                    String body = Files.readString(p);
+
+                    String result = strategy.generateServerCode(fileName, body);
 
                     String serverName = fileName.split("\\.")[0];
-                    int version = Integer.parseInt(fileName.split("\\.")[1]);
-
-                    JsonFormatDto dto = mapper.readValue(p.toFile(), JsonFormatDto.class);
-
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("package my.artfultom.vecenta.controller.v" + version + ";").append("\n")
-                            .append("\n");
-                    sb.append("public interface " + serverName + " {").append("\n");
-
-                    for (JsonFormatDto.Entity entity : dto.getEntities()) {
-                        for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
-                            List<String> args = new ArrayList<>();
-                            for (JsonFormatDto.Entity.Method.Param param : method.getIn()) {
-                                args.add(param.getType() + " " + param.getName());
-                            }
-
-                            sb.append("    ").append(method.getOut().get(0).getType()).append(" ")
-                                    .append(method.getName())
-                                    .append("(")
-                                    .append(String.join(", ", args))
-                                    .append(");").append("\n");
-                        }
-                    }
-
-                    sb.append("}\n");
-
-                    Files.writeString(Paths.get("/Users/artfultom/Documents/IdeaProjects/vecenta/src/main/java/my/artfultom/vecenta/controller/v1/" + serverName + ".java"), sb.toString());
+                    Files.writeString(Paths.get("/Users/artfultom/Documents/IdeaProjects/vecenta/src/main/java/my/artfultom/vecenta/controller/v1/" + serverName + ".java"), result);
                 }
             }
         }

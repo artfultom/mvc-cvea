@@ -1,5 +1,6 @@
 package my.artfultom.vecenta.controller;
 
+import my.artfultom.vecenta.generate.DefaultCodeGenerateStrategy;
 import my.artfultom.vecenta.generate.FileGenerator;
 import my.artfultom.vecenta.matcher.ServerMatcher;
 import my.artfultom.vecenta.transport.Client;
@@ -24,7 +25,7 @@ public class ControllerTest {
     public void testGenerate() throws IOException, URISyntaxException {
         URL schema = getClass().getResource("/schema");
 
-        FileGenerator.generateServerFiles(schema);
+        new FileGenerator(new DefaultCodeGenerateStrategy()).generateServerFiles(schema);
     }
 
     @Test
