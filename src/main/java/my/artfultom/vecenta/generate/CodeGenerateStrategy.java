@@ -6,5 +6,5 @@ public interface CodeGenerateStrategy {
 
     String generateServerCode(String fileName, String body) throws JsonProcessingException;
 
-    String generateClientCode(String fileName, String body);
+    String generateClientCode(String fileName, String body) throws JsonProcessingException;
 }

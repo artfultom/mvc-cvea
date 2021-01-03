@@ -15,7 +15,7 @@
           "out": [
             {
               "name": "return_name",
-              "type": "int"
+              "type": "Integer"
             }
           ]
         }

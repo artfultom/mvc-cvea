@@ -32,15 +32,15 @@ public class ControllerTest {
 
         CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
 
-        List<Path> files = new FileGenerator(strategy).generateServerFiles(schema);
+        List<Path> files = new FileGenerator(strategy).generateFiles(schema);
 
         for (Path file : files) {
-            String expectedFileName = files.get(0).getFileName().toString();
+            String expectedFileName = file.getFileName().toString();
             Path expected = Path.of(getClass().getResource("/schema/" + expectedFileName).toURI());
 
             assertEquals(Files.readString(expected), Files.readString(file));
 
-            Files.delete(file);
+            Files.delete(file);   // TODO move
         }
     }
 
