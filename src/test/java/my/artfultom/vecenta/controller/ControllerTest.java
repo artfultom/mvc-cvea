@@ -1,5 +1,6 @@
 package my.artfultom.vecenta.controller;
 
+import my.artfultom.vecenta.generate.CodeGenerateStrategy;
 import my.artfultom.vecenta.generate.DefaultCodeGenerateStrategy;
 import my.artfultom.vecenta.generate.FileGenerator;
 import my.artfultom.vecenta.matcher.ServerMatcher;
@@ -17,15 +18,30 @@ import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class ControllerTest {
 
     @Test
-    public void testGenerate() throws IOException, URISyntaxException {
+    public void testGeneration() throws IOException, URISyntaxException {
         URL schema = getClass().getResource("/schema");
 
-        new FileGenerator(new DefaultCodeGenerateStrategy()).generateServerFiles(schema);
+        CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
+
+        List<Path> files = new FileGenerator(strategy).generateServerFiles(schema);
+
+        for (Path file : files) {
+            String expectedFileName = files.get(0).getFileName().toString();
+            Path expected = Path.of(getClass().getResource("/schema/" + expectedFileName).toURI());
+
+            assertEquals(Files.readString(expected), Files.readString(file));
+
+            Files.delete(file);
+        }
     }
 
     @Test
