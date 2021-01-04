@@ -9,7 +9,7 @@ import java.util.List;
 public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
     @Override
-    public String generateServerCode(String fileName, String body) throws JsonProcessingException {
+    public GeneratedCode generateServerCode(String fileName, String body) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
         String serverName = fileName.split("\\.")[0];
@@ -41,19 +41,19 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         sb.append("}\n");
 
-        return sb.toString();
+        return new GeneratedCode(serverName, sb.toString());
     }
 
     @Override
-    public String generateClientCode(String fileName, String body) throws JsonProcessingException {
+    public GeneratedCode generateClientCode(String fileName, String body) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
         JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
 
-        String serverName = fileName.split("\\.")[0];
+        String clientName = dto.getClient();
         int version = Integer.parseInt(fileName.split("\\.")[1]);
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("package my.artfultom.vecenta.client.v").append(version).append(";")
                 .append("\n")
@@ -72,11 +72,11 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 .append("\n")
                 .append("\n");
 
-        sb.append("public class ClientConnector {").append("\n");
+        sb.append("public class ").append(clientName).append(" {").append("\n");
         sb.append("    ").append("private final Client client;")
                 .append("\n")
                 .append("\n");
-        sb.append("    ").append("public ClientConnector(Client client) {").append("\n");
+        sb.append("    ").append("public ").append(clientName).append("(Client client) {").append("\n");
         sb.append("    ").append("    ").append("this.client = client;").append("\n");
         sb.append("    ").append("}")
                 .append("\n")
@@ -111,6 +111,6 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         sb.append("}");
 
-        return sb.toString();
+        return new GeneratedCode(clientName, sb.toString());
     }
 }

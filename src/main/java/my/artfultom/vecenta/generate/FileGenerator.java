@@ -31,18 +31,13 @@ public class FileGenerator {
                     String fileName = p.getFileName().toString();
                     String body = Files.readString(p);
 
-                    String serverCode = strategy.generateServerCode(fileName, body);
+                    GeneratedCode serverCode = strategy.generateServerCode(fileName, body);
+                    GeneratedCode clientCode = strategy.generateClientCode(fileName, body);
 
-                    String serverName = fileName.split("\\.")[0];
-                    Path serverFile = Files.writeString(Paths.get("/Users/artfultom/Documents/IdeaProjects/vecenta/src/main/java/my/artfultom/vecenta/controller/v1/" + serverName + ".java"), serverCode);
+                    Path serverFile = Files.writeString(Paths.get("/Users/artfultom/Documents/IdeaProjects/vecenta/src/main/java/my/artfultom/vecenta/controller/v1/" + serverCode.getName() + ".java"), serverCode.getBody());
+                    Path clientFile = Files.writeString(Paths.get("/Users/artfultom/Documents/IdeaProjects/vecenta/src/main/java/my/artfultom/vecenta/client/v1/" + clientCode.getName() + ".java"), clientCode.getBody());
 
                     result.add(serverFile);
-
-                    String clientCode = strategy.generateClientCode(fileName, body);
-
-                    String clientName = "ClientConnector";
-                    Path clientFile = Files.writeString(Paths.get("/Users/artfultom/Documents/IdeaProjects/vecenta/src/main/java/my/artfultom/vecenta/client/v1/" + clientName + ".java"), clientCode);
-
                     result.add(clientFile);
                 }
             }

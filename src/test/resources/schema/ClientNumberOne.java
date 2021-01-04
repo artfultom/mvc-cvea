@@ -7,10 +7,10 @@ import my.artfultom.vecenta.transport.message.Response;
 import java.net.ConnectException;
 import java.nio.ByteBuffer;
 
-public class ClientConnector {
+public class ClientNumberOne {
     private final Client client;
 
-    public ClientConnector(Client client) {
+    public ClientNumberOne(Client client) {
         this.client = client;
     }
 
