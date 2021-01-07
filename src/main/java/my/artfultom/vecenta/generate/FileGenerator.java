@@ -1,8 +1,7 @@
 package my.artfultom.vecenta.generate;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +18,11 @@ public class FileGenerator {
         this.strategy = strategy;
     }
 
-    public List<Path> generateFiles(URL schemaDir) throws URISyntaxException, IOException {
+    public List<Path> generateFiles(URI schemaDir, URI dirsDir) throws IOException {
         List<Path> result = new ArrayList<>();
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.json");
 
-        Path path = Paths.get(schemaDir.toURI());
+        Path path = Paths.get(schemaDir);
 
         try (Stream<Path> walk = Files.walk(path, MAX_DEPTH)) {
             for (Path p : walk.collect(Collectors.toList())) {
@@ -34,8 +33,13 @@ public class FileGenerator {
                     GeneratedCode serverCode = strategy.generateServerCode(fileName, body);
                     GeneratedCode clientCode = strategy.generateClientCode(fileName, body);
 
-                    Path serverFile = Files.writeString(Paths.get("/Users/artfultom/Documents/IdeaProjects/vecenta/src/main/java/my/artfultom/vecenta/controller/v1/" + serverCode.getName() + ".java"), serverCode.getBody());
-                    Path clientFile = Files.writeString(Paths.get("/Users/artfultom/Documents/IdeaProjects/vecenta/src/main/java/my/artfultom/vecenta/client/v1/" + clientCode.getName() + ".java"), clientCode.getBody());
+                    Path serverFile = Path.of(dirsDir).resolve("my/artfultom/vecenta/controller/v1/" + serverCode.getName() + ".java");
+                    Files.createDirectories(serverFile.getParent());
+                    Path clientFile = Path.of(dirsDir).resolve("my/artfultom/vecenta/client/v1/" + clientCode.getName() + ".java");
+                    Files.createDirectories(clientFile.getParent());
+
+                    serverFile = Files.writeString(serverFile, serverCode.getBody());
+                    clientFile = Files.writeString(clientFile, clientCode.getBody());
 
                     result.add(serverFile);
                     result.add(clientFile);

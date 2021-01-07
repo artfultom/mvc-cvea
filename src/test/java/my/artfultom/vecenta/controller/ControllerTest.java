@@ -15,24 +15,25 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class ControllerTest {
 
     @Test
     public void testGeneration() throws IOException, URISyntaxException {
-        URL schema = getClass().getResource("/schema");
+        URI schema = getClass().getResource("/schema").toURI();
 
         CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
 
-        List<Path> files = new FileGenerator(strategy).generateFiles(schema);
+        Path tempDir = Files.createTempDirectory("test_" + System.currentTimeMillis());
+        List<Path> files = new FileGenerator(strategy).generateFiles(schema, tempDir.toUri());
 
         for (Path file : files) {
             String expectedFileName = file.getFileName().toString();
@@ -40,7 +41,7 @@ public class ControllerTest {
 
             assertEquals(Files.readString(expected), Files.readString(file));
 
-            Files.delete(file);   // TODO move
+            Files.delete(file);
         }
     }
 
