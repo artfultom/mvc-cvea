@@ -4,7 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface CodeGenerateStrategy {
 
-    GeneratedCode generateServerCode(String fileName, String body) throws JsonProcessingException;
+    GeneratedCode generateServerCode(
+            String filePackage,
+            String fileName,
+            String body
+    ) throws JsonProcessingException;
 
-    GeneratedCode generateClientCode(String fileName, String body) throws JsonProcessingException;
+    GeneratedCode generateClientCode(
+            String filePackage,
+            String fileName,
+            String body
+    ) throws JsonProcessingException;
 }

@@ -1,4 +1,4 @@
-package my.artfultom.vecenta.client.v1;
+package test.pack.client.v1;
 
 import my.artfultom.vecenta.transport.Client;
 import my.artfultom.vecenta.transport.message.Request;

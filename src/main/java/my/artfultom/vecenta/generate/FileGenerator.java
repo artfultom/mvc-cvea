@@ -1,7 +1,6 @@
 package my.artfultom.vecenta.generate;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +17,11 @@ public class FileGenerator {
         this.strategy = strategy;
     }
 
-    public List<Path> generateFiles(URI schemaDir, URI destDir) throws IOException {
+    public List<Path> generateFiles(Configuration config) throws IOException {
         List<Path> result = new ArrayList<>();
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.json");
 
-        Path path = Paths.get(schemaDir);
+        Path path = config.getSchemaDir();
 
         try (Stream<Path> walk = Files.walk(path, MAX_DEPTH)) {
             for (Path p : walk.collect(Collectors.toList())) {
@@ -30,12 +29,12 @@ public class FileGenerator {
                     String fileName = p.getFileName().toString();
                     String body = Files.readString(p);
 
-                    GeneratedCode serverCode = strategy.generateServerCode(fileName, body);
-                    GeneratedCode clientCode = strategy.generateClientCode(fileName, body);
+                    GeneratedCode serverCode = strategy.generateServerCode(config.getServerPackage(), fileName, body);
+                    GeneratedCode clientCode = strategy.generateClientCode(config.getClientPackage(), fileName, body);
 
-                    Path serverFile = Path.of(destDir).resolve("my/artfultom/vecenta/controller/v" + serverCode.getVersion() + "/" + serverCode.getName() + ".java");
+                    Path serverFile = config.getDestinationDir().resolve(config.getServerPackage().replace(".", "/") + "/v" + serverCode.getVersion() + "/" + serverCode.getName() + ".java");
                     Files.createDirectories(serverFile.getParent());
-                    Path clientFile = Path.of(destDir).resolve("my/artfultom/vecenta/client/v" + clientCode.getVersion() + "/" + clientCode.getName() + ".java");
+                    Path clientFile = config.getDestinationDir().resolve(config.getClientPackage().replace(".", "/") + "/v" + clientCode.getVersion() + "/" + clientCode.getName() + ".java");
                     Files.createDirectories(clientFile.getParent());
 
                     serverFile = Files.writeString(serverFile, serverCode.getBody());

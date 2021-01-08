@@ -9,7 +9,11 @@ import java.util.List;
 public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
     @Override
-    public GeneratedCode generateServerCode(String fileName, String body) throws JsonProcessingException {
+    public GeneratedCode generateServerCode(
+            String filePackage,
+            String fileName,
+            String body
+    ) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
         String serverName = fileName.split("\\.")[0];
@@ -18,7 +22,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("package my.artfultom.vecenta.controller.v").append(version).append(";")
+        sb.append("package ").append(filePackage).append(".v").append(version).append(";")
                 .append("\n")
                 .append("\n");
         sb.append("public interface ").append(serverName).append(" {")
@@ -45,7 +49,11 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
     }
 
     @Override
-    public GeneratedCode generateClientCode(String fileName, String body) throws JsonProcessingException {
+    public GeneratedCode generateClientCode(
+            String filePackage,
+            String fileName,
+            String body
+    ) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
         JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
@@ -55,7 +63,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("package my.artfultom.vecenta.client.v").append(version).append(";")
+        sb.append("package ").append(filePackage).append(".v").append(version).append(";")
                 .append("\n")
                 .append("\n");
         sb.append("import my.artfultom.vecenta.transport.Client;")
