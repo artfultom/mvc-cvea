@@ -13,7 +13,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         ObjectMapper mapper = new ObjectMapper();
 
         String serverName = fileName.split("\\.")[0];
-        int version = Integer.parseInt(fileName.split("\\.")[1]);
+        String version = fileName.split("\\.")[1];
 
         JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
 
@@ -41,7 +41,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         sb.append("}\n");
 
-        return new GeneratedCode(serverName, sb.toString());
+        return new GeneratedCode(serverName, sb.toString(), version);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
 
         String clientName = dto.getClient();
-        int version = Integer.parseInt(fileName.split("\\.")[1]);
+        String version = fileName.split("\\.")[1];
 
         StringBuilder sb = new StringBuilder();
 
@@ -111,6 +111,6 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         sb.append("}");
 
-        return new GeneratedCode(clientName, sb.toString());
+        return new GeneratedCode(clientName, sb.toString(), version);
     }
 }

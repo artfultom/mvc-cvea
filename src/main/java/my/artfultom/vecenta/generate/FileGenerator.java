@@ -33,9 +33,9 @@ public class FileGenerator {
                     GeneratedCode serverCode = strategy.generateServerCode(fileName, body);
                     GeneratedCode clientCode = strategy.generateClientCode(fileName, body);
 
-                    Path serverFile = Path.of(destDir).resolve("my/artfultom/vecenta/controller/v1/" + serverCode.getName() + ".java");
+                    Path serverFile = Path.of(destDir).resolve("my/artfultom/vecenta/controller/v" + serverCode.getVersion() + "/" + serverCode.getName() + ".java");
                     Files.createDirectories(serverFile.getParent());
-                    Path clientFile = Path.of(destDir).resolve("my/artfultom/vecenta/client/v1/" + clientCode.getName() + ".java");
+                    Path clientFile = Path.of(destDir).resolve("my/artfultom/vecenta/client/v" + clientCode.getVersion() + "/" + clientCode.getName() + ".java");
                     Files.createDirectories(clientFile.getParent());
 
                     serverFile = Files.writeString(serverFile, serverCode.getBody());

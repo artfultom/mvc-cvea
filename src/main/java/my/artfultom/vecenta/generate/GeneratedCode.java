@@ -4,10 +4,12 @@ public class GeneratedCode {
 
     private String name;
     private String body;
+    private String version;
 
-    public GeneratedCode(String name, String body) {
+    public GeneratedCode(String name, String body, String version) {
         this.name = name;
         this.body = body;
+        this.version = version;
     }
 
     public String getName() {
@@ -24,5 +26,13 @@ public class GeneratedCode {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }
