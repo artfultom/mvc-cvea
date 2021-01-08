@@ -18,7 +18,7 @@ public class FileGenerator {
         this.strategy = strategy;
     }
 
-    public List<Path> generateFiles(URI schemaDir, URI dirsDir) throws IOException {
+    public List<Path> generateFiles(URI schemaDir, URI destDir) throws IOException {
         List<Path> result = new ArrayList<>();
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.json");
 
@@ -33,9 +33,9 @@ public class FileGenerator {
                     GeneratedCode serverCode = strategy.generateServerCode(fileName, body);
                     GeneratedCode clientCode = strategy.generateClientCode(fileName, body);
 
-                    Path serverFile = Path.of(dirsDir).resolve("my/artfultom/vecenta/controller/v1/" + serverCode.getName() + ".java");
+                    Path serverFile = Path.of(destDir).resolve("my/artfultom/vecenta/controller/v1/" + serverCode.getName() + ".java");
                     Files.createDirectories(serverFile.getParent());
-                    Path clientFile = Path.of(dirsDir).resolve("my/artfultom/vecenta/client/v1/" + clientCode.getName() + ".java");
+                    Path clientFile = Path.of(destDir).resolve("my/artfultom/vecenta/client/v1/" + clientCode.getName() + ".java");
                     Files.createDirectories(clientFile.getParent());
 
                     serverFile = Files.writeString(serverFile, serverCode.getBody());
