@@ -1,0 +1,29 @@
+{
+  "client": "SumClient",
+  "entities": [
+    {
+      "name": "math",
+      "methods": [
+        {
+          "name": "sum",
+          "in": [
+            {
+              "name": "a",
+              "type": "Integer"
+            },
+            {
+              "name": "b",
+              "type": "Integer"
+            }
+          ],
+          "out": [
+            {
+              "name": "c",
+              "type": "Integer"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

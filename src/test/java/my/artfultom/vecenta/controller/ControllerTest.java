@@ -4,20 +4,19 @@ import my.artfultom.vecenta.generate.CodeGenerateStrategy;
 import my.artfultom.vecenta.generate.Configuration;
 import my.artfultom.vecenta.generate.DefaultCodeGenerateStrategy;
 import my.artfultom.vecenta.generate.FileGenerator;
+import my.artfultom.vecenta.generated.v1.SumClient;
 import my.artfultom.vecenta.matcher.ServerMatcher;
 import my.artfultom.vecenta.transport.Client;
 import my.artfultom.vecenta.transport.Server;
-import my.artfultom.vecenta.transport.message.Request;
-import my.artfultom.vecenta.transport.message.Response;
 import my.artfultom.vecenta.transport.tcp.TcpClient;
 import my.artfultom.vecenta.transport.tcp.TcpServer;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -28,7 +27,7 @@ public class ControllerTest {
 
     @Test
     public void testGeneration() throws IOException, URISyntaxException {
-        Path schemaDir = Path.of(getClass().getResource("/schema").toURI());
+        Path schemaDir = Path.of(getClass().getResource("/schema_generation").toURI());
         Path tempDir = Files.createTempDirectory("test_" + System.currentTimeMillis());
 
         CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
@@ -43,7 +42,9 @@ public class ControllerTest {
 
         for (Path file : files) {
             String expectedFileName = file.getFileName().toString();
-            Path expected = Path.of(getClass().getResource("/schema/" + expectedFileName).toURI());
+            Path expected = Path.of(
+                    getClass().getResource("/schema_generation/" + expectedFileName).toURI()
+            );
 
             assertEquals(Files.readString(expected), Files.readString(file));
 
@@ -52,53 +53,35 @@ public class ControllerTest {
     }
 
     @Test
-    public void test() {
+    public void testController() throws URISyntaxException, IOException, ClassNotFoundException {
+        CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
+        Configuration config = new Configuration(
+                Path.of(getClass().getResource("/schema_controller").toURI()),
+                Path.of("src", "test", "java"),
+                "my.artfultom.vecenta.generated",
+                "my.artfultom.vecenta.generated"
+        );
+
+        List<Path> files = new FileGenerator(strategy).generateFiles(config);
+
         ServerMatcher matcher = new ServerMatcher();
-        matcher.register(ServerController.class); // TODO one or many?
+
+        // TODO find
+        ClassLoader cl = new URLClassLoader(new URL[]{files.get(0).getParent().toUri().toURL()});
+        Class<?> serverClass = cl.loadClass("my.artfultom.vecenta.generated.v1.SumServerImpl");
+        Class<?> clientClass = cl.loadClass("my.artfultom.vecenta.generated.v1.SumClient");
+        matcher.register(serverClass);
 
         try (Server server = new TcpServer(); Client client = new TcpClient()) {
             server.start(5550, matcher);
 
             client.startConnection("127.0.0.1", 5550);
-            ClientConnector clientConnector = new ClientConnector(client);
-            int result = clientConnector.sum(3, 4);
+            SumClient clientConnector = new SumClient(client);
+            int result = clientConnector.sum(3, 2);
 
             Assert.assertEquals(5, result);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    public static class ClientConnector {
-        private Client client;
-
-        public ClientConnector(Client client) {
-            this.client = client;
-        }
-
-        // TODO must be generated
-        public Integer sum(Integer a, int b) {
-            Request req = new Request(
-                    "ServerController.sum(java.lang.Integer,int)",
-                    List.of(ByteBuffer.allocate(4).putInt(2).array(), ByteBuffer.allocate(4).putInt(3).array())
-            );
-            Response resp = null;
-
-            try {
-                resp = client.send(req);
-            } catch (ConnectException e) {
-                e.printStackTrace();
-                return null;
-            }
-
-            return ByteBuffer.wrap(resp.getResults().get(0)).getInt();
-        }
-    }
-
-    public static class ServerController {
-
-        public Integer sum(Integer a, int b) {
-            return a + b;
         }
     }
 }

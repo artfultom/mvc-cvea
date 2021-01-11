@@ -79,6 +79,8 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         sb.append("import java.nio.ByteBuffer;")
                 .append("\n")
                 .append("\n");
+        sb.append("import java.util.List;")
+                .append("\n");
 
         sb.append("public class ").append(clientName).append(" {").append("\n");
         sb.append("    ").append("private final Client client;")
@@ -103,7 +105,15 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                         .append(String.join(", ", args))
                         .append(") {").append("\n");
 
-                sb.append("    ").append("    ").append("Request req = new Request(null, null);").append("\n");
+                sb.append("    ").append("    ").append("Request req = new Request(").append("\n");
+
+                // TODO
+                sb.append("    ").append("    ").append("    ").append("\"SumServerImpl.sum(java.lang.Integer,java.lang.Integer)\",").append("\n");
+
+                // TODO
+                sb.append("    ").append("    ").append("    ").append("List.of(ByteBuffer.allocate(4).putInt(a).array(), ByteBuffer.allocate(4).putInt(b).array())").append("\n");
+
+                sb.append("    ").append("    ").append(");").append("\n");
                 sb.append("    ").append("    ").append("try {").append("\n");
                 sb.append("    ").append("    ").append("    ").append("Response resp = client.send(req);").append("\n");
                 sb.append("    ").append("    ").append("    ").append("return ByteBuffer.wrap(resp.getResults().get(0)).getInt();").append("\n");
