@@ -9,11 +9,11 @@
           "in": [
             {
               "name": "a",
-              "type": "Integer"
+              "type": "java.lang.Integer"
             },
             {
               "name": "b",
-              "type": "Integer"
+              "type": "java.lang.Integer"
             }
           ],
           "out": [

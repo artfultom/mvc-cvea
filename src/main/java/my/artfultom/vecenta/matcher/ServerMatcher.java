@@ -8,6 +8,8 @@ import my.artfultom.vecenta.transport.message.Response;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ServerMatcher {
 
@@ -84,7 +86,17 @@ public class ServerMatcher {
     }
 
     private String getName(Method method) {
-        StringBuilder sb = new StringBuilder(method.getDeclaringClass().getSimpleName());
+        List<Method> methods = Stream.of(method.getDeclaringClass().getInterfaces())
+                .map(Class::getMethods)
+                .flatMap(Arrays::stream)
+                .filter(item -> item.getName().equals(method.getName()))
+                .collect(Collectors.toList());
+
+        // TODO if methods != 1
+
+        Entity entity = methods.get(0).getAnnotation(Entity.class);
+
+        StringBuilder sb = new StringBuilder(entity.value());
         sb.append('.').append(method.getName());
         sb.append('(');
         StringJoiner sj = new StringJoiner(",");

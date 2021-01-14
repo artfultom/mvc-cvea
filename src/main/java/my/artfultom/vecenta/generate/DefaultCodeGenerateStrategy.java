@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
@@ -25,7 +26,13 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         sb.append("package ").append(filePackage).append(".v").append(version).append(";")
                 .append("\n")
                 .append("\n");
+
+        sb.append("import my.artfultom.vecenta.matcher.Entity;")
+                .append("\n")
+                .append("\n");
+
         sb.append("public interface ").append(serverName).append(" {")
+                .append("\n")
                 .append("\n");
 
         for (JsonFormatDto.Entity entity : dto.getEntities()) {
@@ -35,6 +42,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                     args.add(param.getType() + " " + param.getName());
                 }
 
+                sb.append("    ").append("@Entity(\"").append(entity.getName()).append("\")").append("\n");
                 sb.append("    ").append(method.getOut().get(0).getType()).append(" ")
                         .append(method.getName())
                         .append("(")
@@ -77,9 +85,9 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         sb.append("import java.net.ConnectException;")
                 .append("\n");
         sb.append("import java.nio.ByteBuffer;")
-                .append("\n")
                 .append("\n");
         sb.append("import java.util.List;")
+                .append("\n")
                 .append("\n");
 
         sb.append("public class ").append(clientName).append(" {").append("\n");
@@ -107,8 +115,8 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
                 sb.append("    ").append("    ").append("Request req = new Request(").append("\n");
 
-                // TODO
-                sb.append("    ").append("    ").append("    ").append("\"SumServerImpl.sum(java.lang.Integer,java.lang.Integer)\",").append("\n");
+                String argumentTypes = method.getIn().stream().map(item -> item.type).collect(Collectors.joining(","));
+                sb.append("    ").append("    ").append("    ").append("\"").append(entity.getName()).append(".").append(method.getName()).append("(").append(argumentTypes).append(")\",").append("\n");
 
                 // TODO
                 sb.append("    ").append("    ").append("    ").append("List.of(ByteBuffer.allocate(4).putInt(a).array(), ByteBuffer.allocate(4).putInt(b).array())").append("\n");

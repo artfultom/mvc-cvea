@@ -15,9 +15,9 @@ public class SumClient {
         this.client = client;
     }
 
-    public Integer sum(Integer a, Integer b) {
+    public Integer sum(java.lang.Integer a, java.lang.Integer b) {
         Request req = new Request(
-                "SumServerImpl.sum(java.lang.Integer,java.lang.Integer)",
+                "math.sum(java.lang.Integer,java.lang.Integer)",
                 List.of(ByteBuffer.allocate(4).putInt(a).array(), ByteBuffer.allocate(4).putInt(b).array())
         );
         try {
