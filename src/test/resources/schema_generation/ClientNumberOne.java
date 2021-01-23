@@ -6,6 +6,7 @@ import my.artfultom.vecenta.transport.message.Response;
 
 import java.net.ConnectException;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 public class ClientNumberOne {
     private final Client client;
@@ -15,7 +16,10 @@ public class ClientNumberOne {
     }
 
     public Integer method_name(my.artfultom.vecenta.controller.v1.A argument_name) {
-        Request req = new Request(null, null);
+        Request req = new Request(
+                "entity_name.method_name(my.artfultom.vecenta.controller.v1.A)",
+                List.of(ByteBuffer.allocate(4).putInt(a).array(), ByteBuffer.allocate(4).putInt(b).array())
+        );
         try {
             Response resp = client.send(req);
             return ByteBuffer.wrap(resp.getResults().get(0)).getInt();

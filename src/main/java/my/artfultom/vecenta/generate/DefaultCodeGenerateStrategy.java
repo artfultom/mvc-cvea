@@ -116,10 +116,10 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 sb.append("    ").append("    ").append("Request req = new Request(").append("\n");
 
                 String argumentTypes = method.getIn().stream().map(item -> item.type).collect(Collectors.joining(","));
-                sb.append("    ").append("    ").append("    ").append("\"").append(entity.getName()).append(".").append(method.getName()).append("(").append(argumentTypes).append(")\",").append("\n");
+                sb.append("    ").append("    ").append("    ").append("    ").append("\"").append(entity.getName()).append(".").append(method.getName()).append("(").append(argumentTypes).append(")\",").append("\n");
 
                 // TODO
-                sb.append("    ").append("    ").append("    ").append("List.of(ByteBuffer.allocate(4).putInt(a).array(), ByteBuffer.allocate(4).putInt(b).array())").append("\n");
+                sb.append("    ").append("    ").append("    ").append("    ").append("List.of(ByteBuffer.allocate(4).putInt(a).array(), ByteBuffer.allocate(4).putInt(b).array())").append("\n");
 
                 sb.append("    ").append("    ").append(");").append("\n");
                 sb.append("    ").append("    ").append("try {").append("\n");
