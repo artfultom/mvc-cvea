@@ -9,7 +9,7 @@
           "in": [
             {
               "name": "argument_name",
-              "type": "my.artfultom.vecenta.controller.v1.A"
+              "type": "com.github.artfultom.vecenta.controller.v1.A"
             }
           ],
           "out": [
