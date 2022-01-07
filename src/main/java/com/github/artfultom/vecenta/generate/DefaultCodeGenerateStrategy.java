@@ -126,7 +126,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 sb.append("    ").append("    ").append("    ").append("Response resp = client.send(req);").append("\n");
                 sb.append("    ").append("    ").append("    ").append("return ByteBuffer.wrap(resp.getResults().get(0)).getInt();").append("\n");
                 sb.append("    ").append("    ").append("} catch (ConnectException e) {").append("\n");
-                sb.append("    ").append("    ").append("    ").append("e.printStackTrace();").append("\n");
+                sb.append("    ").append("    ").append("    ").append("e.printStackTrace();").append("\n");    // TODO log
                 sb.append("    ").append("    ").append("    ").append("return null;").append("\n");
                 sb.append("    ").append("    ").append("}").append("\n");
 

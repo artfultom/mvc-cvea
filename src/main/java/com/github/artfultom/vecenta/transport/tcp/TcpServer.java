@@ -49,7 +49,7 @@ public class TcpServer extends AbstractServer {
                             stream.sendMessage(resp);
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        e.printStackTrace();    // TODO log
                     }
                 }
 
@@ -58,7 +58,7 @@ public class TcpServer extends AbstractServer {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace();    // TODO log
         }
     }
 

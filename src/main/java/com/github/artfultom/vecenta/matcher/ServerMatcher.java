@@ -52,13 +52,13 @@ public class ServerMatcher {
 
                     return new Response(responseParams);
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    e.printStackTrace();    // TODO log
                 } catch (InstantiationException e) {
-                    e.printStackTrace();
+                    e.printStackTrace();    // TODO log
                 } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
+                    e.printStackTrace();    // TODO log
                 } catch (InvocationTargetException e) {
-                    e.printStackTrace();
+                    e.printStackTrace();    // TODO log
                 }
 
                 return new Response(MessageError.WRONG_METHOD_NAME);

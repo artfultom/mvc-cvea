@@ -47,9 +47,10 @@ public class TcpClient extends AbstractClient {
 
             handshake(in, out);
         } catch (ConnectException e) {
+            // TODO log
             throw e;
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace();    // TODO log
         }
     }
 
@@ -70,7 +71,7 @@ public class TcpClient extends AbstractClient {
             } catch (SocketException | EOFException e) {
                 connect();
             } catch (IOException e) {
-                e.printStackTrace();
+                e.printStackTrace();    // TODO log
             }
         }
 

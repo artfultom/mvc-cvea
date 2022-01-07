@@ -50,6 +50,7 @@ public class TcpMessageStream implements MessageStream {
 
             return messageBuf.array();
         } catch (InterruptedException ignored) {
+            // TODO
         } catch (ExecutionException | TimeoutException e) {
             try {
                 if (channel.isOpen()) {
@@ -58,7 +59,7 @@ public class TcpMessageStream implements MessageStream {
                     channel.close();
                 }
             } catch (IOException ex) {
-                ex.printStackTrace();
+                ex.printStackTrace();   // TODO log
             }
         }
 
@@ -73,7 +74,7 @@ public class TcpMessageStream implements MessageStream {
             dataStream.writeInt(resp.length);
             dataStream.write(resp);
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace();    // TODO log
         }
 
         channel.write(ByteBuffer.wrap(out.toByteArray()));

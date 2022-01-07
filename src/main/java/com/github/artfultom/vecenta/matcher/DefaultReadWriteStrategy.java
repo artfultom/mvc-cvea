@@ -31,7 +31,7 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
                 dataStream.write(param);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace();    // TODO log
         }
 
         return out.toByteArray();
@@ -54,11 +54,11 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
                     dataStream.writeByte(1);
                     dataStream.writeInt(in.getError().ordinal());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    e.printStackTrace();    // TODO log
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace();    // TODO log
         }
 
         return out.toByteArray();
