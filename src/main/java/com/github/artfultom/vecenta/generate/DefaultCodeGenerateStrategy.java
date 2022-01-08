@@ -42,12 +42,18 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                     args.add(param.getType() + " " + param.getName());
                 }
 
-                sb.append("    ").append("@Entity(\"").append(entity.getName()).append("\")").append("\n");
-                sb.append("    ").append(method.getOut().get(0).getType()).append(" ")
+                sb
+                        .append("    ")
+                        .append("@Entity(\"").append(entity.getName()).append("\")")
+                        .append("\n");
+                sb
+                        .append("    ")
+                        .append(method.getOut().get(0).getType()).append(" ")
                         .append(method.getName())
                         .append("(")
                         .append(String.join(", ", args))
-                        .append(");").append("\n");
+                        .append(");")
+                        .append("\n");
             }
         }
 
@@ -90,13 +96,25 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 .append("\n")
                 .append("\n");
 
-        sb.append("public class ").append(clientName).append(" {").append("\n");
-        sb.append("    ").append("private final Client client;")
+        sb.append("public class ").append(clientName).append(" {")
+                .append("\n");
+        sb
+                .append("    ")
+                .append("private final Client client;")
                 .append("\n")
                 .append("\n");
-        sb.append("    ").append("public ").append(clientName).append("(Client client) {").append("\n");
-        sb.append("    ").append("    ").append("this.client = client;").append("\n");
-        sb.append("    ").append("}")
+        sb
+                .append("    ")
+                .append("public ").append(clientName).append("(Client client) {")
+                .append("\n");
+        sb
+                .append("    ")
+                .append("    ")
+                .append("this.client = client;")
+                .append("\n");
+        sb
+                .append("    ")
+                .append("}")
                 .append("\n")
                 .append("\n");
 
@@ -107,26 +125,61 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                     args.add(param.getType() + " " + param.getName());
                 }
 
-                sb.append("    ").append("public ").append(method.getOut().get(0).getType()).append(" ")
+                sb
+                        .append("    ")
+                        .append("public ").append(method.getOut().get(0).getType()).append(" ")
                         .append(method.getName())
                         .append("(")
                         .append(String.join(", ", args))
-                        .append(") throws ConnectException {").append("\n");
+                        .append(") throws ConnectException {")
+                        .append("\n");
 
-                sb.append("    ").append("    ").append("Request req = new Request(").append("\n");
+                sb
+                        .append("    ")
+                        .append("    ")
+                        .append("Request req = new Request(")
+                        .append("\n");
 
-                String argumentTypes = method.getIn().stream().map(item -> item.type).collect(Collectors.joining(","));
-                sb.append("    ").append("    ").append("    ").append("    ").append("\"").append(entity.getName()).append(".").append(method.getName()).append("(").append(argumentTypes).append(")\",").append("\n");
+                String argumentTypes = method.getIn()
+                        .stream()
+                        .map(item -> item.type)
+                        .collect(Collectors.joining(","));
+                sb
+                        .append("    ")
+                        .append("    ")
+                        .append("    ")
+                        .append("    ")
+                        .append("\"").append(entity.getName()).append(".").append(method.getName()).append("(").append(argumentTypes).append(")\",")
+                        .append("\n");
 
-                // TODO
-                sb.append("    ").append("    ").append("    ").append("    ").append("List.of(ByteBuffer.allocate(4).putInt(a).array(), ByteBuffer.allocate(4).putInt(b).array())").append("\n");
+                sb
+                        .append("    ")
+                        .append("    ")
+                        .append("    ")
+                        .append("    ")
+                        .append("List.of(ByteBuffer.allocate(4).putInt(a).array(), ByteBuffer.allocate(4).putInt(b).array())")
+                        .append("\n");
 
-                sb.append("    ").append("    ").append(");").append("\n");
+                sb
+                        .append("    ")
+                        .append("    ")
+                        .append(");")
+                        .append("\n");
                 sb.append("\n");
-                sb.append("    ").append("    ").append("Response resp = client.send(req);").append("\n");
-                sb.append("    ").append("    ").append("return ByteBuffer.wrap(resp.getResults().get(0)).getInt();").append("\n");
+                sb
+                        .append("    ")
+                        .append("    ")
+                        .append("Response resp = client.send(req);")
+                        .append("\n");
+                sb
+                        .append("    ")
+                        .append("    ")
+                        .append("return ByteBuffer.wrap(resp.getResults().get(0)).getInt();")
+                        .append("\n");
 
-                sb.append("    ").append("}").append("\n");
+                sb.append("    ")
+                        .append("}")
+                        .append("\n");
             }
         }
 
