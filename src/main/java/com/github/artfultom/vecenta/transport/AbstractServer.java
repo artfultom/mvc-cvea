@@ -8,16 +8,19 @@ import java.nio.charset.StandardCharsets;
 public abstract class AbstractServer implements Server {
 
     public static final int PROTOCOL_VERSION = 1;
+    public static final String PROTOCOL_NAME = "vcea";
 
     protected void handshake(MessageStream stream) {
         byte[] handshake = stream.getNextMessage();
         // TODO handshake process
 
         if (handshake.length > 4) {
-            byte[] protocolNameArr = new byte[4];
-            ByteBuffer.wrap(handshake).get(protocolNameArr);
-            if ("vcea".equals(new String(protocolNameArr, StandardCharsets.UTF_8))) {
-                int protocolVersion = handshake[4];
+            byte[] protocolNameArr = new byte[PROTOCOL_NAME.length()];
+            ByteBuffer buf = ByteBuffer.wrap(handshake);
+            buf.get(protocolNameArr);
+
+            if (PROTOCOL_NAME.equals(new String(protocolNameArr, StandardCharsets.UTF_8))) {
+                int protocolVersion = buf.getInt();
 
                 if (protocolVersion == PROTOCOL_VERSION) {
                     ByteBuffer bb = ByteBuffer.allocate(4);

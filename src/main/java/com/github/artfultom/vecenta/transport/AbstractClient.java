@@ -12,9 +12,12 @@ public abstract class AbstractClient implements Client {
     protected ReadWriteStrategy strategy;
 
     protected void handshake(DataInputStream in, DataOutputStream out) throws IOException {
-        out.writeInt(5);
-        out.write("vcea".getBytes());
-        out.write(AbstractServer.PROTOCOL_VERSION);
+        ByteBuffer protocolInfo = ByteBuffer.allocate(8);
+        protocolInfo.put(AbstractServer.PROTOCOL_NAME.getBytes());
+        protocolInfo.putInt(AbstractServer.PROTOCOL_VERSION);
+
+        out.writeInt(protocolInfo.capacity());
+        out.write(protocolInfo.array());
         out.flush();
 
         int size = in.readInt();
