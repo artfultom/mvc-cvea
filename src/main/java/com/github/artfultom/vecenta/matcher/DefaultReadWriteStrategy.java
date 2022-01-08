@@ -65,6 +65,30 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
     }
 
     @Override
+    public Request convertToRequest(byte[] in) {
+        ByteBuffer buf = ByteBuffer.wrap(in);
+
+        int methodSize = buf.getInt(0);
+
+        byte[] rawMethod = Arrays.copyOfRange(in, Integer.BYTES, methodSize + Integer.BYTES);
+        String method = new String(rawMethod, StandardCharsets.UTF_8);
+
+        List<byte[]> params = new ArrayList<>();
+        for (int i = methodSize + Integer.BYTES; i < buf.capacity(); ) {
+            byte[] rawSize = Arrays.copyOfRange(in, i, i + Integer.BYTES);
+            int paramSize = ByteBuffer.wrap(rawSize).getInt();
+
+            byte[] param = Arrays.copyOfRange(in, i + Integer.BYTES, paramSize + i + Integer.BYTES);
+
+            params.add(param);
+
+            i += paramSize + Integer.BYTES;
+        }
+
+        return new Request(method, params);
+    }
+
+    @Override
     public Response convertToResponse(byte[] in) {
         ByteBuffer buf = ByteBuffer.wrap(in);
 
@@ -89,29 +113,5 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
 
             return new Response(MessageError.values()[errorCode]);
         }
-    }
-
-    @Override
-    public Request convertToRequest(byte[] in) {
-        ByteBuffer buf = ByteBuffer.wrap(in);
-
-        int methodSize = buf.getInt(0);
-
-        byte[] rawMethod = Arrays.copyOfRange(in, Integer.BYTES, methodSize + Integer.BYTES);
-        String method = new String(rawMethod, StandardCharsets.UTF_8);
-
-        List<byte[]> params = new ArrayList<>();
-        for (int i = methodSize + Integer.BYTES; i < buf.capacity(); ) {
-            byte[] rawSize = Arrays.copyOfRange(in, i, i + Integer.BYTES);
-            int paramSize = ByteBuffer.wrap(rawSize).getInt();
-
-            byte[] param = Arrays.copyOfRange(in, i + Integer.BYTES, paramSize + i + Integer.BYTES);
-
-            params.add(param);
-
-            i += paramSize + Integer.BYTES;
-        }
-
-        return new Request(method, params);
     }
 }

@@ -9,7 +9,7 @@ public interface ReadWriteStrategy {
 
     byte[] convertToBytes(Response in);
 
-    Response convertToResponse(byte[] in);
-
     Request convertToRequest(byte[] in);
+
+    Response convertToResponse(byte[] in);
 }

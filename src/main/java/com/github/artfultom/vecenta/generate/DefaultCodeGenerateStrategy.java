@@ -111,7 +111,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                         .append(method.getName())
                         .append("(")
                         .append(String.join(", ", args))
-                        .append(") {").append("\n");
+                        .append(") throws ConnectException {").append("\n");
 
                 sb.append("    ").append("    ").append("Request req = new Request(").append("\n");
 
@@ -122,14 +122,9 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 sb.append("    ").append("    ").append("    ").append("    ").append("List.of(ByteBuffer.allocate(4).putInt(a).array(), ByteBuffer.allocate(4).putInt(b).array())").append("\n");
 
                 sb.append("    ").append("    ").append(");").append("\n");
-                sb.append("    ").append("    ").append("try {").append("\n");
-                sb.append("    ").append("    ").append("    ").append("Response resp = client.send(req);").append("\n");
-                sb.append("    ").append("    ").append("    ").append("return ByteBuffer.wrap(resp.getResults().get(0)).getInt();").append("\n");
-                sb.append("    ").append("    ").append("} catch (ConnectException e) {").append("\n");
-                sb.append("    ").append("    ").append("    ").append("e.printStackTrace();").append("\n");    // TODO log
-                sb.append("    ").append("    ").append("    ").append("return null;").append("\n");
-                sb.append("    ").append("    ").append("}").append("\n");
-
+                sb.append("\n");
+                sb.append("    ").append("    ").append("Response resp = client.send(req);").append("\n");
+                sb.append("    ").append("    ").append("return ByteBuffer.wrap(resp.getResults().get(0)).getInt();").append("\n");
 
                 sb.append("    ").append("}").append("\n");
             }

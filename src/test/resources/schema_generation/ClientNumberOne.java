@@ -15,17 +15,13 @@ public class ClientNumberOne {
         this.client = client;
     }
 
-    public Integer method_name(com.github.artfultom.vecenta.controller.v1.A argument_name) {
+    public Integer method_name(com.github.artfultom.vecenta.controller.v1.A argument_name) throws ConnectException {
         Request req = new Request(
                 "entity_name.method_name(com.github.artfultom.vecenta.controller.v1.A)",
                 List.of(ByteBuffer.allocate(4).putInt(a).array(), ByteBuffer.allocate(4).putInt(b).array())
         );
-        try {
-            Response resp = client.send(req);
-            return ByteBuffer.wrap(resp.getResults().get(0)).getInt();
-        } catch (ConnectException e) {
-            e.printStackTrace();
-            return null;
-        }
+
+        Response resp = client.send(req);
+        return ByteBuffer.wrap(resp.getResults().get(0)).getInt();
     }
 }
