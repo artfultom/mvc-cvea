@@ -20,8 +20,6 @@ public class TcpClient extends AbstractClient {
     private DataOutputStream out;
     private DataInputStream in;
 
-    private ReadWriteStrategy strategy; // TODO here?
-
     public TcpClient() {
         this.strategy = new DefaultReadWriteStrategy();
     }
