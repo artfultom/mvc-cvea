@@ -5,6 +5,8 @@ import com.github.artfultom.vecenta.matcher.ReadWriteStrategy;
 import com.github.artfultom.vecenta.transport.AbstractClient;
 import com.github.artfultom.vecenta.transport.message.Request;
 import com.github.artfultom.vecenta.transport.message.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.ConnectException;
@@ -12,6 +14,8 @@ import java.net.Socket;
 import java.net.SocketException;
 
 public class TcpClient extends AbstractClient {
+
+    private static final Logger log = LoggerFactory.getLogger(TcpClient.class);
 
     private String host;
     private int port;
@@ -45,10 +49,10 @@ public class TcpClient extends AbstractClient {
 
             handshake(in, out);
         } catch (ConnectException e) {
-            // TODO log
+            log.error("cannot connect to " + host + ":" + port, e);
             throw e;
         } catch (IOException e) {
-            e.printStackTrace();    // TODO log
+            log.error("io error during connection to " + host + ":" + port, e);
         }
     }
 
@@ -65,11 +69,12 @@ public class TcpClient extends AbstractClient {
                 byte[] result = in.readNBytes(size);
                 return strategy.convertToResponse(result);
             } catch (ConnectException e) {
+                log.error("cannot send message to " + host + ":" + port, e);
                 throw e;
             } catch (SocketException | EOFException e) {
                 connect();
             } catch (IOException e) {
-                e.printStackTrace();    // TODO log
+                log.error("io error during sending message to " + host + ":" + port, e);
             }
         }
 

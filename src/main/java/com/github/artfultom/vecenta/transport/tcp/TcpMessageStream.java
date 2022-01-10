@@ -1,6 +1,8 @@
 package com.github.artfultom.vecenta.transport.tcp;
 
 import com.github.artfultom.vecenta.transport.MessageStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -13,7 +15,9 @@ import java.util.concurrent.TimeoutException;
 
 public class TcpMessageStream implements MessageStream {
 
-    private AsynchronousSocketChannel channel;
+    private static final Logger log = LoggerFactory.getLogger(TcpMessageStream.class);
+
+    private final AsynchronousSocketChannel channel;
     private final long timeout;
 
     public TcpMessageStream(AsynchronousSocketChannel channel, long timeout) {
@@ -49,8 +53,8 @@ public class TcpMessageStream implements MessageStream {
             }
 
             return messageBuf.array();
-        } catch (InterruptedException ignored) {
-            // TODO
+        } catch (InterruptedException e) {
+            log.info("getting data from channel was interrupted", e);
         } catch (ExecutionException | TimeoutException e) {
             try {
                 if (channel.isOpen()) {
@@ -59,7 +63,7 @@ public class TcpMessageStream implements MessageStream {
                     channel.close();
                 }
             } catch (IOException ex) {
-                ex.printStackTrace();   // TODO log
+                log.error("cannot close the channel", e);
             }
         }
 
@@ -74,7 +78,7 @@ public class TcpMessageStream implements MessageStream {
             dataStream.writeInt(resp.length);
             dataStream.write(resp);
         } catch (IOException e) {
-            e.printStackTrace();    // TODO log
+            log.error("cannot send the message", e);
         }
 
         channel.write(ByteBuffer.wrap(out.toByteArray()));

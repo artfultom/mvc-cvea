@@ -3,6 +3,8 @@ package com.github.artfultom.vecenta.matcher;
 import com.github.artfultom.vecenta.transport.error.MessageError;
 import com.github.artfultom.vecenta.transport.message.Request;
 import com.github.artfultom.vecenta.transport.message.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -14,6 +16,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DefaultReadWriteStrategy implements ReadWriteStrategy {
+
+    private static final Logger log = LoggerFactory.getLogger(DefaultReadWriteStrategy.class);
 
     @Override
     public byte[] convertToBytes(Request in) {
@@ -31,7 +35,7 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
                 dataStream.write(param);
             }
         } catch (IOException e) {
-            e.printStackTrace();    // TODO log
+            log.error("cannot convert request to bytes", e);
         }
 
         return out.toByteArray();
@@ -50,15 +54,11 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
                     dataStream.write(param);
                 }
             } else {
-                try {
-                    dataStream.writeByte(1);
-                    dataStream.writeInt(in.getError().ordinal());
-                } catch (IOException e) {
-                    e.printStackTrace();    // TODO log
-                }
+                dataStream.writeByte(1);
+                dataStream.writeInt(in.getError().ordinal());
             }
         } catch (IOException e) {
-            e.printStackTrace();    // TODO log
+            log.error("cannot convert response to bytes", e);
         }
 
         return out.toByteArray();

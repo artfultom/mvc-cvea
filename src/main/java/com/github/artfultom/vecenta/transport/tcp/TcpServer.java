@@ -2,6 +2,8 @@ package com.github.artfultom.vecenta.transport.tcp;
 
 import com.github.artfultom.vecenta.matcher.ServerMatcher;
 import com.github.artfultom.vecenta.transport.AbstractServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -10,6 +12,8 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 
 public class TcpServer extends AbstractServer {
+
+    private static final Logger log = LoggerFactory.getLogger(TcpServer.class);
 
     private AsynchronousServerSocketChannel listener;
 
@@ -49,7 +53,7 @@ public class TcpServer extends AbstractServer {
                             stream.sendMessage(resp);
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();    // TODO log
+                        log.error("stream error", e);
                     }
                 }
 
@@ -58,7 +62,7 @@ public class TcpServer extends AbstractServer {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();    // TODO log
+            log.error("cannot open asynchronous server socket channel", e);
         }
     }
 

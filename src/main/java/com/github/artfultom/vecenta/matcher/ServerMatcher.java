@@ -4,6 +4,8 @@ import com.github.artfultom.vecenta.transport.MethodHandler;
 import com.github.artfultom.vecenta.transport.error.MessageError;
 import com.github.artfultom.vecenta.transport.message.Request;
 import com.github.artfultom.vecenta.transport.message.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -12,6 +14,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ServerMatcher {
+
+    private static final Logger log = LoggerFactory.getLogger(ServerMatcher.class);
 
     private ReadWriteStrategy readWriteStrategy;
     private ConvertParamStrategy convertParamStrategy;
@@ -51,14 +55,8 @@ public class ServerMatcher {
                     List<byte[]> responseParams = List.of(convertParamStrategy.convertToByteArray(returnType, result));
 
                     return new Response(responseParams);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();    // TODO log
-                } catch (InstantiationException e) {
-                    e.printStackTrace();    // TODO log
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();    // TODO log
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();    // TODO log
+                } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
+                    log.error("cannot register a controller " + controllerClass.getName(), e);
                 }
 
                 return new Response(MessageError.WRONG_METHOD_NAME);
@@ -92,8 +90,13 @@ public class ServerMatcher {
                 .filter(item -> item.getName().equals(method.getName()))
                 .collect(Collectors.toList());
 
-        // TODO if methods != 1
-
+        if (methods.size() == 0) {
+            log.error("no methods with name \"" + method.getName() + "\"");
+            // TODO return
+        }
+        if (methods.size() > 1) {
+            log.warn("too many methods with name \"" + method.getName() + "\". count=" + methods.size());
+        }
         Entity entity = methods.get(0).getAnnotation(Entity.class);
 
         StringBuilder sb = new StringBuilder(entity.value());
