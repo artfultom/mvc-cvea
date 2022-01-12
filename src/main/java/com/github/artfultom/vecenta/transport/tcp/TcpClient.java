@@ -1,5 +1,6 @@
 package com.github.artfultom.vecenta.transport.tcp;
 
+import com.github.artfultom.vecenta.Configuration;
 import com.github.artfultom.vecenta.matcher.DefaultReadWriteStrategy;
 import com.github.artfultom.vecenta.matcher.ReadWriteStrategy;
 import com.github.artfultom.vecenta.transport.AbstractClient;
@@ -16,6 +17,7 @@ import java.net.SocketException;
 public class TcpClient extends AbstractClient {
 
     private static final Logger log = LoggerFactory.getLogger(TcpClient.class);
+    private static final String sendAttemptCountStr = Configuration.get("send.attempt_count");
 
     private String host;
     private int port;
@@ -58,7 +60,9 @@ public class TcpClient extends AbstractClient {
 
     @Override
     public Response send(Request request) throws ConnectException {
-        for (int i = 0; i < 10; i++) {  // TODO settings
+        int sendAttemptCount = Integer.parseInt(sendAttemptCountStr);   // TODO NPE
+
+        for (int i = 0; i < sendAttemptCount; i++) {
             try {
                 byte[] b = strategy.convertToBytes(request);
                 out.writeInt(b.length);
