@@ -1,5 +1,6 @@
 package com.github.artfultom.vecenta.transport.tcp;
 
+import com.github.artfultom.vecenta.Configuration;
 import com.github.artfultom.vecenta.matcher.ServerMatcher;
 import com.github.artfultom.vecenta.transport.AbstractServer;
 import org.slf4j.Logger;
@@ -17,7 +18,7 @@ public class TcpServer extends AbstractServer {
 
     private AsynchronousServerSocketChannel listener;
 
-    private long timeout = 5000;
+    private long timeout = Configuration.getInt("server.default_timeout");
 
     public void setTimeout(long timeout) {
         this.timeout = timeout;

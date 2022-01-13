@@ -1,5 +1,7 @@
 package com.github.artfultom.vecenta.generate;
 
+import com.github.artfultom.vecenta.Configuration;
+
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -12,7 +14,7 @@ import java.util.stream.Stream;
 
 public class FileGenerator {
 
-    private final static int MAX_DEPTH = 5;
+    private final static int maxDepth = Configuration.getInt("generate.walk_max_depth");
 
     private final CodeGenerateStrategy strategy;
 
@@ -26,7 +28,7 @@ public class FileGenerator {
 
         Path path = config.getSchemaDir();
 
-        try (Stream<Path> walk = Files.walk(path, MAX_DEPTH)) {
+        try (Stream<Path> walk = Files.walk(path, maxDepth)) {
             for (Path p : walk.collect(Collectors.toList())) {
                 if (Files.isRegularFile(p) && matcher.matches(p)) {
                     String fileName = p.getFileName().toString();
