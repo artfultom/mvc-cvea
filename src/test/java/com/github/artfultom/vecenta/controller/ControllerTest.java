@@ -1,7 +1,7 @@
 package com.github.artfultom.vecenta.controller;
 
 import com.github.artfultom.vecenta.generate.CodeGenerateStrategy;
-import com.github.artfultom.vecenta.generate.Configuration;
+import com.github.artfultom.vecenta.generate.GenerateConfiguration;
 import com.github.artfultom.vecenta.generate.DefaultCodeGenerateStrategy;
 import com.github.artfultom.vecenta.generate.FileGenerator;
 import com.github.artfultom.vecenta.generated.v1.SumClient;
@@ -31,7 +31,7 @@ public class ControllerTest {
         Path tempDir = Files.createTempDirectory("test_" + System.currentTimeMillis());
 
         CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
-        Configuration config = new Configuration(
+        GenerateConfiguration config = new GenerateConfiguration(
                 schemaDir,
                 tempDir,
                 "test.pack.server",
@@ -55,7 +55,7 @@ public class ControllerTest {
     @Test
     public void testController() throws URISyntaxException, IOException, ClassNotFoundException {
         CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
-        Configuration config = new Configuration(
+        GenerateConfiguration config = new GenerateConfiguration(
                 Path.of(getClass().getResource("/schema_controller").toURI()),
                 Path.of("src", "test", "java"),
                 "com.github.artfultom.vecenta.generated",

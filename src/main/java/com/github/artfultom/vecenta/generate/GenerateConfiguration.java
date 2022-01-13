@@ -2,14 +2,14 @@ package com.github.artfultom.vecenta.generate;
 
 import java.nio.file.Path;
 
-public class Configuration {
+public class GenerateConfiguration {
 
     private Path schemaDir;
     private Path destinationDir;
     private String serverPackage;
     private String clientPackage;
 
-    public Configuration(Path schemaDir, Path destinationDir, String serverPackage, String clientPackage) {
+    public GenerateConfiguration(Path schemaDir, Path destinationDir, String serverPackage, String clientPackage) {
         this.schemaDir = schemaDir;
         this.destinationDir = destinationDir;
         this.serverPackage = serverPackage;

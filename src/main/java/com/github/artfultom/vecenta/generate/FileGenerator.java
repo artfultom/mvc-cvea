@@ -20,7 +20,7 @@ public class FileGenerator {
         this.strategy = strategy;
     }
 
-    public List<Path> generateFiles(Configuration config) throws IOException {
+    public List<Path> generateFiles(GenerateConfiguration config) throws IOException {
         List<Path> result = new ArrayList<>();
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.json");
 
