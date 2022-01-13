@@ -1,6 +1,6 @@
 package com.github.artfultom.vecenta;
 
-import com.github.artfultom.vecenta.transport.tcp.TcpClient;
+import com.github.artfultom.vecenta.exceptions.PropertyNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +19,34 @@ public class Configuration {
         try {
             Properties prop = new Properties();
             prop.load(input);
-            return prop.getProperty(property);
+            String value = prop.getProperty(property);
+
+            if (value != null) {
+                return value;
+            }
         } catch (IOException e) {
             log.error("cannot find property " + property);
         }
 
-        return null;
+        throw new PropertyNotFoundException(property);
+    }
+
+    public static int getInt(String property) {
+        InputStream input = Configuration.class.getClassLoader()
+                .getResourceAsStream("lib.properties");
+
+        try {
+            Properties prop = new Properties();
+            prop.load(input);
+            String value = prop.getProperty(property);
+
+            if (value != null) {
+                return Integer.parseInt(value);
+            }
+        } catch (IOException e) {
+            log.error("cannot find property " + property);
+        }
+
+        throw new PropertyNotFoundException(property);
     }
 }

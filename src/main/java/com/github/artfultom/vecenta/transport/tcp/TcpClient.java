@@ -17,7 +17,7 @@ import java.net.SocketException;
 public class TcpClient extends AbstractClient {
 
     private static final Logger log = LoggerFactory.getLogger(TcpClient.class);
-    private static final String sendAttemptCountStr = Configuration.get("send.attempt_count");
+    private static final int sendAttemptCount = Configuration.getInt("send.attempt_count");
 
     private String host;
     private int port;
@@ -60,8 +60,6 @@ public class TcpClient extends AbstractClient {
 
     @Override
     public Response send(Request request) throws ConnectException {
-        int sendAttemptCount = Integer.parseInt(sendAttemptCountStr);   // TODO NPE
-
         for (int i = 0; i < sendAttemptCount; i++) {
             try {
                 byte[] b = strategy.convertToBytes(request);
