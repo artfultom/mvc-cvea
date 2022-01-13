@@ -11,10 +11,11 @@ import java.util.Properties;
 public class Configuration {
 
     private static final Logger log = LoggerFactory.getLogger(Configuration.class);
+    private static final String fileName = "lib.properties";
 
     public static String get(String property) {
         InputStream input = Configuration.class.getClassLoader()
-                .getResourceAsStream("lib.properties");
+                .getResourceAsStream(fileName);
 
         try {
             Properties prop = new Properties();
@@ -33,7 +34,7 @@ public class Configuration {
 
     public static int getInt(String property) {
         InputStream input = Configuration.class.getClassLoader()
-                .getResourceAsStream("lib.properties");
+                .getResourceAsStream(fileName);
 
         try {
             Properties prop = new Properties();
