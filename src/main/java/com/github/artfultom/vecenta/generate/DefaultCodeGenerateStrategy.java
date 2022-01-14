@@ -22,16 +22,28 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("package ").append(filePackage).append(".v").append(version).append(";")
+        String rpcClientBody = generateRpcClientBody(filePackage, version, serverName, dto);
+        String httpClientBody = generateHttpClientBody(filePackage, version, serverName, dto);
+
+        return new GeneratedCode(serverName, rpcClientBody, httpClientBody, version);
+    }
+
+    private String generateRpcClientBody(
+            String filePackage,
+            String version,
+            String serverName,
+            JsonFormatDto dto
+    ) {
+        StringBuilder sbRpc = new StringBuilder();
+        sbRpc.append("package ").append(filePackage).append(".v").append(version).append(";")
                 .append("\n")
                 .append("\n");
 
-        sb.append("import com.github.artfultom.vecenta.matcher.Entity;")
+        sbRpc.append("import com.github.artfultom.vecenta.matcher.Entity;")
                 .append("\n")
                 .append("\n");
 
-        sb.append("public interface ").append(serverName).append(" {")
+        sbRpc.append("public interface ").append(serverName).append(" {")
                 .append("\n")
                 .append("\n");
 
@@ -42,11 +54,11 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                     args.add(param.getType() + " " + param.getName());
                 }
 
-                sb
+                sbRpc
                         .append("    ")
                         .append("@Entity(\"").append(entity.getName()).append("\")")
                         .append("\n");
-                sb
+                sbRpc
                         .append("    ")
                         .append(method.getOut().get(0).getType()).append(" ")
                         .append(method.getName())
@@ -57,9 +69,41 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
             }
         }
 
-        sb.append("}\n");
+        sbRpc.append("}\n");
 
-        return new GeneratedCode(serverName, sb.toString(), version);
+        return sbRpc.toString();
+    }
+
+    private String generateHttpClientBody(
+            String filePackage,
+            String version,
+            String serverName,
+            JsonFormatDto dto
+    ) {
+        StringBuilder sbHttp = new StringBuilder();
+//        sbHttp.append("package ").append(filePackage).append(".v").append(version).append(";")
+//                .append("\n")
+//                .append("\n");
+//
+//        sbHttp.append("import com.github.artfultom.vecenta.matcher.Entity;")
+//                .append("\n")
+//                .append("\n");
+//
+//        sbHttp.append("public interface ").append(serverName).append(" {")
+//                .append("\n")
+//                .append("\n");
+//
+//        for (JsonFormatDto.Entity entity : dto.getEntities()) {
+//            for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
+//                if (method.getHttp() != null && method.getHttp()) {
+//
+//                }
+//            }
+//        }
+//
+//        sbHttp.append("}\n");
+
+        return sbHttp.toString();
     }
 
     @Override
@@ -185,6 +229,6 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         sb.append("}");
 
-        return new GeneratedCode(clientName, sb.toString(), version);
+        return new GeneratedCode(clientName, sb.toString(), null, version);
     }
 }

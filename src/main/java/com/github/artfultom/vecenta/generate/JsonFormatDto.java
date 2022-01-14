@@ -64,6 +64,9 @@ public class JsonFormatDto implements Serializable {
             @JsonProperty("name")
             String name;
 
+            @JsonProperty("http")
+            Boolean http;
+
             @JsonProperty("in")
             List<Param> in;
 
@@ -79,6 +82,14 @@ public class JsonFormatDto implements Serializable {
 
             public void setName(String name) {
                 this.name = name;
+            }
+
+            public Boolean getHttp() {
+                return http;
+            }
+
+            public void setHttp(Boolean http) {
+                this.http = http;
             }
 
             public List<Param> getIn() {

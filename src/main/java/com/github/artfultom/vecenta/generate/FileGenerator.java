@@ -42,8 +42,8 @@ public class FileGenerator {
                     Path clientFile = config.getDestinationDir().resolve(config.getClientPackage().replace(".", "/") + "/v" + clientCode.getVersion() + "/" + clientCode.getName() + ".java");
                     Files.createDirectories(clientFile.getParent());
 
-                    serverFile = Files.writeString(serverFile, serverCode.getBody());
-                    clientFile = Files.writeString(clientFile, clientCode.getBody());
+                    serverFile = Files.writeString(serverFile, serverCode.getRpcBody());
+                    clientFile = Files.writeString(clientFile, clientCode.getRpcBody());
 
                     result.add(serverFile);
                     result.add(clientFile);

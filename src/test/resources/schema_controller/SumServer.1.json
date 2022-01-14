@@ -5,6 +5,7 @@
       "name": "math",
       "methods": [
         {
+          "http": true,
           "name": "sum",
           "in": [
             {
