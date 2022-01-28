@@ -5,7 +5,10 @@
       "name": "math",
       "methods": [
         {
-          "http": true,
+          "http": {
+            "enabled" :true,
+            "cacheable": true
+          },
           "name": "sum",
           "in": [
             {
