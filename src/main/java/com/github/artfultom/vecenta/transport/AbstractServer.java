@@ -22,7 +22,8 @@ public abstract class AbstractServer implements Server {
                 int protocolVersion = buf.getInt();
 
                 if (protocolVersion == PROTOCOL_VERSION) {
-                    // TODO handshake process
+                    byte flags = buf.get();
+                    setFlags(flags);
 
                     ByteBuffer bb = ByteBuffer.allocate(4);
                     bb.putInt(0);
@@ -43,5 +44,19 @@ public abstract class AbstractServer implements Server {
         bb.putInt(MessageError.WRONG_PROTOCOL.ordinal());
 
         stream.sendMessage(bb.array());
+    }
+
+    private void setFlags(byte flags) {
+        boolean[] bs = new boolean[8];
+        bs[0] = (flags & 0x80) != 0;
+        bs[1] = (flags & 0x40) != 0;
+        bs[2] = (flags & 0x20) != 0;
+        bs[3] = (flags & 0x10) != 0;
+        bs[4] = (flags & 0x8) != 0;
+        bs[5] = (flags & 0x4) != 0;
+        bs[6] = (flags & 0x2) != 0;
+        bs[7] = (flags & 0x1) != 0;
+
+        // TODO handshake logic
     }
 }

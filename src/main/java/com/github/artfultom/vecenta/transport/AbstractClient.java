@@ -12,9 +12,11 @@ public abstract class AbstractClient implements Client {
     protected ReadWriteStrategy strategy;
 
     protected void handshake(DataInputStream in, DataOutputStream out) throws IOException {
-        ByteBuffer protocolInfo = ByteBuffer.allocate(8);
+        ByteBuffer protocolInfo = ByteBuffer.allocate(9);
         protocolInfo.put(AbstractServer.PROTOCOL_NAME.getBytes());
         protocolInfo.putInt(AbstractServer.PROTOCOL_VERSION);
+
+        protocolInfo.put((byte) 0b11101010);    // TODO handshake logic
 
         out.writeInt(protocolInfo.capacity());
         out.write(protocolInfo.array());
@@ -24,6 +26,6 @@ public abstract class AbstractClient implements Client {
         ByteBuffer bb = ByteBuffer.wrap(in.readNBytes(size));
         int result = bb.asIntBuffer().get();
 
-        // TODO handshake logic
+        // TODO process
     }
 }
