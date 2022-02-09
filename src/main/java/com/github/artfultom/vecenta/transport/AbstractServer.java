@@ -12,7 +12,6 @@ public abstract class AbstractServer implements Server {
 
     protected void handshake(MessageStream stream) {
         byte[] handshake = stream.getNextMessage();
-        // TODO handshake process
 
         if (handshake.length > 4) {
             byte[] protocolNameArr = new byte[PROTOCOL_NAME.length()];
@@ -23,6 +22,8 @@ public abstract class AbstractServer implements Server {
                 int protocolVersion = buf.getInt();
 
                 if (protocolVersion == PROTOCOL_VERSION) {
+                    // TODO handshake process
+
                     ByteBuffer bb = ByteBuffer.allocate(4);
                     bb.putInt(0);
 
