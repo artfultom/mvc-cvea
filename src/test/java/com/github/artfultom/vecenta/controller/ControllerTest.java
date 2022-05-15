@@ -28,7 +28,7 @@ public class ControllerTest {
     @Test
     public void testGeneration() throws IOException, URISyntaxException {
         Path schemaDir = Path.of(getClass().getResource("/schema_generation").toURI());
-        Path tempDir = Files.createTempDirectory("test_" + System.currentTimeMillis());
+        Path tempDir = Files.createTempDirectory("test_" + System.currentTimeMillis()); // TODO delete
 
         CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
         GenerateConfiguration config = new GenerateConfiguration(
