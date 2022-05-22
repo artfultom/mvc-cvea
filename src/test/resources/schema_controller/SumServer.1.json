@@ -13,17 +13,17 @@
           "in": [
             {
               "name": "a",
-              "type": "java.lang.Integer"
+              "type": "int32"
             },
             {
               "name": "b",
-              "type": "java.lang.Integer"
+              "type": "int32"
             }
           ],
           "out": [
             {
               "name": "c",
-              "type": "Integer"
+              "type": "int32"
             }
           ]
         }

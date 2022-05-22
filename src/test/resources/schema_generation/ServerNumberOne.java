@@ -5,5 +5,5 @@ import com.github.artfultom.vecenta.matcher.Entity;
 public interface ServerNumberOne {
 
     @Entity("entity_name")
-    Integer method_name(com.github.artfultom.vecenta.controller.v1.A argument_name);
+    java.lang.Boolean method_name(java.lang.Integer argument_name);
 }

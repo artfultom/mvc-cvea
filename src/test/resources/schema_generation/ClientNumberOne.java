@@ -15,9 +15,9 @@ public class ClientNumberOne {
         this.client = client;
     }
 
-    public Integer method_name(com.github.artfultom.vecenta.controller.v1.A argument_name) throws ConnectException {
+    public java.lang.Boolean method_name(java.lang.Integer argument_name) throws ConnectException {
         Request req = new Request(
-                "entity_name.method_name(com.github.artfultom.vecenta.controller.v1.A)",
+                "entity_name.method_name(java.lang.Integer)",
                 List.of(ByteBuffer.allocate(4).putInt(a).array(), ByteBuffer.allocate(4).putInt(b).array())
         );
 

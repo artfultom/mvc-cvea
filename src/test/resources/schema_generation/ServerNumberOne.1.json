@@ -9,13 +9,13 @@
           "in": [
             {
               "name": "argument_name",
-              "type": "com.github.artfultom.vecenta.controller.v1.A"
+              "type": "int32"
             }
           ],
           "out": [
             {
               "name": "return_name",
-              "type": "Integer"
+              "type": "boolean"
             }
           ]
         }

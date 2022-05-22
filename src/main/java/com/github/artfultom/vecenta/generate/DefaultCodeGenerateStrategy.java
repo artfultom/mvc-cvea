@@ -51,8 +51,10 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
             for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
                 List<String> args = new ArrayList<>();
                 for (JsonFormatDto.Entity.Method.Param param : method.getIn()) {
-                    args.add(param.getType() + " " + param.getName());
+                    args.add(translate(param.getType()) + " " + param.getName());
                 }
+
+                String returnTypeStr = method.getOut().get(0).getType();
 
                 sbRpc
                         .append("    ")
@@ -60,7 +62,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                         .append("\n");
                 sbRpc
                         .append("    ")
-                        .append(method.getOut().get(0).getType()).append(" ")
+                        .append(translate(returnTypeStr)).append(" ")
                         .append(method.getName())
                         .append("(")
                         .append(String.join(", ", args))
@@ -166,12 +168,14 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
             for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
                 List<String> args = new ArrayList<>();
                 for (JsonFormatDto.Entity.Method.Param param : method.getIn()) {
-                    args.add(param.getType() + " " + param.getName());
+                    args.add(translate(param.getType()) + " " + param.getName());
                 }
+
+                String returnTypeStr = method.getOut().get(0).getType();
 
                 sb
                         .append("    ")
-                        .append("public ").append(method.getOut().get(0).getType()).append(" ")
+                        .append("public ").append(translate(returnTypeStr)).append(" ")
                         .append(method.getName())
                         .append("(")
                         .append(String.join(", ", args))
@@ -186,7 +190,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
                 String argumentTypes = method.getIn()
                         .stream()
-                        .map(item -> item.type)
+                        .map(item -> translate(item.getType()))
                         .collect(Collectors.joining(","));
                 sb
                         .append("    ")
@@ -230,5 +234,32 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         sb.append("}");
 
         return new GeneratedCode(clientName, sb.toString(), null, version);
+    }
+
+    private String translate(String type) {
+        switch (type) {
+            case "boolean":
+                return Boolean.class.getName();
+            case "string":
+                return String.class.getName();
+            case "int8":
+                return Short.class.getName();  // TODO fix
+            case "uint8":
+                return Short.class.getName();
+            case "int16":
+                return Short.class.getName();
+            case "uint16":
+                return Integer.class.getName();
+            case "int32":
+                return Integer.class.getName();
+            case "uint32":
+                return Long.class.getName();
+            case "int64":
+                return Long.class.getName();
+            case "uint64":
+                return Long.class.getName(); // TODO fix
+            default:
+                return "ERROR"; // TODO get error
+        }
     }
 }

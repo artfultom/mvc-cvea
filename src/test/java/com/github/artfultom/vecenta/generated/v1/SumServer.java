@@ -5,5 +5,5 @@ import com.github.artfultom.vecenta.matcher.Entity;
 public interface SumServer {
 
     @Entity("math")
-    Integer sum(java.lang.Integer a, java.lang.Integer b);
+    java.lang.Integer sum(java.lang.Integer a, java.lang.Integer b);
 }
