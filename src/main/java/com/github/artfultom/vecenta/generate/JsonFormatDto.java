@@ -8,10 +8,10 @@ import java.util.List;
 public class JsonFormatDto implements Serializable {
 
     @JsonProperty("client")
-    String client;
+    private String client;
 
     @JsonProperty("entities")
-    List<Entity> entities;
+    private List<Entity> entities;
 
     public JsonFormatDto() {
     }
@@ -35,10 +35,10 @@ public class JsonFormatDto implements Serializable {
     public static class Entity implements Serializable {
 
         @JsonProperty("name")
-        String name;
+        private String name;
 
         @JsonProperty("methods")
-        List<Method> methods;
+        private List<Method> methods;
 
         public Entity() {
         }
@@ -62,16 +62,16 @@ public class JsonFormatDto implements Serializable {
         public static class Method implements Serializable {
 
             @JsonProperty("name")
-            String name;
+            private String name;
 
             @JsonProperty("http")
-            Http http;
+            private Http http;
 
             @JsonProperty("in")
-            List<Param> in;
+            private List<Param> in;
 
             @JsonProperty("out")
-            List<Param> out;
+            private List<Param> out;
 
             public Method() {
             }
@@ -111,10 +111,10 @@ public class JsonFormatDto implements Serializable {
             public static class Http implements Serializable {
 
                 @JsonProperty("enabled")
-                Boolean enabled;
+                private Boolean enabled;
 
                 @JsonProperty("cacheable")
-                Boolean cacheable;
+                private Boolean cacheable;
 
                 public Http() {
                 }
@@ -139,10 +139,10 @@ public class JsonFormatDto implements Serializable {
             public static class Param implements Serializable {
 
                 @JsonProperty("name")
-                String name;
+                private String name;
 
                 @JsonProperty("type")
-                String type;
+                private String type;
 
                 public Param() {
                 }
