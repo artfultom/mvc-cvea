@@ -1,9 +1,9 @@
 package com.github.artfultom.vecenta.controller;
 
 import com.github.artfultom.vecenta.generate.CodeGenerateStrategy;
-import com.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import com.github.artfultom.vecenta.generate.DefaultCodeGenerateStrategy;
 import com.github.artfultom.vecenta.generate.FileGenerator;
+import com.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import com.github.artfultom.vecenta.generated.v1.SumClient;
 import com.github.artfultom.vecenta.matcher.ServerMatcher;
 import com.github.artfultom.vecenta.transport.Client;
@@ -18,15 +18,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
-import static java.nio.file.FileVisitResult.CONTINUE;
-import static java.nio.file.FileVisitResult.TERMINATE;
 import static org.junit.Assert.assertEquals;
 
 public class ControllerTest {
