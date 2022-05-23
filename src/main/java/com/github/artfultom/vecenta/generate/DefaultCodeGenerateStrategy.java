@@ -2,12 +2,18 @@ package com.github.artfultom.vecenta.generate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
+
+    private static final Logger log = LoggerFactory.getLogger(DefaultCodeGenerateStrategy.class);
 
     @Override
     public GeneratedCode generateServerCode(
@@ -41,6 +47,82 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         String clientName = dto.getClient();
         String version = fileName.split("\\.")[1];
 
+        String rpcClientBody = generateRpcClientBody(filePackage, version, clientName, dto);
+
+        return new GeneratedCode(clientName, rpcClientBody, null, version);
+    }
+
+    private String generateRpcServerBody(
+            String filePackage,
+            String version,
+            String serverName,
+            JsonFormatDto dto
+    ) {
+        StringBuilder sbRpc = new StringBuilder();
+        sbRpc.append("package ").append(filePackage).append(".v").append(version).append(";")
+                .append("\n")
+                .append("\n");
+
+        sbRpc.append("import com.github.artfultom.vecenta.matcher.Entity;")
+                .append("\n")
+                .append("\n");
+
+        sbRpc.append("public interface ").append(serverName).append(" {")
+                .append("\n")
+                .append("\n");
+
+        for (JsonFormatDto.Entity entity : dto.getEntities()) {
+            for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
+                List<String> args = new ArrayList<>();
+                for (JsonFormatDto.Entity.Method.Param param : method.getIn()) {
+                    String type = translate(param.getType());
+
+                    if (type != null) {
+                        args.add(type + " " + param.getName());
+                    } else {
+                        log.error("Wrong type " + param.getType() + ". Parameter " + param.getName() +
+                                " of " + method.getName() + " is ignored.");
+                    }
+                }
+
+                if (method.getOut().size() == 0) {
+                    log.error("No return type in method " + method.getName() + ".");
+                    continue;
+                }
+
+                String returnType = method.getOut().get(0).getType();
+                String translatedReturnType = translate(returnType);
+                if (translatedReturnType == null) {
+                    log.error("Wrong return type " + returnType + ". Method " + method.getName() + " is ignored.");
+                    continue;
+                }
+
+                sbRpc
+                        .append("    ")
+                        .append("@Entity(\"").append(entity.getName()).append("\")")
+                        .append("\n");
+                sbRpc
+                        .append("    ")
+                        .append(translatedReturnType).append(" ")
+                        .append(method.getName())
+                        .append("(")
+                        .append(String.join(", ", args))
+                        .append(");")
+                        .append("\n");
+            }
+        }
+
+        sbRpc.append("}\n");
+
+        return sbRpc.toString();
+    }
+
+    private String generateRpcClientBody(
+            String filePackage,
+            String version,
+            String clientName,
+            JsonFormatDto dto
+    ) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("package ").append(filePackage).append(".v").append(version).append(";")
@@ -88,14 +170,31 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
             for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
                 List<String> args = new ArrayList<>();
                 for (JsonFormatDto.Entity.Method.Param param : method.getIn()) {
-                    args.add(translate(param.getType()) + " " + param.getName());
+                    String type = translate(param.getType());
+
+                    if (type != null) {
+                        args.add(type + " " + param.getName());
+                    } else {
+                        log.error("Wrong type " + param.getType() + ". Parameter " + param.getName() +
+                                " of " + method.getName() + " is ignored.");
+                    }
                 }
 
-                String returnTypeStr = method.getOut().get(0).getType();
+                if (method.getOut().size() == 0) {
+                    log.error("No return type in method " + method.getName() + ".");
+                    continue;
+                }
+
+                String returnType = method.getOut().get(0).getType();
+                String translatedReturnType = translate(returnType);
+                if (translatedReturnType == null) {
+                    log.error("Wrong return type " + returnType + ". Method " + method.getName() + " is ignored.");
+                    continue;
+                }
 
                 sb
                         .append("    ")
-                        .append("public ").append(translate(returnTypeStr)).append(" ")
+                        .append("public ").append(translatedReturnType).append(" ")
                         .append(method.getName())
                         .append("(")
                         .append(String.join(", ", args))
@@ -110,7 +209,16 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
                 String argumentTypes = method.getIn()
                         .stream()
-                        .map(item -> translate(item.getType()))
+                        .map(item -> {
+                            String translated = translate(item.getType());
+                            if (translated == null) {
+                                log.error("Wrong type " + item.getType() + ". Parameter " + item.getName() +
+                                        " of " + method.getName() + " is ignored.");
+                            }
+
+                            return translated;
+                        })
+                        .filter(Objects::nonNull)
                         .collect(Collectors.joining(","));
                 sb
                         .append("    ")
@@ -153,55 +261,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         sb.append("}");
 
-        return new GeneratedCode(clientName, sb.toString(), null, version);
-    }
-
-    private String generateRpcServerBody(
-            String filePackage,
-            String version,
-            String serverName,
-            JsonFormatDto dto
-    ) {
-        StringBuilder sbRpc = new StringBuilder();
-        sbRpc.append("package ").append(filePackage).append(".v").append(version).append(";")
-                .append("\n")
-                .append("\n");
-
-        sbRpc.append("import com.github.artfultom.vecenta.matcher.Entity;")
-                .append("\n")
-                .append("\n");
-
-        sbRpc.append("public interface ").append(serverName).append(" {")
-                .append("\n")
-                .append("\n");
-
-        for (JsonFormatDto.Entity entity : dto.getEntities()) {
-            for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
-                List<String> args = new ArrayList<>();
-                for (JsonFormatDto.Entity.Method.Param param : method.getIn()) {
-                    args.add(translate(param.getType()) + " " + param.getName());
-                }
-
-                String returnTypeStr = method.getOut().get(0).getType();
-
-                sbRpc
-                        .append("    ")
-                        .append("@Entity(\"").append(entity.getName()).append("\")")
-                        .append("\n");
-                sbRpc
-                        .append("    ")
-                        .append(translate(returnTypeStr)).append(" ")
-                        .append(method.getName())
-                        .append("(")
-                        .append(String.join(", ", args))
-                        .append(");")
-                        .append("\n");
-            }
-        }
-
-        sbRpc.append("}\n");
-
-        return sbRpc.toString();
+        return sb.toString();
     }
 
     private String generateHttpServerBody(
@@ -243,23 +303,19 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
             case "string":
                 return String.class.getName();
             case "int8":
-                return Short.class.getName();  // TODO fix
             case "uint8":
-                return Short.class.getName();
             case "int16":
                 return Short.class.getName();
             case "uint16":
-                return Integer.class.getName();
             case "int32":
                 return Integer.class.getName();
             case "uint32":
-                return Long.class.getName();
             case "int64":
                 return Long.class.getName();
             case "uint64":
-                return Long.class.getName(); // TODO fix
+                return BigInteger.class.getName();
             default:
-                return "ERROR"; // TODO get error
+                return null;
         }
     }
 }
