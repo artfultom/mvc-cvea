@@ -10,6 +10,7 @@ import com.github.artfultom.vecenta.transport.Client;
 import com.github.artfultom.vecenta.transport.Server;
 import com.github.artfultom.vecenta.transport.tcp.TcpClient;
 import com.github.artfultom.vecenta.transport.tcp.TcpServer;
+import com.github.artfultom.vecenta.utils.TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,10 +18,15 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
+import static java.nio.file.FileVisitResult.CONTINUE;
+import static java.nio.file.FileVisitResult.TERMINATE;
 import static org.junit.Assert.assertEquals;
 
 public class ControllerTest {
@@ -28,7 +34,7 @@ public class ControllerTest {
     @Test
     public void testGeneration() throws IOException, URISyntaxException {
         Path schemaDir = Path.of(getClass().getResource("/schema_generation").toURI());
-        Path tempDir = Files.createTempDirectory("test_" + System.currentTimeMillis()); // TODO delete
+        Path tempDir = Files.createTempDirectory("test_" + System.currentTimeMillis());
 
         CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
         GenerateConfiguration config = new GenerateConfiguration(
@@ -50,6 +56,8 @@ public class ControllerTest {
 
             Files.delete(file);
         }
+
+        TestUtils.deleteDir(tempDir);
     }
 
     @Test
