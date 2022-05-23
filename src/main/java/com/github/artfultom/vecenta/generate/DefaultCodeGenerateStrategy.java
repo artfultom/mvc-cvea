@@ -22,90 +22,10 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
 
-        String rpcClientBody = generateRpcClientBody(filePackage, version, serverName, dto);
-        String httpClientBody = generateHttpClientBody(filePackage, version, serverName, dto);
+        String rpcServerBody = generateRpcServerBody(filePackage, version, serverName, dto);
+        String httpServerBody = generateHttpServerBody(filePackage, version, serverName, dto);
 
-        return new GeneratedCode(serverName, rpcClientBody, httpClientBody, version);
-    }
-
-    private String generateRpcClientBody(
-            String filePackage,
-            String version,
-            String serverName,
-            JsonFormatDto dto
-    ) {
-        StringBuilder sbRpc = new StringBuilder();
-        sbRpc.append("package ").append(filePackage).append(".v").append(version).append(";")
-                .append("\n")
-                .append("\n");
-
-        sbRpc.append("import com.github.artfultom.vecenta.matcher.Entity;")
-                .append("\n")
-                .append("\n");
-
-        sbRpc.append("public interface ").append(serverName).append(" {")
-                .append("\n")
-                .append("\n");
-
-        for (JsonFormatDto.Entity entity : dto.getEntities()) {
-            for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
-                List<String> args = new ArrayList<>();
-                for (JsonFormatDto.Entity.Method.Param param : method.getIn()) {
-                    args.add(translate(param.getType()) + " " + param.getName());
-                }
-
-                String returnTypeStr = method.getOut().get(0).getType();
-
-                sbRpc
-                        .append("    ")
-                        .append("@Entity(\"").append(entity.getName()).append("\")")
-                        .append("\n");
-                sbRpc
-                        .append("    ")
-                        .append(translate(returnTypeStr)).append(" ")
-                        .append(method.getName())
-                        .append("(")
-                        .append(String.join(", ", args))
-                        .append(");")
-                        .append("\n");
-            }
-        }
-
-        sbRpc.append("}\n");
-
-        return sbRpc.toString();
-    }
-
-    private String generateHttpClientBody(
-            String filePackage,
-            String version,
-            String serverName,
-            JsonFormatDto dto
-    ) {
-        StringBuilder sbHttp = new StringBuilder();
-//        sbHttp.append("package ").append(filePackage).append(".v").append(version).append(";")
-//                .append("\n")
-//                .append("\n");
-//
-//        sbHttp.append("import com.github.artfultom.vecenta.matcher.Entity;")
-//                .append("\n")
-//                .append("\n");
-//
-//        sbHttp.append("public interface ").append(serverName).append(" {")
-//                .append("\n")
-//                .append("\n");
-//
-//        for (JsonFormatDto.Entity entity : dto.getEntities()) {
-//            for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
-//                if (method.getHttp() != null && method.getHttp()) {
-//
-//                }
-//            }
-//        }
-//
-//        sbHttp.append("}\n");
-
-        return sbHttp.toString();
+        return new GeneratedCode(serverName, rpcServerBody, httpServerBody, version);
     }
 
     @Override
@@ -234,6 +154,86 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         sb.append("}");
 
         return new GeneratedCode(clientName, sb.toString(), null, version);
+    }
+
+    private String generateRpcServerBody(
+            String filePackage,
+            String version,
+            String serverName,
+            JsonFormatDto dto
+    ) {
+        StringBuilder sbRpc = new StringBuilder();
+        sbRpc.append("package ").append(filePackage).append(".v").append(version).append(";")
+                .append("\n")
+                .append("\n");
+
+        sbRpc.append("import com.github.artfultom.vecenta.matcher.Entity;")
+                .append("\n")
+                .append("\n");
+
+        sbRpc.append("public interface ").append(serverName).append(" {")
+                .append("\n")
+                .append("\n");
+
+        for (JsonFormatDto.Entity entity : dto.getEntities()) {
+            for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
+                List<String> args = new ArrayList<>();
+                for (JsonFormatDto.Entity.Method.Param param : method.getIn()) {
+                    args.add(translate(param.getType()) + " " + param.getName());
+                }
+
+                String returnTypeStr = method.getOut().get(0).getType();
+
+                sbRpc
+                        .append("    ")
+                        .append("@Entity(\"").append(entity.getName()).append("\")")
+                        .append("\n");
+                sbRpc
+                        .append("    ")
+                        .append(translate(returnTypeStr)).append(" ")
+                        .append(method.getName())
+                        .append("(")
+                        .append(String.join(", ", args))
+                        .append(");")
+                        .append("\n");
+            }
+        }
+
+        sbRpc.append("}\n");
+
+        return sbRpc.toString();
+    }
+
+    private String generateHttpServerBody(
+            String filePackage,
+            String version,
+            String serverName,
+            JsonFormatDto dto
+    ) {
+        StringBuilder sbHttp = new StringBuilder();
+//        sbHttp.append("package ").append(filePackage).append(".v").append(version).append(";")
+//                .append("\n")
+//                .append("\n");
+//
+//        sbHttp.append("import com.github.artfultom.vecenta.matcher.Entity;")
+//                .append("\n")
+//                .append("\n");
+//
+//        sbHttp.append("public interface ").append(serverName).append(" {")
+//                .append("\n")
+//                .append("\n");
+//
+//        for (JsonFormatDto.Entity entity : dto.getEntities()) {
+//            for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
+//                if (method.getHttp() != null && method.getHttp()) {
+//
+//                }
+//            }
+//        }
+//
+//        sbHttp.append("}\n");
+
+        return sbHttp.toString();
     }
 
     private String translate(String type) {
