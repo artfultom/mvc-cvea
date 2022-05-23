@@ -1,6 +1,8 @@
 package com.github.artfultom.vecenta.generate;
 
 import com.github.artfultom.vecenta.Configuration;
+import com.github.artfultom.vecenta.generate.config.GenerateConfiguration;
+import com.github.artfultom.vecenta.generate.config.GenerateMode;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -34,19 +36,29 @@ public class FileGenerator {
                     String fileName = p.getFileName().toString();
                     String body = Files.readString(p);
 
-                    GeneratedCode serverCode = strategy.generateServerCode(config.getServerPackage(), fileName, body);
-                    GeneratedCode clientCode = strategy.generateClientCode(config.getClientPackage(), fileName, body);
+                    if (config.getMode() != GenerateMode.CLIENT) {
+                        GeneratedCode serverCode = strategy.generateServerCode(
+                                config.getServerPackage(),
+                                fileName,
+                                body
+                        );
+                        Path serverFile = config.getDestinationDir().resolve(config.getServerPackage().replace(".", "/") + "/v" + serverCode.getVersion() + "/" + serverCode.getName() + ".java");
+                        Files.createDirectories(serverFile.getParent());
+                        serverFile = Files.writeString(serverFile, serverCode.getRpcBody());
+                        result.add(serverFile);
+                    }
 
-                    Path serverFile = config.getDestinationDir().resolve(config.getServerPackage().replace(".", "/") + "/v" + serverCode.getVersion() + "/" + serverCode.getName() + ".java");
-                    Files.createDirectories(serverFile.getParent());
-                    Path clientFile = config.getDestinationDir().resolve(config.getClientPackage().replace(".", "/") + "/v" + clientCode.getVersion() + "/" + clientCode.getName() + ".java");
-                    Files.createDirectories(clientFile.getParent());
-
-                    serverFile = Files.writeString(serverFile, serverCode.getRpcBody());
-                    clientFile = Files.writeString(clientFile, clientCode.getRpcBody());
-
-                    result.add(serverFile);
-                    result.add(clientFile);
+                    if (config.getMode() != GenerateMode.SERVER) {
+                        GeneratedCode clientCode = strategy.generateClientCode(
+                                config.getClientPackage(),
+                                fileName,
+                                body
+                        );
+                        Path clientFile = config.getDestinationDir().resolve(config.getClientPackage().replace(".", "/") + "/v" + clientCode.getVersion() + "/" + clientCode.getName() + ".java");
+                        Files.createDirectories(clientFile.getParent());
+                        clientFile = Files.writeString(clientFile, clientCode.getRpcBody());
+                        result.add(clientFile);
+                    }
                 }
             }
         }

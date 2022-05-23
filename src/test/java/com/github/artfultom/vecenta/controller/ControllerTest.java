@@ -1,7 +1,7 @@
 package com.github.artfultom.vecenta.controller;
 
 import com.github.artfultom.vecenta.generate.CodeGenerateStrategy;
-import com.github.artfultom.vecenta.generate.GenerateConfiguration;
+import com.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import com.github.artfultom.vecenta.generate.DefaultCodeGenerateStrategy;
 import com.github.artfultom.vecenta.generate.FileGenerator;
 import com.github.artfultom.vecenta.generated.v1.SumClient;
