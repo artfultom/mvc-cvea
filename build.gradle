@@ -1,8 +1,8 @@
 apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 
-group = "com.github.artfultom"
-version = "0.0.2"
+group = "io.github.artfultom"
+version = "0.0.3"
 
 repositories {
     mavenCentral()

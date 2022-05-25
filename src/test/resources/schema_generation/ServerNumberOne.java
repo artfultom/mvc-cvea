@@ -1,6 +1,6 @@
 package test.pack.server.v1;
 
-import com.github.artfultom.vecenta.matcher.Entity;
+import io.github.artfultom.vecenta.matcher.Entity;
 
 public interface ServerNumberOne {
 

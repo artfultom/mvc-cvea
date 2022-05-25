@@ -1,4 +1,4 @@
-package test.pack.client.v1;
+package io.github.artfultom.vecenta.generated.v1;
 
 import io.github.artfultom.vecenta.transport.Client;
 import io.github.artfultom.vecenta.transport.message.Request;
@@ -8,16 +8,16 @@ import java.net.ConnectException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-public class ClientNumberOne {
+public class SumClient {
     private final Client client;
 
-    public ClientNumberOne(Client client) {
+    public SumClient(Client client) {
         this.client = client;
     }
 
-    public java.lang.Boolean method_name(java.lang.Integer argument_name) throws ConnectException {
+    public java.lang.Integer sum(java.lang.Integer a, java.lang.Integer b) throws ConnectException {
         Request req = new Request(
-                "entity_name.method_name(java.lang.Integer)",
+                "math.sum(java.lang.Integer,java.lang.Integer)",
                 List.of(ByteBuffer.allocate(4).putInt(a).array(), ByteBuffer.allocate(4).putInt(b).array())
         );
 
