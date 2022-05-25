@@ -23,12 +23,16 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ControllerTest {
 
     @Test
     public void testGeneration() throws IOException, URISyntaxException {
-        Path schemaDir = Path.of(getClass().getResource("/schema_generation").toURI());
+        URL schemaRes = getClass().getResource("/schema_generation");
+        assertNotNull(schemaRes);
+
+        Path schemaDir = Path.of(schemaRes.toURI());
         Path tempDir = Files.createTempDirectory("test_" + System.currentTimeMillis());
 
         CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
@@ -43,9 +47,10 @@ public class ControllerTest {
 
         for (Path file : files) {
             String expectedFileName = file.getFileName().toString();
-            Path expected = Path.of(
-                    getClass().getResource("/schema_generation/" + expectedFileName).toURI()
-            );
+
+            URL expectedRes = getClass().getResource("/schema_generation/" + expectedFileName);
+            assertNotNull(expectedRes);
+            Path expected = Path.of(expectedRes.toURI());
 
             assertEquals(Files.readString(expected), Files.readString(file));
 
@@ -58,8 +63,11 @@ public class ControllerTest {
     @Test
     public void testController() throws URISyntaxException, IOException, ClassNotFoundException {
         CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
+
+        URL res = getClass().getResource("/schema_controller");
+        assertNotNull(res);
         GenerateConfiguration config = new GenerateConfiguration(
-                Path.of(getClass().getResource("/schema_controller").toURI()),
+                Path.of(res.toURI()),
                 Path.of("src", "test", "java"),
                 "io.github.artfultom.vecenta.generated",
                 "io.github.artfultom.vecenta.generated"
