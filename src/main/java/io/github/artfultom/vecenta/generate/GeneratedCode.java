@@ -4,13 +4,11 @@ public class GeneratedCode {
 
     private String name;
     private String rpcBody;
-    private String httpBody;
     private String version;
 
-    public GeneratedCode(String name, String rpcBody, String httpBody, String version) {
+    public GeneratedCode(String name, String rpcBody, String version) {
         this.name = name;
         this.rpcBody = rpcBody;
-        this.httpBody = httpBody;
         this.version = version;
     }
 
@@ -28,14 +26,6 @@ public class GeneratedCode {
 
     public void setRpcBody(String rpcBody) {
         this.rpcBody = rpcBody;
-    }
-
-    public String getHttpBody() {
-        return httpBody;
-    }
-
-    public void setHttpBody(String httpBody) {
-        this.httpBody = httpBody;
     }
 
     public String getVersion() {

@@ -29,9 +29,8 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
 
         String rpcServerBody = generateRpcServerBody(filePackage, version, serverName, dto);
-        String httpServerBody = generateHttpServerBody(filePackage, version, serverName, dto);
 
-        return new GeneratedCode(serverName, rpcServerBody, httpServerBody, version);
+        return new GeneratedCode(serverName, rpcServerBody, version);
     }
 
     @Override
@@ -49,7 +48,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         String rpcClientBody = generateRpcClientBody(filePackage, version, clientName, dto);
 
-        return new GeneratedCode(clientName, rpcClientBody, null, version);
+        return new GeneratedCode(clientName, rpcClientBody, version);
     }
 
     private String generateRpcServerBody(
@@ -262,38 +261,6 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         sb.append("}");
 
         return sb.toString();
-    }
-
-    private String generateHttpServerBody(
-            String filePackage,
-            String version,
-            String serverName,
-            JsonFormatDto dto
-    ) {
-        StringBuilder sbHttp = new StringBuilder();
-//        sbHttp.append("package ").append(filePackage).append(".v").append(version).append(";")
-//                .append("\n")
-//                .append("\n");
-//
-//        sbHttp.append("import io.github.artfultom.vecenta.matcher.Entity;")
-//                .append("\n")
-//                .append("\n");
-//
-//        sbHttp.append("public interface ").append(serverName).append(" {")
-//                .append("\n")
-//                .append("\n");
-//
-//        for (JsonFormatDto.Entity entity : dto.getEntities()) {
-//            for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
-//                if (method.getHttp() != null && method.getHttp()) {
-//
-//                }
-//            }
-//        }
-//
-//        sbHttp.append("}\n");
-
-        return sbHttp.toString();
     }
 
     private String translate(String type) {
