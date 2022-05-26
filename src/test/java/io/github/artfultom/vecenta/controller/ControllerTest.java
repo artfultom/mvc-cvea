@@ -5,6 +5,7 @@ import io.github.artfultom.vecenta.generate.DefaultCodeGenerateStrategy;
 import io.github.artfultom.vecenta.generate.FileGenerator;
 import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.generated.v1.SumClient;
+import io.github.artfultom.vecenta.generated.v1.SumServerImpl;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;
 import io.github.artfultom.vecenta.transport.Client;
 import io.github.artfultom.vecenta.transport.Server;
@@ -17,7 +18,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -74,19 +74,18 @@ public class ControllerTest {
         );
 
         List<Path> files = new FileGenerator(strategy).generateFiles(config);
+        assertNotNull(files);
+        assertEquals(2, files.size());
 
         ServerMatcher matcher = new ServerMatcher();
-
-        // TODO find
-        ClassLoader cl = new URLClassLoader(new URL[]{files.get(0).getParent().toUri().toURL()});
-        Class<?> serverClass = cl.loadClass("io.github.artfultom.vecenta.generated.v1.SumServerImpl");
-        Class<?> clientClass = cl.loadClass("io.github.artfultom.vecenta.generated.v1.SumClient");
-        matcher.register(serverClass);
+        matcher.register(SumServerImpl.class);
 
         try (Server server = new TcpServer(); Client client = new TcpClient()) {
-            server.start(5550, matcher);
+            int port = 5550;
 
-            client.startConnection("127.0.0.1", 5550);
+            server.start(port, matcher);
+
+            client.startConnection("127.0.0.1", port);
             SumClient clientConnector = new SumClient(client);
             int result = clientConnector.sum(3, 2);
 
