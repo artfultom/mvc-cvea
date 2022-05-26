@@ -5,12 +5,12 @@ import io.github.artfultom.vecenta.generate.DefaultCodeGenerateStrategy;
 import io.github.artfultom.vecenta.generate.FileGenerator;
 import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.generated.v1.SumClient;
-import io.github.artfultom.vecenta.generated.v1.SumServerImpl;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;
 import io.github.artfultom.vecenta.transport.Client;
 import io.github.artfultom.vecenta.transport.Server;
 import io.github.artfultom.vecenta.transport.tcp.TcpClient;
 import io.github.artfultom.vecenta.transport.tcp.TcpServer;
+import io.github.artfultom.vecenta.util.ReflectionUtils;
 import io.github.artfultom.vecenta.utils.TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -66,11 +66,13 @@ public class ControllerTest {
 
         URL res = getClass().getResource("/schema_controller");
         assertNotNull(res);
+
+        String pack = "io.github.artfultom.vecenta.generated";
         GenerateConfiguration config = new GenerateConfiguration(
                 Path.of(res.toURI()),
                 Path.of("src", "test", "java"),
-                "io.github.artfultom.vecenta.generated",
-                "io.github.artfultom.vecenta.generated"
+                pack,
+                pack
         );
 
         List<Path> files = new FileGenerator(strategy).generateFiles(config);
@@ -78,7 +80,10 @@ public class ControllerTest {
         assertEquals(2, files.size());
 
         ServerMatcher matcher = new ServerMatcher();
-        matcher.register(SumServerImpl.class);
+        List<Class<?>> classes = ReflectionUtils.findServerClasses(pack);
+        for (Class<?> clazz : classes) {
+            matcher.register(clazz);
+        }
 
         try (Server server = new TcpServer(); Client client = new TcpClient()) {
             int port = 5550;

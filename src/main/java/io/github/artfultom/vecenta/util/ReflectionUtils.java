@@ -1,16 +1,21 @@
 package io.github.artfultom.vecenta.util;
 
+import io.github.artfultom.vecenta.matcher.Entity;
+
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReflectionUtils {
 
-    public static List<Class> findAllClassesInPackage(String packageName) throws IOException, ClassNotFoundException {
-        List<Class> result = new ArrayList<>();
+    public static List<Class<?>> findServerClasses(String packageName) throws IOException, ClassNotFoundException {
+        List<Class<?>> result = new ArrayList<>();
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
@@ -25,14 +30,37 @@ public class ReflectionUtils {
         }
 
         for (File directory : dirs) {
-            result.addAll(findClasses(directory, packageName));
+            List<Class<?>> classes = findClasses(directory, packageName);
+
+            classes = classes.stream()
+                    .filter(item -> {
+                        if (item.isInterface()) {
+                            return false;
+                        }
+
+                        Class<?>[] inters = item.getInterfaces();
+                        for (Class<?> inter : inters) {
+                            for (Method method : inter.getMethods()) {
+                                for (Annotation annotation : method.getAnnotations()) {
+                                    if (annotation.annotationType() == Entity.class) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+
+                        return false;
+                    })
+                    .collect(Collectors.toList());
+
+            result.addAll(classes);
         }
 
         return result;
     }
 
-    private static List<Class> findClasses(File directory, String packageName) throws ClassNotFoundException {
-        List<Class> classes = new ArrayList<>();
+    private static List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
+        List<Class<?>> classes = new ArrayList<>();
 
         if (directory.exists()) {
             File[] files = directory.listFiles();
