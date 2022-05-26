@@ -4,9 +4,11 @@ import io.github.artfultom.vecenta.transport.MethodHandler;
 import io.github.artfultom.vecenta.transport.error.MessageError;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
+import io.github.artfultom.vecenta.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -32,6 +34,18 @@ public class ServerMatcher {
 
     public void setConvertParamStrategy(ConvertParamStrategy convertParamStrategy) {
         this.convertParamStrategy = convertParamStrategy;
+    }
+
+    public void register(String pack) {
+        try {
+            List<Class<?>> classes = ReflectionUtils.findServerClasses(pack);
+
+            for (Class<?> clazz : classes) {
+                register(clazz);
+            }
+        } catch (IOException e) {
+            log.error("Cannot register a controller in package " + pack, e);
+        }
     }
 
     public void register(Class<?> controllerClass) {

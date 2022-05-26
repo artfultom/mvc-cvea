@@ -10,7 +10,6 @@ import io.github.artfultom.vecenta.transport.Client;
 import io.github.artfultom.vecenta.transport.Server;
 import io.github.artfultom.vecenta.transport.tcp.TcpClient;
 import io.github.artfultom.vecenta.transport.tcp.TcpServer;
-import io.github.artfultom.vecenta.util.ReflectionUtils;
 import io.github.artfultom.vecenta.utils.TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -61,7 +60,7 @@ public class ControllerTest {
     }
 
     @Test
-    public void testController() throws URISyntaxException, IOException, ClassNotFoundException {
+    public void testController() throws URISyntaxException, IOException {
         CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
 
         URL res = getClass().getResource("/schema_controller");
@@ -80,10 +79,7 @@ public class ControllerTest {
         assertEquals(2, files.size());
 
         ServerMatcher matcher = new ServerMatcher();
-        List<Class<?>> classes = ReflectionUtils.findServerClasses(pack);
-        for (Class<?> clazz : classes) {
-            matcher.register(clazz);
-        }
+        matcher.register(pack);
 
         try (Server server = new TcpServer(); Client client = new TcpClient()) {
             int port = 5550;
