@@ -91,9 +91,12 @@ public class ControllerTest {
 
             client.startConnection("127.0.0.1", port);
             SumClient clientConnector = new SumClient(client);
-            int result = clientConnector.sum(3, 2);
 
-            Assert.assertEquals(5, result);
+            int result1 = clientConnector.sum(3, 2);
+            Assert.assertEquals(5, result1);
+
+            String result2 = clientConnector.concat("test", "1", "2");
+            Assert.assertEquals("test12", result2);
         }
     }
 

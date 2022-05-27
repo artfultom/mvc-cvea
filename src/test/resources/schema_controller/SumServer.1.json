@@ -22,6 +22,29 @@
               "type": "int32"
             }
           ]
+        },
+        {
+          "name": "concat",
+          "in": [
+            {
+              "name": "a",
+              "type": "string"
+            },
+            {
+              "name": "b",
+              "type": "string"
+            },
+            {
+              "name": "c",
+              "type": "string"
+            }
+          ],
+          "out": [
+            {
+              "name": "d",
+              "type": "string"
+            }
+          ]
         }
       ]
     }

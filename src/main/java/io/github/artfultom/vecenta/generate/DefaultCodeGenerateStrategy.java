@@ -108,6 +108,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                         .append(String.join(", ", args))
                         .append(");")
                         .append("\n");
+                sbRpc.append("\n");
             }
         }
 
@@ -129,6 +130,10 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 .append("\n");
         sb.append("import io.github.artfultom.vecenta.exceptions.ProtocolException;")
                 .append("\n");
+        sb.append("import io.github.artfultom.vecenta.matcher.ConvertParamStrategy;")
+                .append("\n");
+        sb.append("import io.github.artfultom.vecenta.matcher.DefaultConvertParamStrategy;")
+                .append("\n");
         sb.append("import io.github.artfultom.vecenta.transport.Client;")
                 .append("\n");
         sb.append("import io.github.artfultom.vecenta.transport.message.Request;")
@@ -139,17 +144,21 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         sb.append("import java.net.ConnectException;")
                 .append("\n");
-        sb.append("import java.nio.ByteBuffer;")
-                .append("\n");
         sb.append("import java.util.List;")
                 .append("\n")
                 .append("\n");
 
         sb.append("public class ").append(clientName).append(" {")
+                .append("\n")
                 .append("\n");
         sb
                 .append("    ")
                 .append("private final Client client;")
+                .append("\n")
+                .append("\n");
+        sb
+                .append("    ")
+                .append("private final ConvertParamStrategy convertParamStrategy = new DefaultConvertParamStrategy();")
                 .append("\n")
                 .append("\n");
         sb
@@ -229,12 +238,16 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                         .append("\"").append(entity.getName()).append(".").append(method.getName()).append("(").append(argumentTypes).append(")\",")
                         .append("\n");
 
+                String params = method.getIn().stream()
+                        .map(item -> "convertParamStrategy.convertToByteArray(" + translate(item.getType()) + ".class, " + item.getName() + ")")
+                        .collect(Collectors.joining(","));
+
                 sb
                         .append("    ")
                         .append("    ")
                         .append("    ")
                         .append("    ")
-                        .append("List.of(ByteBuffer.allocate(4).putInt(a).array(), ByteBuffer.allocate(4).putInt(b).array())")
+                        .append("List.of(").append(params).append(")")
                         .append("\n");
 
                 sb
@@ -273,7 +286,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 sb
                         .append("    ")
                         .append("    ")
-                        .append("return ByteBuffer.wrap(result.get(0)).getInt();")
+                        .append("return convertParamStrategy.convertToObject(" + translate(method.getOut().get(0).getType()) + ".class, result.get(0));")
                         .append("\n");
 
                 sb.append("    ")

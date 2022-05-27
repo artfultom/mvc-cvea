@@ -6,4 +6,9 @@ public class SumServerImpl implements SumServer {
     public Integer sum(Integer a, Integer b) {
         return a + b;
     }
+
+    @Override
+    public String concat(String a, String b, String c) {
+        return a + b + c;
+    }
 }
