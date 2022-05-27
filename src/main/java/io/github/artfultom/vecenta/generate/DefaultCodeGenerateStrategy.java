@@ -127,6 +127,8 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         sb.append("package ").append(filePackage).append(".v").append(version).append(";")
                 .append("\n")
                 .append("\n");
+        sb.append("import io.github.artfultom.vecenta.exceptions.ProtocolException;")
+                .append("\n");
         sb.append("import io.github.artfultom.vecenta.transport.Client;")
                 .append("\n");
         sb.append("import io.github.artfultom.vecenta.transport.message.Request;")
@@ -197,7 +199,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                         .append(method.getName())
                         .append("(")
                         .append(String.join(", ", args))
-                        .append(") throws ConnectException {")
+                        .append(") throws ConnectException, ProtocolException {")
                         .append("\n");
 
                 sb
@@ -249,7 +251,29 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 sb
                         .append("    ")
                         .append("    ")
-                        .append("return ByteBuffer.wrap(resp.getResults().get(0)).getInt();")
+                        .append("List<byte[]> result = resp.getResults();")
+                        .append("\n");
+                sb
+                        .append("    ")
+                        .append("    ")
+                        .append("if (result == null) {")
+                        .append("\n");
+                sb
+                        .append("    ")
+                        .append("    ")
+                        .append("    ")
+                        .append("throw new ProtocolException(resp.getError());")
+                        .append("\n");
+                sb
+                        .append("    ")
+                        .append("    ")
+                        .append("}")
+                        .append("\n");
+                sb.append("\n");
+                sb
+                        .append("    ")
+                        .append("    ")
+                        .append("return ByteBuffer.wrap(result.get(0)).getInt();")
                         .append("\n");
 
                 sb.append("    ")

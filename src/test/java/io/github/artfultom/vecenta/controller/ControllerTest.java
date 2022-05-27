@@ -1,13 +1,16 @@
 package io.github.artfultom.vecenta.controller;
 
+import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.generate.CodeGenerateStrategy;
 import io.github.artfultom.vecenta.generate.DefaultCodeGenerateStrategy;
 import io.github.artfultom.vecenta.generate.FileGenerator;
 import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
+import io.github.artfultom.vecenta.generate.config.GenerateMode;
 import io.github.artfultom.vecenta.generated.v1.SumClient;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;
 import io.github.artfultom.vecenta.transport.Client;
 import io.github.artfultom.vecenta.transport.Server;
+import io.github.artfultom.vecenta.transport.error.MessageError;
 import io.github.artfultom.vecenta.transport.tcp.TcpClient;
 import io.github.artfultom.vecenta.transport.tcp.TcpServer;
 import io.github.artfultom.vecenta.utils.TestUtils;
@@ -60,7 +63,7 @@ public class ControllerTest {
     }
 
     @Test
-    public void testController() throws URISyntaxException, IOException {
+    public void testController() throws URISyntaxException, IOException, ProtocolException {
         CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
 
         URL res = getClass().getResource("/schema_controller");
@@ -91,8 +94,41 @@ public class ControllerTest {
             int result = clientConnector.sum(3, 2);
 
             Assert.assertEquals(5, result);
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testControllerFail() throws URISyntaxException, IOException {
+        CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
+
+        URL res = getClass().getResource("/schema_controller");
+        assertNotNull(res);
+
+        String pack = "io.github.artfultom.vecenta.generated";
+        GenerateConfiguration config = new GenerateConfiguration(
+                Path.of(res.toURI()),
+                Path.of("src", "test", "java"),
+                pack,
+                pack,
+                GenerateMode.CLIENT
+        );
+
+        List<Path> files = new FileGenerator(strategy).generateFiles(config);
+        assertNotNull(files);
+        assertEquals(1, files.size());
+
+        try (Server server = new TcpServer(); Client client = new TcpClient()) {
+            int port = 5550;
+
+            server.start(port, new ServerMatcher());
+
+            client.startConnection("127.0.0.1", port);
+            SumClient clientConnector = new SumClient(client);
+            clientConnector.sum(3, 2);
+
+            Assert.fail();
+        } catch (ProtocolException e) {
+            Assert.assertEquals(MessageError.WRONG_METHOD_NAME, e.getError());
         }
     }
 }
