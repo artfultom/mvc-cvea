@@ -64,9 +64,6 @@ public class JsonFormatDto implements Serializable {
             @JsonProperty("name")
             private String name;
 
-            @JsonProperty("http")
-            private Http http;
-
             @JsonProperty("in")
             private List<Param> in;
 
@@ -84,14 +81,6 @@ public class JsonFormatDto implements Serializable {
                 this.name = name;
             }
 
-            public Http getHttp() {
-                return http;
-            }
-
-            public void setHttp(Http http) {
-                this.http = http;
-            }
-
             public List<Param> getIn() {
                 return in;
             }
@@ -106,34 +95,6 @@ public class JsonFormatDto implements Serializable {
 
             public void setOut(List<Param> out) {
                 this.out = out;
-            }
-
-            public static class Http implements Serializable {
-
-                @JsonProperty("enabled")
-                private Boolean enabled;
-
-                @JsonProperty("cacheable")
-                private Boolean cacheable;
-
-                public Http() {
-                }
-
-                public Boolean getEnabled() {
-                    return enabled;
-                }
-
-                public void setEnabled(Boolean enabled) {
-                    this.enabled = enabled;
-                }
-
-                public Boolean getCacheable() {
-                    return cacheable;
-                }
-
-                public void setCacheable(Boolean cacheable) {
-                    this.cacheable = cacheable;
-                }
             }
 
             public static class Param implements Serializable {
