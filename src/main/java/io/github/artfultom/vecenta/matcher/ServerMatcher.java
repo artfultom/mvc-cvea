@@ -61,7 +61,7 @@ public class ServerMatcher {
                         requestParams.add(convertParamStrategy.convertToObject(method.getParameterTypes()[i], param));
                     }
 
-                    Object result = method.invoke( // TODO static methods and others constructors
+                    Object result = method.invoke(
                             controllerClass.getDeclaredConstructor().newInstance(),
                             requestParams.toArray()
                     );
@@ -80,7 +80,7 @@ public class ServerMatcher {
         }
     }
 
-    public void register(MethodHandler handler) { // TODO bool?
+    public void register(MethodHandler handler) {
         handlerMap.put(handler.getName(), handler);
     }
 
