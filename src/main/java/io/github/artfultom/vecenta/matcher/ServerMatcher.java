@@ -50,7 +50,13 @@ public class ServerMatcher {
 
     public void register(Class<?> controllerClass) {
         for (Method method : controllerClass.getDeclaredMethods()) {
-            MethodHandler handler = new MethodHandler(getName(method), (request) -> {
+            String name = getName(method);
+
+            if (name == null) {
+                continue;
+            }
+
+            MethodHandler handler = new MethodHandler(name, (request) -> {
                 try {
                     Class<?> returnType = method.getReturnType();
 
@@ -69,7 +75,12 @@ public class ServerMatcher {
                     List<byte[]> responseParams = List.of(convertParamStrategy.convertToByteArray(returnType, result));
 
                     return new Response(responseParams);
-                } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
+                } catch (
+                        IllegalAccessException |
+                        InstantiationException |
+                        NoSuchMethodException |
+                        InvocationTargetException e
+                ) {
                     log.error("cannot register a controller " + controllerClass.getName(), e);
                 }
 
@@ -106,7 +117,8 @@ public class ServerMatcher {
 
         if (methods.size() == 0) {
             log.error("no methods with name \"" + method.getName() + "\"");
-            // TODO return
+
+            return null;
         }
         if (methods.size() > 1) {
             log.warn("too many methods with name \"" + method.getName() + "\". count=" + methods.size());
