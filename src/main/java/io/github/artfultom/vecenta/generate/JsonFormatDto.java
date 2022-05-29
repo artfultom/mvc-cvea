@@ -40,6 +40,9 @@ public class JsonFormatDto implements Serializable {
         @JsonProperty("methods")
         private List<Method> methods;
 
+        @JsonProperty("models")
+        private List<Model> models;
+
         public Entity() {
         }
 
@@ -57,6 +60,14 @@ public class JsonFormatDto implements Serializable {
 
         public void setMethods(List<Method> methods) {
             this.methods = methods;
+        }
+
+        public List<Model> getModels() {
+            return models;
+        }
+
+        public void setModels(List<Model> models) {
+            this.models = models;
         }
 
         public static class Method implements Serializable {
@@ -97,33 +108,63 @@ public class JsonFormatDto implements Serializable {
                 this.out = out;
             }
 
-            public static class Param implements Serializable {
+        }
 
-                @JsonProperty("name")
-                private String name;
+        public static class Model implements Serializable {
 
-                @JsonProperty("type")
-                private String type;
+            @JsonProperty("name")
+            private String name;
 
-                public Param() {
-                }
+            @JsonProperty("fields")
+            private List<Param> fields;
 
-                public String getName() {
-                    return name;
-                }
-
-                public void setName(String name) {
-                    this.name = name;
-                }
-
-                public String getType() {
-                    return type;
-                }
-
-                public void setType(String type) {
-                    this.type = type;
-                }
+            public Model() {
             }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public List<Param> getFields() {
+                return fields;
+            }
+
+            public void setFields(List<Param> fields) {
+                this.fields = fields;
+            }
+        }
+
+        public static class Param implements Serializable {
+
+            @JsonProperty("name")
+            private String name;
+
+            @JsonProperty("type")
+            private String type;
+
+            public Param() {
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public String getType() {
+                return type;
+            }
+
+            public void setType(String type) {
+                this.type = type;
+            }
+
         }
     }
 }

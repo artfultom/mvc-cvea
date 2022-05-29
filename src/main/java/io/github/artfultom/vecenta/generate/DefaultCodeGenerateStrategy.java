@@ -73,7 +73,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         for (JsonFormatDto.Entity entity : dto.getEntities()) {
             for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
                 List<String> args = new ArrayList<>();
-                for (JsonFormatDto.Entity.Method.Param param : method.getIn()) {
+                for (JsonFormatDto.Entity.Param param : method.getIn()) {
                     String type = translate(param.getType());
 
                     if (type != null) {
@@ -179,7 +179,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         for (JsonFormatDto.Entity entity : dto.getEntities()) {
             for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
                 List<String> args = new ArrayList<>();
-                for (JsonFormatDto.Entity.Method.Param param : method.getIn()) {
+                for (JsonFormatDto.Entity.Param param : method.getIn()) {
                     String type = translate(param.getType());
 
                     if (type != null) {
