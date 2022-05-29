@@ -1,8 +1,8 @@
 package io.github.artfultom.vecenta.transport.tcp;
 
 import io.github.artfultom.vecenta.Configuration;
-import io.github.artfultom.vecenta.matcher.DefaultReadWriteStrategy;
 import io.github.artfultom.vecenta.matcher.ReadWriteStrategy;
+import io.github.artfultom.vecenta.matcher.impl.DefaultReadWriteStrategy;
 import io.github.artfultom.vecenta.transport.AbstractClient;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;

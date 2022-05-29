@@ -1,5 +1,6 @@
-package io.github.artfultom.vecenta.matcher;
+package io.github.artfultom.vecenta.matcher.impl;
 
+import io.github.artfultom.vecenta.matcher.ReadWriteStrategy;
 import io.github.artfultom.vecenta.transport.error.MessageError;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;

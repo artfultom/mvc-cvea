@@ -132,7 +132,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 .append("\n");
         sb.append("import io.github.artfultom.vecenta.matcher.ConvertParamStrategy;")
                 .append("\n");
-        sb.append("import io.github.artfultom.vecenta.matcher.DefaultConvertParamStrategy;")
+        sb.append("import io.github.artfultom.vecenta.matcher.impl.DefaultConvertParamStrategy;")
                 .append("\n");
         sb.append("import io.github.artfultom.vecenta.transport.Client;")
                 .append("\n");
