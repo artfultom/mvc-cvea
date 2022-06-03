@@ -1,5 +1,6 @@
 package io.github.artfultom.vecenta.generate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.artfultom.vecenta.Configuration;
 import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.generate.config.GenerateMode;
@@ -28,6 +29,7 @@ public class FileGenerator {
     public List<Path> generateFiles(GenerateConfiguration config) throws IOException {
         List<Path> result = new ArrayList<>();
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.json");
+        ObjectMapper mapper = new ObjectMapper();
 
         Path path = config.getSchemaDir();
 
@@ -36,10 +38,11 @@ public class FileGenerator {
                 if (Files.isRegularFile(p) && matcher.matches(p)) {
                     String fileName = p.getFileName().toString();
                     String body = Files.readString(p);
+                    JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
 
                     Map<String, String> models = strategy.generateModels(
                             config.getClientPackage(),  // TODO replace to model package
-                            body
+                            dto
                     );
                     for (Map.Entry<String, String> model : models.entrySet()) {
                         Path modelFile = config.getDestinationDir().resolve(model.getKey().replace(".", "/") + ".java");
@@ -52,7 +55,7 @@ public class FileGenerator {
                         GeneratedCode serverCode = strategy.generateServerCode(
                                 config.getServerPackage(),
                                 fileName,
-                                body
+                                dto
                         );
                         Path serverFile = config.getDestinationDir().resolve(config.getServerPackage().replace(".", "/") + "/v" + serverCode.getVersion() + "/" + serverCode.getName() + ".java");
                         Files.createDirectories(serverFile.getParent());
@@ -64,7 +67,7 @@ public class FileGenerator {
                         GeneratedCode clientCode = strategy.generateClientCode(
                                 config.getClientPackage(),
                                 fileName,
-                                body
+                                dto
                         );
                         Path clientFile = config.getDestinationDir().resolve(config.getClientPackage().replace(".", "/") + "/v" + clientCode.getVersion() + "/" + clientCode.getName() + ".java");
                         Files.createDirectories(clientFile.getParent());

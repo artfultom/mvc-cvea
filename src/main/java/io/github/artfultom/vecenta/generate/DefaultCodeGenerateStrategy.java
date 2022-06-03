@@ -1,7 +1,5 @@
 package io.github.artfultom.vecenta.generate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,52 +14,8 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
     @Override
     public Map<String, String> generateModels(
             String modelPackage,
-            String body
-    ) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-
-        JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
-
-        return generateModelClasses(modelPackage, dto);
-    }
-
-    @Override
-    public GeneratedCode generateServerCode(
-            String filePackage,
-            String fileName,
-            String body
-    ) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();   // TODO refactor
-
-        String serverName = fileName.split("\\.")[0];
-        String version = fileName.split("\\.")[1];
-
-        JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
-
-        String rpcServerBody = generateRpcServerBody(filePackage, version, serverName, dto);
-
-        return new GeneratedCode(serverName, rpcServerBody, version);
-    }
-
-    @Override
-    public GeneratedCode generateClientCode(
-            String filePackage,
-            String fileName,
-            String body
-    ) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-
-        JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
-
-        String clientName = dto.getClient();
-        String version = fileName.split("\\.")[1];
-
-        String rpcClientBody = generateRpcClientBody(filePackage, version, clientName, dto);
-
-        return new GeneratedCode(clientName, rpcClientBody, version);
-    }
-
-    private Map<String, String> generateModelClasses(String modelPackage, JsonFormatDto dto) {
+            JsonFormatDto dto
+    ) {
         Map<String, String> result = new HashMap<>();
 
         for (JsonFormatDto.Entity entity : dto.getEntities()) {
@@ -75,6 +29,34 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         }
 
         return result;
+    }
+
+    @Override
+    public GeneratedCode generateServerCode(
+            String filePackage,
+            String fileName,
+            JsonFormatDto dto
+    ) {
+        String serverName = fileName.split("\\.")[0];
+        String version = fileName.split("\\.")[1];
+
+        String rpcServerBody = generateRpcServerBody(filePackage, version, serverName, dto);
+
+        return new GeneratedCode(serverName, rpcServerBody, version);
+    }
+
+    @Override
+    public GeneratedCode generateClientCode(
+            String filePackage,
+            String fileName,
+            JsonFormatDto dto
+    ) {
+        String clientName = dto.getClient();
+        String version = fileName.split("\\.")[1];
+
+        String rpcClientBody = generateRpcClientBody(filePackage, version, clientName, dto);
+
+        return new GeneratedCode(clientName, rpcClientBody, version);
     }
 
     private String generateRpcServerBody(
