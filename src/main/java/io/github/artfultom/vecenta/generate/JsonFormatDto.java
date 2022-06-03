@@ -3,6 +3,7 @@ package io.github.artfultom.vecenta.generate;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class JsonFormatDto implements Serializable {
@@ -44,6 +45,8 @@ public class JsonFormatDto implements Serializable {
         private List<Model> models;
 
         public Entity() {
+            this.methods = new ArrayList<>();
+            this.models = new ArrayList<>();
         }
 
         public String getName() {

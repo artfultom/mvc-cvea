@@ -5,9 +5,13 @@ import java.nio.file.Path;
 public class GenerateConfiguration {
 
     private Path schemaDir;
+
     private Path destinationDir;
+
     private String serverPackage;
+
     private String clientPackage;
+
     private GenerateMode mode;
 
     public GenerateConfiguration(

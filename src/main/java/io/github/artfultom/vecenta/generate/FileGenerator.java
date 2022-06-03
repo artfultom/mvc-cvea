@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,6 +36,17 @@ public class FileGenerator {
                 if (Files.isRegularFile(p) && matcher.matches(p)) {
                     String fileName = p.getFileName().toString();
                     String body = Files.readString(p);
+
+                    Map<String, String> models = strategy.generateModels(
+                            config.getClientPackage(),  // TODO replace to model package
+                            body
+                    );
+                    for (Map.Entry<String, String> model : models.entrySet()) {
+                        Path modelFile = config.getDestinationDir().resolve(model.getKey().replace(".", "/") + ".java");
+                        Files.createDirectories(modelFile.getParent());
+                        modelFile = Files.writeString(modelFile, model.getValue());
+                        // TODO add modelFile to result
+                    }
 
                     if (config.getMode() != GenerateMode.CLIENT) {
                         GeneratedCode serverCode = strategy.generateServerCode(

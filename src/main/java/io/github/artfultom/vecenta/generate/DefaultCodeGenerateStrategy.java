@@ -6,9 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
@@ -16,12 +14,24 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
     private static final Logger log = LoggerFactory.getLogger(DefaultCodeGenerateStrategy.class);
 
     @Override
+    public Map<String, String> generateModels(
+            String modelPackage,
+            String body
+    ) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
+
+        return generateModelClasses(modelPackage, dto);
+    }
+
+    @Override
     public GeneratedCode generateServerCode(
             String filePackage,
             String fileName,
             String body
     ) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();   // TODO refactor
 
         String serverName = fileName.split("\\.")[0];
         String version = fileName.split("\\.")[1];
@@ -49,6 +59,22 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         String rpcClientBody = generateRpcClientBody(filePackage, version, clientName, dto);
 
         return new GeneratedCode(clientName, rpcClientBody, version);
+    }
+
+    private Map<String, String> generateModelClasses(String modelPackage, JsonFormatDto dto) {
+        Map<String, String> result = new HashMap<>();
+
+        for (JsonFormatDto.Entity entity : dto.getEntities()) {
+            for (JsonFormatDto.Entity.Model model : entity.getModels()) {
+                String name = model.getName();
+                String fullName = modelPackage + "." + name.substring(0, 1).toUpperCase() + name.substring(1);
+
+                String body = "package " + modelPackage + ";";
+                result.put(fullName, body);
+            }
+        }
+
+        return result;
     }
 
     private String generateRpcServerBody(
