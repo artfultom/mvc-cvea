@@ -1,4 +1,4 @@
-package test.pack.client.v1;
+package test.pack.client;
 
 public class Model2 {
 

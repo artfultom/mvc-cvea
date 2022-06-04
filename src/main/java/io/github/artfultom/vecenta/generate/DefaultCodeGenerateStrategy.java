@@ -20,10 +20,10 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         for (JsonFormatDto.Entity entity : dto.getEntities()) {
             for (JsonFormatDto.Entity.Model model : entity.getModels()) {
-                String name = model.getName();
-                String fullName = modelPackage + "." + name.substring(0, 1).toUpperCase() + name.substring(1);
+                String name = model.getName().substring(0, 1).toUpperCase() + model.getName().substring(1);
+                String fullName = modelPackage + "." + name;
 
-                String body = "package " + modelPackage + ";";
+                String body = generateModelBody(modelPackage, name, model);
                 result.put(fullName, body);
             }
         }
@@ -57,6 +57,31 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         String rpcClientBody = generateRpcClientBody(filePackage, version, clientName, dto);
 
         return new GeneratedCode(clientName, rpcClientBody, version);
+    }
+
+    private String generateModelBody(String modelPackage, String name, JsonFormatDto.Entity.Model model) {
+        StringBuilder body = new StringBuilder();
+        body.append("package ").append(modelPackage).append(";")
+                .append("\n")
+                .append("\n");
+
+        body.append("public class ").append(name).append(" {")
+                .append("\n")
+                .append("\n");
+
+        for (JsonFormatDto.Entity.Param param : model.getFields()) {
+            body.append("    ").append("private ").append(translate(param.getType())).append(" ").append(param.getName()).append(";")
+                    .append("\n")
+                    .append("\n");
+        }
+
+        body.append("    ").append("public ").append(name).append(" {}")
+                .append("\n")
+                .append("\n");
+
+        body.append("}\n");
+
+        return body.toString();
     }
 
     private String generateRpcServerBody(
