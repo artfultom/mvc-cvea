@@ -38,8 +38,8 @@
           "name": "model2",
           "fields": [
             {
-              "name": "model1",
-              "type": "int32"
+              "name": "field1",
+              "type": "model1"
             }
           ]
         }

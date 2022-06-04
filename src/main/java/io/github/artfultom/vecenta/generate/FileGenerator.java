@@ -40,7 +40,7 @@ public class FileGenerator {
                     String body = Files.readString(p);
                     JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
 
-                    Map<String, String> models = strategy.generateModels(
+                    Map<String, String> models = strategy.generateModels(   // TODO replace to class
                             config.getClientPackage(),  // TODO replace to model package
                             dto
                     );
@@ -48,7 +48,7 @@ public class FileGenerator {
                         Path modelFile = config.getDestinationDir().resolve(model.getKey().replace(".", "/") + ".java");
                         Files.createDirectories(modelFile.getParent());
                         modelFile = Files.writeString(modelFile, model.getValue());
-                        // TODO add modelFile to result
+                        result.add(modelFile);
                     }
 
                     if (config.getMode() != GenerateMode.CLIENT) {
