@@ -3,7 +3,9 @@ package io.github.artfultom.vecenta.generate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,7 +25,22 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 String name = model.getName().substring(0, 1).toUpperCase() + model.getName().substring(1);
                 String fullName = modelPackage + "." + name;
 
-                String body = generateModelBody(modelPackage, name, model);
+                Map<String, String> params = model.getFields().stream()
+                        .collect(Collectors.toMap(
+                                JsonFormatDto.Entity.Param::getName,
+                                item -> {
+                                    String type = translate(item.getType());
+
+                                    if (type == null) {
+                                        String capitalType = item.getType().substring(0, 1).toUpperCase() + item.getType().substring(1);
+                                        type = modelPackage + "." + capitalType;
+                                    }
+
+                                    return type;
+                                }
+                        ));
+
+                String body = generateModelBody(modelPackage, name, params);
                 result.put(fullName, body);
             }
         }
@@ -59,29 +76,14 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         return new GeneratedCode(clientName, rpcClientBody, version);
     }
 
-    private String generateModelBody(String modelPackage, String name, JsonFormatDto.Entity.Model model) {
-        StringBuilder body = new StringBuilder();
-        body.append("package ").append(modelPackage).append(";")
-                .append("\n")
-                .append("\n");
-
-        body.append("public class ").append(name).append(" {")
-                .append("\n")
-                .append("\n");
-
-        for (JsonFormatDto.Entity.Param param : model.getFields()) {
-            body.append("    ").append("private ").append(translate(param.getType())).append(" ").append(param.getName()).append(";")
-                    .append("\n")
-                    .append("\n");
+    private String generateModelBody(String modelPackage, String name, Map<String, String> params) {
+        try {
+            return new ModelGenerator(modelPackage, name, params).generate();
+        } catch (IOException e) {
+            throw new RuntimeException(e);  // TODO
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);  // TODO
         }
-
-        body.append("    ").append("public ").append(name).append(" {}")
-                .append("\n")
-                .append("\n");
-
-        body.append("}\n");
-
-        return body.toString();
     }
 
     private String generateRpcServerBody(
