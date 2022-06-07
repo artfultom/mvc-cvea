@@ -1,11 +1,13 @@
 package io.github.artfultom.vecenta.generate;
 
+import com.squareup.javapoet.*;
+import io.github.artfultom.vecenta.util.GenerateUtils;
+import io.github.artfultom.vecenta.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import javax.lang.model.element.Modifier;
 import java.math.BigInteger;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,26 +24,41 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         for (JsonFormatDto.Entity entity : dto.getEntities()) {
             for (JsonFormatDto.Entity.Model model : entity.getModels()) {
-                String name = model.getName().substring(0, 1).toUpperCase() + model.getName().substring(1);
+                String name = StringUtils.capitalizeFirstLetter(model.getName());
                 String fullName = modelPackage + "." + name;
 
-                Map<String, String> params = model.getFields().stream()
-                        .collect(Collectors.toMap(
-                                JsonFormatDto.Entity.Param::getName,
-                                item -> {
-                                    String type = translate(item.getType());
+                MethodSpec constructor = MethodSpec.constructorBuilder()
+                        .addModifiers(Modifier.PUBLIC)
+                        .build();
 
-                                    if (type == null) {
-                                        String capitalType = item.getType().substring(0, 1).toUpperCase() + item.getType().substring(1);
-                                        type = modelPackage + "." + capitalType;
-                                    }
+                TypeSpec.Builder builder = TypeSpec.classBuilder(name)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addMethod(constructor);
 
-                                    return type;
-                                }
-                        ));
+                for (JsonFormatDto.Entity.Param field : model.getFields()) {
+                    Class<?> type = convertToTypeName(field.getType());
+                    FieldSpec fieldSpec;
 
-                String body = generateModelBody(modelPackage, name, params);
-                result.put(fullName, body);
+                    if (type == null) {
+                        String capitalType = StringUtils.capitalizeFirstLetter(field.getType());
+                        ClassName className = ClassName.get(modelPackage, capitalType);
+
+                        fieldSpec = FieldSpec.builder(className, field.getName(), Modifier.PUBLIC).build();
+                    } else {
+                        fieldSpec = FieldSpec.builder(type, field.getName(), Modifier.PUBLIC).build();
+                    }
+
+                    builder.addField(fieldSpec);
+                    GenerateUtils.addGetterAndSetter(fieldSpec, builder);
+                }
+
+                JavaFile file = JavaFile
+                        .builder(modelPackage, builder.build())
+                        .indent("    ")
+                        .skipJavaLangImports(true)
+                        .build();
+
+                result.put(fullName, file.toString());
             }
         }
 
@@ -74,16 +91,6 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         String rpcClientBody = generateRpcClientBody(filePackage, version, clientName, dto);
 
         return new GeneratedCode(clientName, rpcClientBody, version);
-    }
-
-    private String generateModelBody(String modelPackage, String name, Map<String, String> params) {
-        try {
-            return new ModelGenerator(modelPackage, name, params).generate();
-        } catch (IOException e) {
-            throw new RuntimeException(e);  // TODO
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);  // TODO
-        }
     }
 
     private String generateRpcServerBody(
@@ -353,6 +360,29 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 return Long.class.getName();
             case "uint64":
                 return BigInteger.class.getName();
+            default:
+                return null;
+        }
+    }
+
+    private Class<?> convertToTypeName(String type) {
+        switch (type) {
+            case "boolean":
+                return Boolean.class;
+            case "string":
+                return String.class;
+            case "int8":
+            case "uint8":
+            case "int16":
+                return Short.class;
+            case "uint16":
+            case "int32":
+                return Integer.class;
+            case "uint32":
+            case "int64":
+                return Long.class;
+            case "uint64":
+                return BigInteger.class;
             default:
                 return null;
         }
