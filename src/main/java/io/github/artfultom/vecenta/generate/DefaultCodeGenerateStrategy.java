@@ -1,7 +1,7 @@
 package io.github.artfultom.vecenta.generate;
 
 import com.squareup.javapoet.*;
-import io.github.artfultom.vecenta.util.GenerateUtils;
+import io.github.artfultom.vecenta.matcher.Entity;
 import io.github.artfultom.vecenta.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         for (JsonFormatDto.Entity entity : dto.getEntities()) {
             for (JsonFormatDto.Entity.Model model : entity.getModels()) {
                 String name = StringUtils.capitalizeFirstLetter(model.getName());
-                String fullName = modelPackage + "." + name;
+                String fullName = modelPackage + "." + entity.getName().toLowerCase() + "." + name;
 
                 MethodSpec constructor = MethodSpec.constructorBuilder()
                         .addModifiers(Modifier.PUBLIC)
@@ -49,7 +49,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                     }
 
                     builder.addField(fieldSpec);
-                    GenerateUtils.addGetterAndSetter(fieldSpec, builder);
+                    addGetterAndSetter(fieldSpec, builder);
                 }
 
                 JavaFile file = JavaFile
@@ -74,9 +74,59 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         String serverName = fileName.split("\\.")[0];
         String version = fileName.split("\\.")[1];
 
-        String rpcServerBody = generateRpcServerBody(filePackage, version, serverName, dto);
+        String name = StringUtils.capitalizeFirstLetter(serverName);
 
-        return new GeneratedCode(serverName, rpcServerBody, version);
+        TypeSpec.Builder builder = TypeSpec.interfaceBuilder(name)
+                .addModifiers(Modifier.PUBLIC);
+
+        for (JsonFormatDto.Entity entity : dto.getEntities()) {
+            AnnotationSpec annotationSpec = AnnotationSpec.builder(Entity.class)
+                    .addMember("value", "\"" + entity.getName() + "\"")
+                    .build();
+
+            for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
+                MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
+                        .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                        .addAnnotation(annotationSpec);
+
+                for (JsonFormatDto.Entity.Param param : method.getIn()) {
+                    Class<?> type = convertToTypeName(param.getType());
+                    ParameterSpec parameterSpec;
+
+                    if (type == null) {
+                        String capitalType = StringUtils.capitalizeFirstLetter(param.getType());
+                        ClassName className = ClassName.get(filePackage, capitalType);
+
+                        parameterSpec = ParameterSpec.builder(className, param.getName()).build();
+                    } else {
+                        parameterSpec = ParameterSpec.builder(type, param.getName()).build();
+                    }
+
+                    methodBuilder.addParameter(parameterSpec);
+                }
+
+                String returnTypeName = method.getOut().get(0).getType();
+                Class<?> type = convertToTypeName(returnTypeName);
+                if (type == null) {
+                    String capitalType = StringUtils.capitalizeFirstLetter(returnTypeName);
+                    ClassName className = ClassName.get(filePackage, capitalType);
+
+                    methodBuilder.returns(className);
+                } else {
+                    methodBuilder.returns(type);
+                }
+
+                builder.addMethod(methodBuilder.build());
+            }
+        }
+
+        JavaFile file = JavaFile
+                .builder(filePackage + ".v" + version, builder.build())
+                .indent("    ")
+                .skipJavaLangImports(true)
+                .build();
+
+        return new GeneratedCode(serverName, file.toString(), version);
     }
 
     @Override
@@ -91,72 +141,6 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         String rpcClientBody = generateRpcClientBody(filePackage, version, clientName, dto);
 
         return new GeneratedCode(clientName, rpcClientBody, version);
-    }
-
-    private String generateRpcServerBody(
-            String filePackage,
-            String version,
-            String serverName,
-            JsonFormatDto dto
-    ) {
-        StringBuilder sbRpc = new StringBuilder();
-        sbRpc.append("package ").append(filePackage).append(".v").append(version).append(";")
-                .append("\n")
-                .append("\n");
-
-        sbRpc.append("import io.github.artfultom.vecenta.matcher.Entity;")
-                .append("\n")
-                .append("\n");
-
-        sbRpc.append("public interface ").append(serverName).append(" {")
-                .append("\n")
-                .append("\n");
-
-        for (JsonFormatDto.Entity entity : dto.getEntities()) {
-            for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
-                List<String> args = new ArrayList<>();
-                for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                    String type = translate(param.getType());
-
-                    if (type != null) {
-                        args.add(type + " " + param.getName());
-                    } else {
-                        log.error("Wrong type " + param.getType() + ". Parameter " + param.getName() +
-                                " of " + method.getName() + " is ignored.");
-                    }
-                }
-
-                if (method.getOut().size() == 0) {
-                    log.error("No return type in method " + method.getName() + ".");
-                    continue;
-                }
-
-                String returnType = method.getOut().get(0).getType();
-                String translatedReturnType = translate(returnType);
-                if (translatedReturnType == null) {
-                    log.error("Wrong return type " + returnType + ". Method " + method.getName() + " is ignored.");
-                    continue;
-                }
-
-                sbRpc
-                        .append("    ")
-                        .append("@Entity(\"").append(entity.getName()).append("\")")
-                        .append("\n");
-                sbRpc
-                        .append("    ")
-                        .append(translatedReturnType).append(" ")
-                        .append(method.getName())
-                        .append("(")
-                        .append(String.join(", ", args))
-                        .append(");")
-                        .append("\n");
-                sbRpc.append("\n");
-            }
-        }
-
-        sbRpc.append("}\n");
-
-        return sbRpc.toString();
     }
 
     private String generateRpcClientBody(
@@ -386,5 +370,34 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
             default:
                 return null;
         }
+    }
+
+    private void addGetterAndSetter(FieldSpec fieldSpec, TypeSpec.Builder classBuilder) {
+        addGetter(fieldSpec, classBuilder);
+        addSetter(fieldSpec, classBuilder);
+    }
+
+    private void addSetter(FieldSpec fieldSpec, TypeSpec.Builder classBuilder) {
+        String setterName = "set" + StringUtils.capitalizeFirstLetter(fieldSpec.name);
+
+        MethodSpec.Builder methodBuilder = MethodSpec
+                .methodBuilder(setterName)
+                .addModifiers(Modifier.PUBLIC);
+
+        methodBuilder.addParameter(fieldSpec.type, fieldSpec.name);
+        methodBuilder.addStatement("this." + fieldSpec.name + " = " + fieldSpec.name);
+        classBuilder.addMethod(methodBuilder.build());
+    }
+
+    private void addGetter(FieldSpec fieldSpec, TypeSpec.Builder classBuilder) {
+        String getterName = "get" + StringUtils.capitalizeFirstLetter(fieldSpec.name);
+
+        MethodSpec.Builder methodBuilder = MethodSpec
+                .methodBuilder(getterName)
+                .returns(fieldSpec.type)
+                .addModifiers(Modifier.PUBLIC);
+
+        methodBuilder.addStatement("return this." + fieldSpec.name);
+        classBuilder.addMethod(methodBuilder.build());
     }
 }
