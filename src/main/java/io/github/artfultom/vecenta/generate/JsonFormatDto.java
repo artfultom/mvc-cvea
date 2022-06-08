@@ -82,7 +82,7 @@ public class JsonFormatDto implements Serializable {
             private List<Param> in;
 
             @JsonProperty("out")
-            private List<Param> out;
+            private String out;
 
             public Method() {
             }
@@ -103,11 +103,11 @@ public class JsonFormatDto implements Serializable {
                 this.in = in;
             }
 
-            public List<Param> getOut() {
+            public String getOut() {
                 return out;
             }
 
-            public void setOut(List<Param> out) {
+            public void setOut(String out) {
                 this.out = out;
             }
 

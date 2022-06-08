@@ -12,12 +12,7 @@
               "type": "int32"
             }
           ],
-          "out": [
-            {
-              "name": "return_name",
-              "type": "boolean"
-            }
-          ]
+          "out": "boolean"
         }
       ],
       "models": [

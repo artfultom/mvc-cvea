@@ -103,7 +103,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                     methodBuilder.addParameter(parameterSpec);
                 }
 
-                String returnTypeName = method.getOut().get(0).getType();
+                String returnTypeName = method.getOut();
                 ClassName className = getClassName(filePackage, returnTypeName);
                 methodBuilder.returns(className);
 
@@ -190,7 +190,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 methodBuilder.addCode(ifNullBlock);
                 methodBuilder.addCode("\n");
 
-                String returnTypeName = method.getOut().get(0).getType();
+                String returnTypeName = method.getOut();
                 ClassName className = getClassName(filePackage, returnTypeName);
                 methodBuilder.returns(className);
                 String returnStatement = "return convertParamStrategy.convertToObject($T.class, result.get(0))";

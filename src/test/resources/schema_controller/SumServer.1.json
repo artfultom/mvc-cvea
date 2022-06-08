@@ -16,12 +16,7 @@
               "type": "int32"
             }
           ],
-          "out": [
-            {
-              "name": "c",
-              "type": "int32"
-            }
-          ]
+          "out": "int32"
         },
         {
           "name": "concat",
@@ -39,12 +34,7 @@
               "type": "string"
             }
           ],
-          "out": [
-            {
-              "name": "d",
-              "type": "string"
-            }
-          ]
+          "out": "string"
         }
       ]
     }
