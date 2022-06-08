@@ -6,12 +6,11 @@ import io.github.artfultom.vecenta.matcher.impl.DefaultConvertParamStrategy;
 import io.github.artfultom.vecenta.transport.Client;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
-
 import java.net.ConnectException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClientNumberOne {
-
     private final Client client;
 
     private final ConvertParamStrategy convertParamStrategy = new DefaultConvertParamStrategy();
@@ -20,11 +19,11 @@ public class ClientNumberOne {
         this.client = client;
     }
 
-    public java.lang.Boolean method_name(java.lang.Integer argument_name) throws ConnectException, ProtocolException {
-        Request req = new Request(
-                "entity_name.method_name(java.lang.Integer)",
-                List.of(convertParamStrategy.convertToByteArray(java.lang.Integer.class, argument_name))
-        );
+    public Boolean method_name(Integer argument_name) throws ConnectException, ProtocolException {
+        String name = "entity_name.method_name(int32)";
+        List<byte[]> arguments = new ArrayList<>();
+        arguments.add(convertParamStrategy.convertToByteArray(Integer.class, argument_name));
+        Request req = new Request(name, arguments);
 
         Response resp = client.send(req);
         List<byte[]> result = resp.getResults();
@@ -32,6 +31,6 @@ public class ClientNumberOne {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(java.lang.Boolean.class, result.get(0));
+        return convertParamStrategy.convertToObject(Boolean.class, result.get(0));
     }
 }

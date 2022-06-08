@@ -8,10 +8,10 @@ import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 
 import java.net.ConnectException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SumClient {
-
     private final Client client;
 
     private final ConvertParamStrategy convertParamStrategy = new DefaultConvertParamStrategy();
@@ -20,11 +20,12 @@ public class SumClient {
         this.client = client;
     }
 
-    public java.lang.Integer sum(java.lang.Integer a, java.lang.Integer b) throws ConnectException, ProtocolException {
-        Request req = new Request(
-                "math.sum(java.lang.Integer,java.lang.Integer)",
-                List.of(convertParamStrategy.convertToByteArray(java.lang.Integer.class, a),convertParamStrategy.convertToByteArray(java.lang.Integer.class, b))
-        );
+    public Integer sum(Integer a, Integer b) throws ConnectException, ProtocolException {
+        String name = "math.sum(int32,int32)";
+        List<byte[]> arguments = new ArrayList<>();
+        arguments.add(convertParamStrategy.convertToByteArray(Integer.class, a));
+        arguments.add(convertParamStrategy.convertToByteArray(Integer.class, b));
+        Request req = new Request(name, arguments);
 
         Response resp = client.send(req);
         List<byte[]> result = resp.getResults();
@@ -32,13 +33,16 @@ public class SumClient {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(java.lang.Integer.class, result.get(0));
+        return convertParamStrategy.convertToObject(Integer.class, result.get(0));
     }
-    public java.lang.String concat(java.lang.String a, java.lang.String b, java.lang.String c) throws ConnectException, ProtocolException {
-        Request req = new Request(
-                "math.concat(java.lang.String,java.lang.String,java.lang.String)",
-                List.of(convertParamStrategy.convertToByteArray(java.lang.String.class, a),convertParamStrategy.convertToByteArray(java.lang.String.class, b),convertParamStrategy.convertToByteArray(java.lang.String.class, c))
-        );
+
+    public String concat(String a, String b, String c) throws ConnectException, ProtocolException {
+        String name = "math.concat(string,string,string)";
+        List<byte[]> arguments = new ArrayList<>();
+        arguments.add(convertParamStrategy.convertToByteArray(String.class, a));
+        arguments.add(convertParamStrategy.convertToByteArray(String.class, b));
+        arguments.add(convertParamStrategy.convertToByteArray(String.class, c));
+        Request req = new Request(name, arguments);
 
         Response resp = client.send(req);
         List<byte[]> result = resp.getResults();
@@ -46,6 +50,6 @@ public class SumClient {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(java.lang.String.class, result.get(0));
+        return convertParamStrategy.convertToObject(String.class, result.get(0));
     }
 }

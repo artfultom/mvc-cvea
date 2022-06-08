@@ -118,27 +118,15 @@ public class ServerMatcher {
                 .collect(Collectors.toList());
 
         if (methods.size() == 0) {
-            log.error("no methods with name \"" + method.getName() + "\"");
+            log.error("No methods with name \"" + method.getName() + "\"");
 
             return null;
         }
         if (methods.size() > 1) {
-            log.warn("too many methods with name \"" + method.getName() + "\". count=" + methods.size());
+            log.warn("Too many methods with name \"" + method.getName() + "\". count=" + methods.size());
         }
-        Entity entity = methods.get(0).getAnnotation(Entity.class);
+        RpcMethod rpcMethod = methods.get(0).getAnnotation(RpcMethod.class);
 
-        StringBuilder sb = new StringBuilder(entity.value());
-        sb.append('.').append(method.getName());
-        sb.append('(');
-        StringJoiner sj = new StringJoiner(",");
-        Class<?>[] var3 = method.getParameterTypes();
-
-        for (Class<?> parameterType : var3) {
-            sj.add(parameterType.getTypeName());
-        }
-
-        sb.append(sj);
-        sb.append(')');
-        return sb.toString();
+        return rpcMethod.name();
     }
 }

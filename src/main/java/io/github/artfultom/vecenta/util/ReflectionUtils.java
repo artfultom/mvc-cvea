@@ -1,6 +1,6 @@
 package io.github.artfultom.vecenta.util;
 
-import io.github.artfultom.vecenta.matcher.Entity;
+import io.github.artfultom.vecenta.matcher.RpcMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public class ReflectionUtils {
                         for (Class<?> inter : inters) {
                             for (Method method : inter.getMethods()) {
                                 for (Annotation annotation : method.getAnnotations()) {
-                                    if (annotation.annotationType() == Entity.class) {
+                                    if (annotation.annotationType() == RpcMethod.class) {
                                         return true;
                                     }
                                 }
