@@ -2,24 +2,22 @@ package io.github.artfultom.vecenta.transport.message;
 
 import io.github.artfultom.vecenta.transport.error.MessageError;
 
-import java.util.List;
-
 public class Response {
-    private final List<byte[]> results;
+    private final byte[] result;
     private final MessageError error;
 
-    public Response(List<byte[]> results) {
-        this.results = results;
+    public Response(byte[] result) {
+        this.result = result;
         this.error = null;
     }
 
     public Response(MessageError error) {
-        this.results = null;
+        this.result = null;
         this.error = error;
     }
 
-    public List<byte[]> getResults() {
-        return results;
+    public byte[] getResult() {
+        return result;
     }
 
     public MessageError getError() {

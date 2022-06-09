@@ -78,7 +78,7 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
                 break;
             case "String":
             case "java.lang.String":
-                result = new String(in, StandardCharsets.UTF_8);;
+                result = new String(in, StandardCharsets.UTF_8);
                 break;
             default:
                 System.err.println("Unknown type: " + clazz.getName());

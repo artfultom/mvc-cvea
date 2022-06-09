@@ -26,11 +26,11 @@ public class ClientNumberOne {
         Request req = new Request(name, arguments);
 
         Response resp = client.send(req);
-        List<byte[]> result = resp.getResults();
+        byte[] result = resp.getResult();
         if (result == null) {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(Boolean.class, result.get(0));
+        return convertParamStrategy.convertToObject(Boolean.class, result);
     }
 }

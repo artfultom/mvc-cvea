@@ -50,10 +50,10 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
         try {
             if (in.getError() == null) {
                 dataStream.writeByte(0);
-                for (byte[] param : in.getResults()) {
-                    dataStream.writeInt(param.length);
-                    dataStream.write(param);
-                }
+
+                byte[] param = in.getResult();
+                dataStream.writeInt(param.length);
+                dataStream.write(param);
             } else {
                 dataStream.writeByte(1);
                 dataStream.writeInt(in.getError().ordinal());
@@ -96,19 +96,11 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
         byte errorFlag = buf.get();
 
         if (errorFlag == 0) {
-            List<byte[]> params = new ArrayList<>();
+            byte[] rawSize = Arrays.copyOfRange(in, 1, 1 + Integer.BYTES);
+            int size = ByteBuffer.wrap(rawSize).getInt();
+            byte[] param = Arrays.copyOfRange(in, 1 + Integer.BYTES, 1 + Integer.BYTES + size);
 
-            for (int i = 1; i < buf.capacity(); ) {
-                byte[] rawSize = Arrays.copyOfRange(in, i, i + Integer.BYTES);
-                int size = ByteBuffer.wrap(rawSize).getInt();
-                byte[] param = Arrays.copyOfRange(in, i + Integer.BYTES, i + Integer.BYTES + size);
-
-                params.add(param);
-
-                i += size + Integer.BYTES;
-            }
-
-            return new Response(params);
+            return new Response(param);
         } else {
             int errorCode = buf.getInt();
 

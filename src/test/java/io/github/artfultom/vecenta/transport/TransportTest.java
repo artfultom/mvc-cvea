@@ -18,7 +18,7 @@ public class TransportTest {
     @Test
     public void manyClients() {
         ServerMatcher matcher = new ServerMatcher();
-        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams()))); // TODO one or many?
+        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams().get(0))));
 
         try (Server server = new TcpServer()) {
             server.start(5550, matcher);
@@ -31,12 +31,10 @@ public class TransportTest {
 
                         for (int j = 0; j < 100; j++) {
                             byte[] param1 = ("param1" + j).getBytes();
-                            byte[] param2 = ("param2" + j).getBytes();
-                            Response resp = client.send(new Request("echo", List.of(param1, param2)));
+                            Response resp = client.send(new Request("echo", List.of(param1)));
 
-                            Assert.assertEquals(2, resp.getResults().size());
-                            Assert.assertArrayEquals(param1, resp.getResults().get(0));
-                            Assert.assertArrayEquals(param2, resp.getResults().get(1));
+                            Assert.assertNotNull(resp.getResult());
+                            Assert.assertArrayEquals(param1, resp.getResult());
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -57,7 +55,7 @@ public class TransportTest {
     @Test
     public void timeoutClients() {
         ServerMatcher matcher = new ServerMatcher();
-        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams()))); // TODO one or many?
+        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams().get(0))));
 
         try (TcpServer server = new TcpServer()) {
             server.setTimeout(100);
@@ -73,8 +71,8 @@ public class TransportTest {
                             byte[] param = ("param" + j).getBytes();
                             Response resp = client.send(new Request("echo", List.of(param)));
 
-                            Assert.assertEquals(1, resp.getResults().size());
-                            Assert.assertArrayEquals(param, resp.getResults().get(0));
+                            Assert.assertNotNull(resp.getResult());
+                            Assert.assertArrayEquals(param, resp.getResult());
 
                             try {
                                 Thread.sleep(150);
@@ -101,7 +99,7 @@ public class TransportTest {
     @Test
     public void error1Clients() {
         ServerMatcher matcher = new ServerMatcher();
-        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams()))); // TODO one or many?
+        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams().get(0))));
 
         try (TcpServer server = new TcpServer()) {
             server.start(5550, matcher);
@@ -122,7 +120,7 @@ public class TransportTest {
     @Test
     public void error2Clients() {
         ServerMatcher matcher = new ServerMatcher();
-        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams()))); // TODO one or many?
+        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams().get(0))));
 
         TcpServer server = new TcpServer();
         server.start(5550, matcher);
@@ -151,7 +149,7 @@ public class TransportTest {
 
             Assert.assertNotNull(response);
             Assert.assertNotNull(response.getError());
-            Assert.assertNull(response.getResults());
+            Assert.assertNull(response.getResult());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -160,7 +158,7 @@ public class TransportTest {
     @Test
     public void error2Handler() {
         ServerMatcher matcher = new ServerMatcher();
-        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams())));
+        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams().get(0))));
 
         try (TcpServer server = new TcpServer(); Client client = new TcpClient()) {
             server.start(5550, matcher);
@@ -170,7 +168,7 @@ public class TransportTest {
 
             Assert.assertNotNull(response);
             Assert.assertNotNull(response.getError());
-            Assert.assertNull(response.getResults());
+            Assert.assertNull(response.getResult());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -181,7 +179,7 @@ public class TransportTest {
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("double", (request) -> {
             request.getParams().addAll(request.getParams());
-            return new Response(request.getParams());
+            return new Response(request.getParams().get(0));
         }));
 
         try (TcpServer server = new TcpServer(); Client client = new TcpClient()) {
@@ -192,8 +190,7 @@ public class TransportTest {
 
             Assert.assertNotNull(response);
             Assert.assertNull(response.getError());
-            Assert.assertNotNull(response.getResults());
-            Assert.assertEquals(2, response.getResults().size());
+            Assert.assertNotNull(response.getResult());
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -74,9 +74,9 @@ public class ServerMatcher {
                             requestParams.toArray()
                     );
 
-                    List<byte[]> responseParams = List.of(convertParamStrategy.convertToByteArray(returnType, result));
+                    byte[] responseParam = convertParamStrategy.convertToByteArray(returnType, result);
 
-                    return new Response(responseParams);
+                    return new Response(responseParam);
                 } catch (
                         IllegalAccessException |
                         InstantiationException |

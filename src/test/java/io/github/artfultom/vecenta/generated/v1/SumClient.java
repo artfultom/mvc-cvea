@@ -28,12 +28,12 @@ public class SumClient {
         Request req = new Request(name, arguments);
 
         Response resp = client.send(req);
-        List<byte[]> result = resp.getResults();
+        byte[] result = resp.getResult();
         if (result == null) {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(Integer.class, result.get(0));
+        return convertParamStrategy.convertToObject(Integer.class, result);
     }
 
     public String concat(String a, String b, String c) throws ConnectException, ProtocolException {
@@ -45,11 +45,11 @@ public class SumClient {
         Request req = new Request(name, arguments);
 
         Response resp = client.send(req);
-        List<byte[]> result = resp.getResults();
+        byte[] result = resp.getResult();
         if (result == null) {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(String.class, result.get(0));
+        return convertParamStrategy.convertToObject(String.class, result);
     }
 }

@@ -181,7 +181,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 methodBuilder.addCode("\n");
 
                 methodBuilder.addStatement("$T resp = client.send(req)", Response.class);
-                methodBuilder.addStatement("$T<byte[]> result = resp.getResults()", List.class);
+                methodBuilder.addStatement("byte[] result = resp.getResult()");
                 CodeBlock ifNullBlock = CodeBlock.builder()
                         .beginControlFlow("if (result == null)")
                         .addStatement("throw new $T(resp.getError())", ProtocolException.class)
@@ -193,7 +193,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 String returnTypeName = method.getOut();
                 ClassName className = getClassName(filePackage, returnTypeName);
                 methodBuilder.returns(className);
-                String returnStatement = "return convertParamStrategy.convertToObject($T.class, result.get(0))";
+                String returnStatement = "return convertParamStrategy.convertToObject($T.class, result)";
                 methodBuilder.addStatement(returnStatement, className);
 
                 builder.addMethod(methodBuilder.build());
