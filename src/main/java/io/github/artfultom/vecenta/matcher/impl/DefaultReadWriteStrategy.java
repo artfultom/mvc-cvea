@@ -22,7 +22,7 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
 
     @Override
     public byte[] convertToBytes(Request in) {
-        try(
+        try (
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 DataOutputStream dataStream = new DataOutputStream(out)
         ) {
@@ -41,12 +41,12 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
             log.error("Cannot convert request to bytes", e);
         }
 
-        return null;
+        return new byte[0];
     }
 
     @Override
     public byte[] convertToBytes(Response in) {
-        try(
+        try (
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 DataOutputStream dataStream = new DataOutputStream(out)
         ) {
@@ -66,7 +66,7 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
             log.error("Cannot convert response to bytes", e);
         }
 
-        return null;
+        return new byte[0];
     }
 
     @Override

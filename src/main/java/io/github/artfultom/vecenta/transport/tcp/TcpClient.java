@@ -17,7 +17,7 @@ import java.net.SocketException;
 public class TcpClient extends AbstractClient {
 
     private static final Logger log = LoggerFactory.getLogger(TcpClient.class);
-    private static final int sendAttemptCount = Configuration.getInt("send.attempt_count");
+    private static final int SEND_ATTEMPT_COUNT = Configuration.getInt("send.attempt_count");
 
     private String host;
     private int port;
@@ -51,7 +51,6 @@ public class TcpClient extends AbstractClient {
 
             handshake(in, out);
         } catch (ConnectException e) {
-            log.error("Cannot connect to " + host + ":" + port, e);
             throw e;
         } catch (IOException e) {
             log.error("IO error during connection to " + host + ":" + port, e);
@@ -60,7 +59,7 @@ public class TcpClient extends AbstractClient {
 
     @Override
     public Response send(Request request) throws ConnectException {
-        for (int i = 0; i < sendAttemptCount; i++) {
+        for (int i = 0; i < SEND_ATTEMPT_COUNT; i++) {
             try {
                 byte[] b = strategy.convertToBytes(request);
                 out.writeInt(b.length);
@@ -71,7 +70,6 @@ public class TcpClient extends AbstractClient {
                 byte[] result = in.readNBytes(size);
                 return strategy.convertToResponse(result);
             } catch (ConnectException e) {
-                log.error("Cannot send message to " + host + ":" + port, e);
                 throw e;
             } catch (SocketException | EOFException e) {
                 connect();

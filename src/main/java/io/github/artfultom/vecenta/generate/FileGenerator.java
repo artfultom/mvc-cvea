@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 public class FileGenerator {
 
-    private final static int maxDepth = Configuration.getInt("generate.walk_max_depth");
+    private static final int MAX_DEPTH = Configuration.getInt("generate.walk_max_depth");
 
     private final CodeGenerateStrategy strategy;
 
@@ -33,7 +33,7 @@ public class FileGenerator {
 
         Path path = config.getSchemaDir();
 
-        try (Stream<Path> walk = Files.walk(path, maxDepth)) {
+        try (Stream<Path> walk = Files.walk(path, MAX_DEPTH)) {
             for (Path p : walk.collect(Collectors.toList())) {
                 if (Files.isRegularFile(p) && matcher.matches(p)) {
                     String fileName = p.getFileName().toString();
@@ -45,7 +45,8 @@ public class FileGenerator {
                             dto
                     );
                     for (Map.Entry<String, String> model : models.entrySet()) {
-                        Path modelFile = config.getDestinationDir().resolve(model.getKey().replace(".", "/") + ".java");
+                        String other = model.getKey().replace(".", "/") + ".java";
+                        Path modelFile = config.getDestinationDir().resolve(other);
                         Files.createDirectories(modelFile.getParent());
                         modelFile = Files.writeString(modelFile, model.getValue());
                         result.add(modelFile);
@@ -57,7 +58,11 @@ public class FileGenerator {
                                 fileName,
                                 dto
                         );
-                        Path serverFile = config.getDestinationDir().resolve(config.getServerPackage().replace(".", "/") + "/v" + serverCode.getVersion() + "/" + serverCode.getName() + ".java");
+                        String other = config.getServerPackage()
+                                .replace(".", "/") +
+                                "/v" + serverCode.getVersion() + "/" +
+                                serverCode.getName() + ".java";
+                        Path serverFile = config.getDestinationDir().resolve(other);
                         Files.createDirectories(serverFile.getParent());
                         serverFile = Files.writeString(serverFile, serverCode.getRpcBody());
                         result.add(serverFile);
@@ -69,7 +74,11 @@ public class FileGenerator {
                                 fileName,
                                 dto
                         );
-                        Path clientFile = config.getDestinationDir().resolve(config.getClientPackage().replace(".", "/") + "/v" + clientCode.getVersion() + "/" + clientCode.getName() + ".java");
+                        String other = config.getClientPackage()
+                                .replace(".", "/") +
+                                "/v" + clientCode.getVersion() + "/" +
+                                clientCode.getName() + ".java";
+                        Path clientFile = config.getDestinationDir().resolve(other);
                         Files.createDirectories(clientFile.getParent());
                         clientFile = Files.writeString(clientFile, clientCode.getRpcBody());
                         result.add(clientFile);

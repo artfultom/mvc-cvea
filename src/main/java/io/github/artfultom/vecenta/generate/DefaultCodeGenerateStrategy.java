@@ -9,8 +9,6 @@ import io.github.artfultom.vecenta.transport.Client;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 import io.github.artfultom.vecenta.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.lang.model.element.Modifier;
 import java.math.BigInteger;
@@ -22,8 +20,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
-
-    private static final Logger log = LoggerFactory.getLogger(DefaultCodeGenerateStrategy.class);   // TODO logging
 
     @Override
     public Map<String, String> generateModels(

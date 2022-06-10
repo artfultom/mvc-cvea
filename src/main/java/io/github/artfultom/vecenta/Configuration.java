@@ -11,10 +11,13 @@ import java.util.Properties;
 public class Configuration {
 
     private static final Logger log = LoggerFactory.getLogger(Configuration.class);
-    private static final String fileName = "lib.properties";
+    private static final String FILENAME = "lib.properties";
+
+    private Configuration() {
+    }
 
     public static String get(String property) {
-        try(InputStream input = Configuration.class.getClassLoader().getResourceAsStream(fileName)) {
+        try (InputStream input = Configuration.class.getClassLoader().getResourceAsStream(FILENAME)) {
             Properties prop = new Properties();
             prop.load(input);
             String value = prop.getProperty(property);
@@ -23,14 +26,14 @@ public class Configuration {
                 return value;
             }
         } catch (IOException e) {
-            log.error("Cannot find property " + property);
+            log.error(String.format("Cannot find property %s", property));
         }
 
         throw new PropertyNotFoundException(property);
     }
 
     public static int getInt(String property) {
-        try(InputStream input = Configuration.class.getClassLoader().getResourceAsStream(fileName)) {
+        try (InputStream input = Configuration.class.getClassLoader().getResourceAsStream(FILENAME)) {
             Properties prop = new Properties();
             prop.load(input);
             String value = prop.getProperty(property);
@@ -39,7 +42,7 @@ public class Configuration {
                 return Integer.parseInt(value);
             }
         } catch (IOException e) {
-            log.error("Cannot find property " + property);
+            log.error(String.format("Cannot find property %s", property));
         }
 
         throw new PropertyNotFoundException(property);

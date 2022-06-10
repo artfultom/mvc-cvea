@@ -58,7 +58,7 @@ public class ServerMatcher {
                 continue;
             }
 
-            MethodHandler handler = new MethodHandler(name, (request) -> {
+            MethodHandler handler = new MethodHandler(name, request -> {
                 try {
                     Class<?> returnType = method.getReturnType();
 
@@ -117,8 +117,8 @@ public class ServerMatcher {
                 .filter(item -> item.getName().equals(method.getName()))
                 .collect(Collectors.toList());
 
-        if (methods.size() == 0) {
-            log.error("No methods with name \"" + method.getName() + "\"");
+        if (methods.isEmpty()) {
+            log.error(String.format("No methods with name \"%s\"", method.getName()));
 
             return null;
         }

@@ -18,6 +18,9 @@ public class ReflectionUtils {
 
     private static final Logger log = LoggerFactory.getLogger(ReflectionUtils.class);
 
+    private ReflectionUtils() {
+    }
+
     public static List<Class<?>> findServerClasses(String packageName) throws IOException {
         List<Class<?>> result = new ArrayList<>();
 
@@ -69,19 +72,21 @@ public class ReflectionUtils {
         if (directory.exists()) {
             File[] files = directory.listFiles();
 
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isDirectory()) {
-                        classes.addAll(findClasses(file, packageName + "." + file.getName()));
-                    } else {
-                        if (file.getName().endsWith(".class")) {
-                            String name = packageName + '.' + file.getName().substring(0, file.getName().length() - 6);
+            if (files == null) {
+                return classes;
+            }
 
-                            try {
-                                classes.add(Class.forName(name));
-                            } catch (ClassNotFoundException e) {
-                                log.error("Cannot find class " + name, e);
-                            }
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    classes.addAll(findClasses(file, packageName + "." + file.getName()));
+                } else {
+                    if (file.getName().endsWith(".class")) {
+                        String name = packageName + '.' + file.getName().substring(0, file.getName().length() - 6);
+
+                        try {
+                            classes.add(Class.forName(name));
+                        } catch (ClassNotFoundException e) {
+                            log.error("Cannot find class " + name, e);
                         }
                     }
                 }

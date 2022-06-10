@@ -55,6 +55,7 @@ public class TcpMessageStream implements MessageStream {
             return messageBuf.array();
         } catch (InterruptedException e) {
             log.error("Getting data from channel was interrupted", e);
+            Thread.currentThread().interrupt();
         } catch (ExecutionException | TimeoutException e) {
             try {
                 if (channel.isOpen()) {

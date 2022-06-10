@@ -2,20 +2,16 @@ package io.github.artfultom.vecenta.generate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JsonFormatDto implements Serializable {
+public class JsonFormatDto {
 
     @JsonProperty("client")
     private String client;
 
     @JsonProperty("entities")
     private List<Entity> entities;
-
-    public JsonFormatDto() {
-    }
 
     public String getClient() {
         return client;
@@ -33,7 +29,7 @@ public class JsonFormatDto implements Serializable {
         this.entities = entities;
     }
 
-    public static class Entity implements Serializable {
+    public static class Entity {
 
         @JsonProperty("name")
         private String name;
@@ -73,7 +69,7 @@ public class JsonFormatDto implements Serializable {
             this.models = models;
         }
 
-        public static class Method implements Serializable {
+        public static class Method {
 
             @JsonProperty("name")
             private String name;
@@ -83,9 +79,6 @@ public class JsonFormatDto implements Serializable {
 
             @JsonProperty("out")
             private String out;
-
-            public Method() {
-            }
 
             public String getName() {
                 return name;
@@ -113,16 +106,13 @@ public class JsonFormatDto implements Serializable {
 
         }
 
-        public static class Model implements Serializable {
+        public static class Model {
 
             @JsonProperty("name")
             private String name;
 
             @JsonProperty("fields")
             private List<Param> fields;
-
-            public Model() {
-            }
 
             public String getName() {
                 return name;
@@ -141,16 +131,13 @@ public class JsonFormatDto implements Serializable {
             }
         }
 
-        public static class Param implements Serializable {
+        public static class Param {
 
             @JsonProperty("name")
             private String name;
 
             @JsonProperty("type")
             private String type;
-
-            public Param() {
-            }
 
             public String getName() {
                 return name;
