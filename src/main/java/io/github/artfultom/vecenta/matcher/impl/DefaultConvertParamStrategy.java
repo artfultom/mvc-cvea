@@ -7,8 +7,9 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -59,26 +60,29 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
                 result = ((String) in).getBytes(StandardCharsets.UTF_8);
                 break;
             default:
-                List<Field> fields = Arrays.stream(clazz.getFields())
-//                        .filter(item -> Modifier.isPublic(item.getModifiers()))   // TODO add getters
-                        .sorted(Comparator.comparing(Field::getName))   // TODO order of fields
+                List<Method> methods = Arrays.stream(clazz.getDeclaredMethods())
+                        .filter(item -> item.getName().startsWith("get") && item.getParameterTypes().length == 0)
+                        .filter(item -> Modifier.isPublic(item.getModifiers()))
+                        .sorted(Comparator.comparing(Method::getName))
                         .collect(Collectors.toList());
 
                 try (
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
                         DataOutputStream dataStream = new DataOutputStream(out)
                 ) {
-                    for (Field field : fields) {
-                        Object val = field.get(in);
-                        byte[] bytes = convertToByteArray(field.getType(), val);
+                    for (Method method : methods) {
+                        Object val = method.invoke(in);
+                        byte[] bytes = convertToByteArray(method.getReturnType(), val);
 
                         dataStream.writeInt(bytes.length);
                         dataStream.write(bytes);
                     }
 
                     result = out.toByteArray();
-                } catch (IllegalAccessException | IOException e) {
-                    throw new RuntimeException(e);  // TODO remove
+                } catch (IOException e) {
+                    log.error("Cannot open binary stream for type " + clazz.getName(), e);
+                } catch (InvocationTargetException | IllegalAccessException e) {
+                    log.error("Cannot invoke method. Type " + clazz.getName(), e);
                 }
         }
 
@@ -87,7 +91,7 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
 
     @Override
     public <T> T convertToObject(Class<T> clazz, byte[] in) {
-        Object result;
+        Object result = null;
 
         switch (clazz.getName()) {
             case "boolean":
@@ -122,27 +126,33 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
                 result = new String(in, StandardCharsets.UTF_8);
                 break;
             default:
-                List<Field> fields = Arrays.stream(clazz.getFields())
-//                        .filter(item -> Modifier.isPublic(item.getModifiers()))   // TODO add getters
-                        .sorted(Comparator.comparing(Field::getName))   // TODO order of fields
+                List<Method> methods = Arrays.stream(clazz.getDeclaredMethods())
+                        .filter(item -> item.getName().startsWith("set") && item.getParameterTypes().length == 1)
+                        .filter(item -> Modifier.isPublic(item.getModifiers()))
+                        .sorted(Comparator.comparing(Method::getName))
                         .collect(Collectors.toList());
 
                 try {
                     T model = clazz.getDeclaredConstructor().newInstance();
 
                     ByteBuffer buf = ByteBuffer.wrap(in);
-                    for (Field field : fields) {
+                    for (Method method : methods) {
                         int size = buf.getInt();
                         byte[] dst = new byte[size];
                         buf.get(dst);
 
-                        field.set(model, convertToObject(field.getType(), dst));
+                        Class<?> type = method.getParameterTypes()[0];
+                        method.invoke(model, convertToObject(type, dst));
                     }
 
                     result = model;
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                         NoSuchMethodException e) {
-                    throw new RuntimeException(e);  // TODO remove
+                } catch (
+                        InvocationTargetException |
+                        InstantiationException |
+                        IllegalAccessException |
+                        NoSuchMethodException e
+                ) {
+                    log.error("Cannot invoke method. Type " + clazz.getName(), e);
                 }
         }
 
