@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultCodeGenerateStrategy.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultCodeGenerateStrategy.class);   // TODO logging
 
     @Override
     public Map<String, String> generateModels(
@@ -171,9 +171,10 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 methodBuilder.addStatement("String name = $S", methodName);
                 methodBuilder.addStatement("$T<byte[]> arguments = new $T<>()", List.class, ArrayList.class);
                 for (JsonFormatDto.Entity.Param param : method.getIn()) {
+                    ClassName className = getClassName(filePackage, param.getType());
                     methodBuilder.addStatement(
                             "arguments.add(convertParamStrategy.convertToByteArray($T.class, $L))",
-                            convertToTypeName(param.getType()),
+                            className,
                             param.getName()
                     );
                 }

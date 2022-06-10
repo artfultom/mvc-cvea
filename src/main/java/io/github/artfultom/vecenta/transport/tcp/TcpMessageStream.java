@@ -34,13 +34,13 @@ public class TcpMessageStream implements MessageStream {
             while (sizeBuf.position() < Integer.BYTES) {
                 int bytesRead = channel.read(sizeBuf).get(timeout, TimeUnit.MILLISECONDS);
                 if (bytesRead == -1) {
-                    return null;
+                    return new byte[0];
                 }
             }
 
             size = sizeBuf.getInt(0);
             if (size == 0) {
-                return null;
+                return new byte[0];
             }
 
             ByteBuffer messageBuf = ByteBuffer.allocate(size);
@@ -48,13 +48,13 @@ public class TcpMessageStream implements MessageStream {
             while (messageBuf.position() < messageBuf.capacity()) {
                 int bytesRead = channel.read(messageBuf).get(timeout, TimeUnit.MILLISECONDS);
                 if (bytesRead == -1) {
-                    return null;
+                    return new byte[0];
                 }
             }
 
             return messageBuf.array();
         } catch (InterruptedException e) {
-            log.info("getting data from channel was interrupted", e);
+            log.error("Getting data from channel was interrupted", e);
         } catch (ExecutionException | TimeoutException e) {
             try {
                 if (channel.isOpen()) {
@@ -63,25 +63,26 @@ public class TcpMessageStream implements MessageStream {
                     channel.close();
                 }
             } catch (IOException ex) {
-                log.error("cannot close the channel", e);
+                log.error("Cannot close the channel", e);
             }
         }
 
-        return null;
+        return new byte[0];
     }
 
     @Override
     public void sendMessage(byte[] resp) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream(resp.length + Integer.BYTES);
-        DataOutputStream dataStream = new DataOutputStream(out);
-        try {
+        try (
+                ByteArrayOutputStream out = new ByteArrayOutputStream(resp.length + Integer.BYTES);
+                DataOutputStream dataStream = new DataOutputStream(out)
+        ) {
             dataStream.writeInt(resp.length);
             dataStream.write(resp);
-        } catch (IOException e) {
-            log.error("cannot send the message", e);
-        }
 
-        channel.write(ByteBuffer.wrap(out.toByteArray()));
+            channel.write(ByteBuffer.wrap(out.toByteArray()));
+        } catch (IOException e) {
+            log.error("Cannot send the message", e);
+        }
     }
 
     @Override

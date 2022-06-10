@@ -51,10 +51,10 @@ public class TcpClient extends AbstractClient {
 
             handshake(in, out);
         } catch (ConnectException e) {
-            log.error("cannot connect to " + host + ":" + port, e);
+            log.error("Cannot connect to " + host + ":" + port, e);
             throw e;
         } catch (IOException e) {
-            log.error("io error during connection to " + host + ":" + port, e);
+            log.error("IO error during connection to " + host + ":" + port, e);
         }
     }
 
@@ -71,12 +71,12 @@ public class TcpClient extends AbstractClient {
                 byte[] result = in.readNBytes(size);
                 return strategy.convertToResponse(result);
             } catch (ConnectException e) {
-                log.error("cannot send message to " + host + ":" + port, e);
+                log.error("Cannot send message to " + host + ":" + port, e);
                 throw e;
             } catch (SocketException | EOFException e) {
                 connect();
             } catch (IOException e) {
-                log.error("io error during sending message to " + host + ":" + port, e);
+                log.error("IO error during sending message to " + host + ":" + port, e);
             }
         }
 

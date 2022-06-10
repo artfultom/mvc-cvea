@@ -45,7 +45,7 @@ public class TcpServer extends AbstractServer {
 
                         while (listener.isOpen()) {
                             byte[] req = stream.getNextMessage();
-                            if (req == null || !listener.isOpen()) {
+                            if (req == null || req.length == 0 || !listener.isOpen()) {
                                 break;
                             }
 
@@ -54,16 +54,17 @@ public class TcpServer extends AbstractServer {
                             stream.sendMessage(resp);
                         }
                     } catch (IOException e) {
-                        log.error("stream error", e);
+                        log.error("Stream error", e);
                     }
                 }
 
                 @Override
                 public void failed(Throwable e, Void att) {
+                    log.error(e.getMessage(), e);
                 }
             });
         } catch (IOException e) {
-            log.error("cannot open asynchronous server socket channel", e);
+            log.error("Cannot open asynchronous server socket channel", e);
         }
     }
 

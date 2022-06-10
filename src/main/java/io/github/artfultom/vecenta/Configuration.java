@@ -14,10 +14,7 @@ public class Configuration {
     private static final String fileName = "lib.properties";
 
     public static String get(String property) {
-        InputStream input = Configuration.class.getClassLoader()
-                .getResourceAsStream(fileName);
-
-        try {
+        try(InputStream input = Configuration.class.getClassLoader().getResourceAsStream(fileName)) {
             Properties prop = new Properties();
             prop.load(input);
             String value = prop.getProperty(property);
@@ -26,17 +23,14 @@ public class Configuration {
                 return value;
             }
         } catch (IOException e) {
-            log.error("cannot find property " + property);
+            log.error("Cannot find property " + property);
         }
 
         throw new PropertyNotFoundException(property);
     }
 
     public static int getInt(String property) {
-        InputStream input = Configuration.class.getClassLoader()
-                .getResourceAsStream(fileName);
-
-        try {
+        try(InputStream input = Configuration.class.getClassLoader().getResourceAsStream(fileName)) {
             Properties prop = new Properties();
             prop.load(input);
             String value = prop.getProperty(property);
@@ -45,7 +39,7 @@ public class Configuration {
                 return Integer.parseInt(value);
             }
         } catch (IOException e) {
-            log.error("cannot find property " + property);
+            log.error("Cannot find property " + property);
         }
 
         throw new PropertyNotFoundException(property);

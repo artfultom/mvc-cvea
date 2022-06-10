@@ -83,7 +83,7 @@ public class ServerMatcher {
                         NoSuchMethodException |
                         InvocationTargetException e
                 ) {
-                    log.error("cannot register a controller " + controllerClass.getName(), e);
+                    log.error("Cannot register a controller " + controllerClass.getName(), e);
                 }
 
                 return new Response(MessageError.WRONG_METHOD_NAME);

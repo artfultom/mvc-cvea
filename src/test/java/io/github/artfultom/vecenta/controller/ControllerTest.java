@@ -6,6 +6,7 @@ import io.github.artfultom.vecenta.generate.DefaultCodeGenerateStrategy;
 import io.github.artfultom.vecenta.generate.FileGenerator;
 import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.generate.config.GenerateMode;
+import io.github.artfultom.vecenta.generated.Model1;
 import io.github.artfultom.vecenta.generated.v1.SumClient;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;
 import io.github.artfultom.vecenta.transport.Client;
@@ -79,7 +80,7 @@ public class ControllerTest {
 
         List<Path> files = new FileGenerator(strategy).generateFiles(config);
         assertNotNull(files);
-        assertEquals(2, files.size());
+        assertEquals(3, files.size());
 
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(pack);
@@ -97,6 +98,18 @@ public class ControllerTest {
 
             String result2 = clientConnector.concat("test", "1", "2");
             Assert.assertEquals("test12", result2);
+
+            Model1 model1 = new Model1();
+            model1.setField1(1);
+            model1.setField2((short) 2);
+            model1.setField3("test");
+            model1.setField4(true);
+
+            Model1 result3 = clientConnector.echo(model1);
+            Assert.assertEquals(model1.getField1(), result3.getField1());
+            Assert.assertEquals(model1.getField2(), result3.getField2());
+            Assert.assertEquals(model1.getField3(), result3.getField3());
+            Assert.assertEquals(model1.getField4(), result3.getField4());
         }
     }
 
@@ -118,7 +131,7 @@ public class ControllerTest {
 
         List<Path> files = new FileGenerator(strategy).generateFiles(config);
         assertNotNull(files);
-        assertEquals(1, files.size());
+        assertEquals(2, files.size());
 
         try (Server server = new TcpServer(); Client client = new TcpClient()) {
             int port = 5550;

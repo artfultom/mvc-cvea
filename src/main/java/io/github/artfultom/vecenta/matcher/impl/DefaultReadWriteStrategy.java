@@ -22,10 +22,10 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
 
     @Override
     public byte[] convertToBytes(Request in) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        DataOutputStream dataStream = new DataOutputStream(out);
-
-        try {
+        try(
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                DataOutputStream dataStream = new DataOutputStream(out)
+        ) {
             int methodLength = in.getMethodName().length();
             dataStream.writeInt(methodLength);
             dataStream.writeBytes(in.getMethodName());
@@ -35,19 +35,21 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
                 dataStream.writeInt(paramLength);
                 dataStream.write(param);
             }
+
+            return out.toByteArray();
         } catch (IOException e) {
-            log.error("cannot convert request to bytes", e);
+            log.error("Cannot convert request to bytes", e);
         }
 
-        return out.toByteArray();
+        return null;
     }
 
     @Override
     public byte[] convertToBytes(Response in) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        DataOutputStream dataStream = new DataOutputStream(out);
-
-        try {
+        try(
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                DataOutputStream dataStream = new DataOutputStream(out)
+        ) {
             if (in.getError() == null) {
                 dataStream.writeByte(0);
 
@@ -58,11 +60,13 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
                 dataStream.writeByte(1);
                 dataStream.writeInt(in.getError().ordinal());
             }
+
+            return out.toByteArray();
         } catch (IOException e) {
-            log.error("cannot convert response to bytes", e);
+            log.error("Cannot convert response to bytes", e);
         }
 
-        return out.toByteArray();
+        return null;
     }
 
     @Override
