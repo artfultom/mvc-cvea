@@ -42,8 +42,8 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                         .addMethod(constructor);
 
                 for (JsonFormatDto.Entity.Param field : model.getFields()) {
-                    ClassName className = getClassName(modelPackage, field.getType());
-                    FieldSpec fieldSpec = FieldSpec.builder(className, field.getName(), Modifier.PUBLIC).build();
+                    TypeName typeName = getTypeName(modelPackage, field.getType());
+                    FieldSpec fieldSpec = FieldSpec.builder(typeName, field.getName(), Modifier.PUBLIC).build();
 
                     builder.addField(fieldSpec);
                     addGetterAndSetter(fieldSpec, builder);
@@ -93,15 +93,15 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                         .addAnnotation(annotationSpec);
 
                 for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                    ClassName className = getClassName(filePackage, param.getType());
-                    ParameterSpec parameterSpec = ParameterSpec.builder(className, param.getName()).build();
+                    TypeName typeName = getTypeName(filePackage, param.getType());
+                    ParameterSpec parameterSpec = ParameterSpec.builder(typeName, param.getName()).build();
 
                     methodBuilder.addParameter(parameterSpec);
                 }
 
                 String returnTypeName = method.getOut();
-                ClassName className = getClassName(filePackage, returnTypeName);
-                methodBuilder.returns(className);
+                TypeName typeName = getTypeName(filePackage, returnTypeName);
+                methodBuilder.returns(typeName);
 
                 builder.addMethod(methodBuilder.build());
             }
@@ -154,8 +154,8 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                         .addException(ProtocolException.class);
 
                 for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                    ClassName className = getClassName(filePackage, param.getType());
-                    ParameterSpec parameterSpec = ParameterSpec.builder(className, param.getName()).build();
+                    TypeName typeName = getTypeName(filePackage, param.getType());
+                    ParameterSpec parameterSpec = ParameterSpec.builder(typeName, param.getName()).build();
 
                     methodBuilder.addParameter(parameterSpec);
                 }
@@ -167,10 +167,10 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 methodBuilder.addStatement("String name = $S", methodName);
                 methodBuilder.addStatement("$T<byte[]> arguments = new $T<>()", List.class, ArrayList.class);
                 for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                    ClassName className = getClassName(filePackage, param.getType());
+                    TypeName typeName = getTypeName(filePackage, param.getType());
                     methodBuilder.addStatement(
                             "arguments.add(convertParamStrategy.convertToByteArray($T.class, $L))",
-                            className,
+                            typeName,
                             param.getName()
                     );
                 }
@@ -188,10 +188,10 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 methodBuilder.addCode("\n");
 
                 String returnTypeName = method.getOut();
-                ClassName className = getClassName(filePackage, returnTypeName);
-                methodBuilder.returns(className);
+                TypeName typeName = getTypeName(filePackage, returnTypeName);
+                methodBuilder.returns(typeName);
                 String returnStatement = "return convertParamStrategy.convertToObject($T.class, result)";
-                methodBuilder.addStatement(returnStatement, className);
+                methodBuilder.addStatement(returnStatement, typeName);
 
                 builder.addMethod(methodBuilder.build());
             }
@@ -224,20 +224,37 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 return Long.class;
             case "uint64":
                 return BigInteger.class;
+            case "float32":
+                return Float.class;
+            case "float64":
+                return Double.class;
+            case "byte":
+                return Byte.class;
             default:
                 return null;
         }
     }
 
-    private ClassName getClassName(String pack, String name) {
-        Class<?> type = convertToTypeName(name);
-        if (type == null) {
-            String capitalType = StringUtils.capitalizeFirstLetter(name);
+    private TypeName getTypeName(String pack, String name) {
+        TypeName result;
 
-            return ClassName.get(pack, capitalType);
+        boolean isArray = name.endsWith("[]");
+        String simpleName = name.replace("[]", "");
+
+        Class<?> type = convertToTypeName(simpleName);
+        if (type == null) {
+            String capitalType = StringUtils.capitalizeFirstLetter(simpleName);
+
+            result = ClassName.get(pack, capitalType).box();
+        } else {
+            result = TypeName.get(type);
         }
 
-        return ClassName.get(type);
+        if (isArray) {
+            return ParameterizedTypeName.get(ClassName.get(List.class), result);
+        }
+
+        return result;
     }
 
     private void addGetterAndSetter(FieldSpec fieldSpec, TypeSpec.Builder classBuilder) {
