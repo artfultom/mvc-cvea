@@ -60,8 +60,6 @@ public class ServerMatcher {
 
             MethodHandler handler = new MethodHandler(name, request -> {
                 try {
-                    Class<?> returnType = method.getReturnType();
-
                     List<Object> requestParams = new ArrayList<>();
                     for (int i = 0; i < request.getParams().size(); i++) {
                         byte[] param = request.getParams().get(i);
@@ -74,6 +72,7 @@ public class ServerMatcher {
                             requestParams.toArray()
                     );
 
+                    Class<?> returnType = method.getReturnType();
                     byte[] responseParam = convertParamStrategy.convertToByteArray(returnType, result);
 
                     return new Response(responseParam);
@@ -127,6 +126,11 @@ public class ServerMatcher {
         }
         RpcMethod rpcMethod = methods.get(0).getAnnotation(RpcMethod.class);
 
-        return rpcMethod.name();
+        return String.format(
+                "%s.%s(%s)",
+                rpcMethod.entity(),
+                rpcMethod.name(),
+                String.join(",", rpcMethod.argumentTypes())
+        );    // TODO add return type
     }
 }

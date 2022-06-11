@@ -78,14 +78,15 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         for (JsonFormatDto.Entity entity : dto.getEntities()) {
             for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
-                String paramNames = method.getIn().stream()
-                        .map(JsonFormatDto.Entity.Param::getType)
-                        .collect(Collectors.joining(","));
-                String methodName = entity.getName() + "." + method.getName() + "(" + paramNames + ")";
-
                 AnnotationSpec annotationSpec = AnnotationSpec.builder(RpcMethod.class)
                         .addMember("entity", "\"" + entity.getName() + "\"")
-                        .addMember("name", "\"" + methodName + "\"")
+                        .addMember("name", "\"" + method.getName() + "\"")
+                        .addMember("argumentTypes", "$L",
+                                method.getIn().stream()
+                                        .map(item -> CodeBlock.of("$S", item.getType()))
+                                        .collect(CodeBlock.joining(", ", "{", "}"))
+                        )
+                        .addMember("returnType", "\"" + method.getOut() + "\"")
                         .build();
 
                 MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())

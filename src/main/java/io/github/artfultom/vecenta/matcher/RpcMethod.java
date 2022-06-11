@@ -9,4 +9,8 @@ public @interface RpcMethod {
     String entity();
 
     String name();
+
+    String[] argumentTypes();
+
+    String returnType();
 }

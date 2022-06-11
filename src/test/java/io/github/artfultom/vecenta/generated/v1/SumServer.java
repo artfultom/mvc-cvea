@@ -6,19 +6,25 @@ import io.github.artfultom.vecenta.matcher.RpcMethod;
 public interface SumServer {
     @RpcMethod(
             entity = "math",
-            name = "math.sum(int32,int32)"
+            name = "sum",
+            argumentTypes = {"int32", "int32"},
+            returnType = "int32"
     )
     Integer sum(Integer a, Integer b);
 
     @RpcMethod(
             entity = "math",
-            name = "math.concat(string,string,string)"
+            name = "concat",
+            argumentTypes = {"string", "string", "string"},
+            returnType = "string"
     )
     String concat(String a, String b, String c);
 
     @RpcMethod(
             entity = "math",
-            name = "math.echo(Model1)"
+            name = "echo",
+            argumentTypes = {"Model1"},
+            returnType = "Model1"
     )
     Model1 echo(Model1 a);
 }
