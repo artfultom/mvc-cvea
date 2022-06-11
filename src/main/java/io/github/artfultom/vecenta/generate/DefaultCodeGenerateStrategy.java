@@ -164,7 +164,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 String paramNames = method.getIn().stream()
                         .map(JsonFormatDto.Entity.Param::getType)
                         .collect(Collectors.joining(","));
-                String methodName = entity.getName() + "." + method.getName() + "(" + paramNames + ")";
+                String methodName = entity.getName() + "." + method.getName() + "(" + paramNames + ")->" + method.getOut();
                 methodBuilder.addStatement("String name = $S", methodName);
                 methodBuilder.addStatement("$T<byte[]> arguments = new $T<>()", List.class, ArrayList.class);
                 for (JsonFormatDto.Entity.Param param : method.getIn()) {

@@ -127,10 +127,11 @@ public class ServerMatcher {
         RpcMethod rpcMethod = methods.get(0).getAnnotation(RpcMethod.class);
 
         return String.format(
-                "%s.%s(%s)",
+                "%s.%s(%s)->%s",
                 rpcMethod.entity(),
                 rpcMethod.name(),
-                String.join(",", rpcMethod.argumentTypes())
-        );    // TODO add return type
+                String.join(",", rpcMethod.argumentTypes()),
+                rpcMethod.returnType()
+        );
     }
 }

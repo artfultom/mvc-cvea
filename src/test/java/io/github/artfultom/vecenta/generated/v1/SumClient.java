@@ -21,7 +21,7 @@ public class SumClient {
     }
 
     public Integer sum(Integer a, Integer b) throws ConnectException, ProtocolException {
-        String name = "math.sum(int32,int32)";
+        String name = "math.sum(int32,int32)->int32";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(Integer.class, a));
         arguments.add(convertParamStrategy.convertToByteArray(Integer.class, b));
@@ -37,7 +37,7 @@ public class SumClient {
     }
 
     public String concat(String a, String b, String c) throws ConnectException, ProtocolException {
-        String name = "math.concat(string,string,string)";
+        String name = "math.concat(string,string,string)->string";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(String.class, a));
         arguments.add(convertParamStrategy.convertToByteArray(String.class, b));
@@ -54,7 +54,7 @@ public class SumClient {
     }
 
     public Model1 echo(Model1 a) throws ConnectException, ProtocolException {
-        String name = "math.echo(Model1)";
+        String name = "math.echo(Model1)->Model1";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(Model1.class, a));
         Request req = new Request(name, arguments);
