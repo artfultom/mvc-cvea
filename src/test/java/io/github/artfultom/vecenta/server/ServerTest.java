@@ -1,4 +1,4 @@
-package io.github.artfultom.vecenta.controller;
+package io.github.artfultom.vecenta.server;
 
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.generate.CodeGenerateStrategy;
@@ -28,7 +28,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class ControllerTest {
+public class ServerTest {
 
     @Test
     public void testGeneration() throws IOException, URISyntaxException {
@@ -64,10 +64,10 @@ public class ControllerTest {
     }
 
     @Test
-    public void testController() throws URISyntaxException, IOException, ProtocolException {
+    public void testServer() throws URISyntaxException, IOException, ProtocolException {
         CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
 
-        URL res = getClass().getResource("/schema_controller");
+        URL res = getClass().getResource("/transfer_data");
         assertNotNull(res);
 
         String pack = "io.github.artfultom.vecenta.generated";
@@ -114,10 +114,10 @@ public class ControllerTest {
     }
 
     @Test
-    public void testControllerFail() throws URISyntaxException, IOException {
+    public void testServerFail() throws URISyntaxException, IOException {
         CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
 
-        URL res = getClass().getResource("/schema_controller");
+        URL res = getClass().getResource("/transfer_data");
         assertNotNull(res);
 
         String pack = "io.github.artfultom.vecenta.generated";

@@ -46,12 +46,12 @@ public class ServerMatcher {
                 register(clazz);
             }
         } catch (IOException e) {
-            log.error("Cannot register a controller in package " + pack, e);
+            log.error("Cannot register a server class in package " + pack, e);
         }
     }
 
-    public void register(Class<?> controllerClass) {
-        for (Method method : controllerClass.getDeclaredMethods()) {
+    public void register(Class<?> serverClass) {
+        for (Method method : serverClass.getDeclaredMethods()) {
             String name = getName(method);
 
             if (name == null) {
@@ -70,7 +70,7 @@ public class ServerMatcher {
                     }
 
                     Object result = method.invoke(
-                            controllerClass.getDeclaredConstructor().newInstance(),
+                            serverClass.getDeclaredConstructor().newInstance(),
                             requestParams.toArray()
                     );
 
@@ -83,7 +83,7 @@ public class ServerMatcher {
                         NoSuchMethodException |
                         InvocationTargetException e
                 ) {
-                    log.error("Cannot register a controller " + controllerClass.getName(), e);
+                    log.error("Cannot register a server class " + serverClass.getName(), e);
                 }
 
                 return new Response(MessageError.WRONG_METHOD_NAME);
