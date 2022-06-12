@@ -1,5 +1,6 @@
 package test.pack.client;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -12,51 +13,39 @@ public class Model1 {
 
     public List<String> field4;
 
-    public Short field5;
+    public Byte field5;
 
-    public List<Short> field6;
+    public List<Byte> field6;
 
     public Short field7;
 
     public List<Short> field8;
 
-    public Short field9;
+    public Integer field9;
 
-    public List<Short> field10;
+    public List<Integer> field10;
 
-    public Integer field11;
+    public Long field11;
 
-    public List<Integer> field12;
+    public List<Long> field12;
 
-    public Integer field13;
+    public Float field13;
 
-    public List<Integer> field14;
+    public List<Float> field14;
 
-    public Long field15;
+    public Double field15;
 
-    public List<Long> field16;
+    public List<Double> field16;
 
-    public Long field17;
+    public List<Model2> field17;
 
-    public List<Long> field18;
+    public BigInteger field18;
 
-    public BigInteger field19;
+    public List<BigInteger> field19;
 
-    public List<BigInteger> field20;
+    public BigDecimal field20;
 
-    public Float field21;
-
-    public List<Float> field22;
-
-    public Double field23;
-
-    public List<Double> field24;
-
-    public Byte field25;
-
-    public List<Byte> field26;
-
-    public List<Model2> field27;
+    public List<BigDecimal> field21;
 
     public Model1() {
     }
@@ -93,19 +82,19 @@ public class Model1 {
         this.field4 = field4;
     }
 
-    public Short getField5() {
+    public Byte getField5() {
         return this.field5;
     }
 
-    public void setField5(Short field5) {
+    public void setField5(Byte field5) {
         this.field5 = field5;
     }
 
-    public List<Short> getField6() {
+    public List<Byte> getField6() {
         return this.field6;
     }
 
-    public void setField6(List<Short> field6) {
+    public void setField6(List<Byte> field6) {
         this.field6 = field6;
     }
 
@@ -125,155 +114,107 @@ public class Model1 {
         this.field8 = field8;
     }
 
-    public Short getField9() {
+    public Integer getField9() {
         return this.field9;
     }
 
-    public void setField9(Short field9) {
+    public void setField9(Integer field9) {
         this.field9 = field9;
     }
 
-    public List<Short> getField10() {
+    public List<Integer> getField10() {
         return this.field10;
     }
 
-    public void setField10(List<Short> field10) {
+    public void setField10(List<Integer> field10) {
         this.field10 = field10;
     }
 
-    public Integer getField11() {
+    public Long getField11() {
         return this.field11;
     }
 
-    public void setField11(Integer field11) {
+    public void setField11(Long field11) {
         this.field11 = field11;
     }
 
-    public List<Integer> getField12() {
+    public List<Long> getField12() {
         return this.field12;
     }
 
-    public void setField12(List<Integer> field12) {
+    public void setField12(List<Long> field12) {
         this.field12 = field12;
     }
 
-    public Integer getField13() {
+    public Float getField13() {
         return this.field13;
     }
 
-    public void setField13(Integer field13) {
+    public void setField13(Float field13) {
         this.field13 = field13;
     }
 
-    public List<Integer> getField14() {
+    public List<Float> getField14() {
         return this.field14;
     }
 
-    public void setField14(List<Integer> field14) {
+    public void setField14(List<Float> field14) {
         this.field14 = field14;
     }
 
-    public Long getField15() {
+    public Double getField15() {
         return this.field15;
     }
 
-    public void setField15(Long field15) {
+    public void setField15(Double field15) {
         this.field15 = field15;
     }
 
-    public List<Long> getField16() {
+    public List<Double> getField16() {
         return this.field16;
     }
 
-    public void setField16(List<Long> field16) {
+    public void setField16(List<Double> field16) {
         this.field16 = field16;
     }
 
-    public Long getField17() {
+    public List<Model2> getField17() {
         return this.field17;
     }
 
-    public void setField17(Long field17) {
+    public void setField17(List<Model2> field17) {
         this.field17 = field17;
     }
 
-    public List<Long> getField18() {
+    public BigInteger getField18() {
         return this.field18;
     }
 
-    public void setField18(List<Long> field18) {
+    public void setField18(BigInteger field18) {
         this.field18 = field18;
     }
 
-    public BigInteger getField19() {
+    public List<BigInteger> getField19() {
         return this.field19;
     }
 
-    public void setField19(BigInteger field19) {
+    public void setField19(List<BigInteger> field19) {
         this.field19 = field19;
     }
 
-    public List<BigInteger> getField20() {
+    public BigDecimal getField20() {
         return this.field20;
     }
 
-    public void setField20(List<BigInteger> field20) {
+    public void setField20(BigDecimal field20) {
         this.field20 = field20;
     }
 
-    public Float getField21() {
+    public List<BigDecimal> getField21() {
         return this.field21;
     }
 
-    public void setField21(Float field21) {
+    public void setField21(List<BigDecimal> field21) {
         this.field21 = field21;
-    }
-
-    public List<Float> getField22() {
-        return this.field22;
-    }
-
-    public void setField22(List<Float> field22) {
-        this.field22 = field22;
-    }
-
-    public Double getField23() {
-        return this.field23;
-    }
-
-    public void setField23(Double field23) {
-        this.field23 = field23;
-    }
-
-    public List<Double> getField24() {
-        return this.field24;
-    }
-
-    public void setField24(List<Double> field24) {
-        this.field24 = field24;
-    }
-
-    public Byte getField25() {
-        return this.field25;
-    }
-
-    public void setField25(Byte field25) {
-        this.field25 = field25;
-    }
-
-    public List<Byte> getField26() {
-        return this.field26;
-    }
-
-    public void setField26(List<Byte> field26) {
-        this.field26 = field26;
-    }
-
-    public List<Model2> getField27() {
-        return this.field27;
-    }
-
-    public void setField27(List<Model2> field27) {
-        this.field27 = field27;
     }
 }

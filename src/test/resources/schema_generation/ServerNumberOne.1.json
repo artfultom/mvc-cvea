@@ -45,87 +45,63 @@
             },
             {
               "name": "field7",
-              "type": "uint8"
-            },
-            {
-              "name": "field8",
-              "type": "uint8[]"
-            },
-            {
-              "name": "field9",
               "type": "int16"
             },
             {
-              "name": "field10",
+              "name": "field8",
               "type": "int16[]"
             },
             {
-              "name": "field11",
-              "type": "uint16"
-            },
-            {
-              "name": "field12",
-              "type": "uint16[]"
-            },
-            {
-              "name": "field13",
+              "name": "field9",
               "type": "int32"
             },
             {
-              "name": "field14",
+              "name": "field10",
               "type": "int32[]"
             },
             {
-              "name": "field15",
-              "type": "uint32"
-            },
-            {
-              "name": "field16",
-              "type": "uint32[]"
-            },
-            {
-              "name": "field17",
+              "name": "field11",
               "type": "int64"
             },
             {
-              "name": "field18",
+              "name": "field12",
               "type": "int64[]"
             },
             {
+              "name": "field13",
+              "type": "dec32"
+            },
+            {
+              "name": "field14",
+              "type": "dec32[]"
+            },
+            {
+              "name": "field15",
+              "type": "dec64"
+            },
+            {
+              "name": "field16",
+              "type": "dec64[]"
+            },
+            {
+              "name": "field17",
+              "type": "model2[]"
+            },
+            {
+              "name": "field18",
+              "type": "bigint"
+            },
+            {
               "name": "field19",
-              "type": "uint64"
+              "type": "bigint[]"
             },
             {
               "name": "field20",
-              "type": "uint64[]"
+              "type": "bigdec"
             },
             {
               "name": "field21",
-              "type": "float32"
-            },
-            {
-              "name": "field22",
-              "type": "float32[]"
-            },
-            {
-              "name": "field23",
-              "type": "float64"
-            },
-            {
-              "name": "field24",
-              "type": "float64[]"
-            },
-            {
-              "name": "field25",
-              "type": "byte"
-            },
-            {
-              "name": "field26",
-              "type": "byte[]"
-            },
-            {
-              "name": "field27",
-              "type": "model2[]"
+              "type": "bigdec[]"
             }
           ]
         },

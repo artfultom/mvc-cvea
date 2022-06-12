@@ -11,6 +11,7 @@ import io.github.artfultom.vecenta.transport.message.Response;
 import io.github.artfultom.vecenta.util.StringUtils;
 
 import javax.lang.model.element.Modifier;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.ConnectException;
 import java.util.ArrayList;
@@ -214,23 +215,21 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
             case "string":
                 return String.class;
             case "int8":
-            case "uint8":
+                return Byte.class;
             case "int16":
                 return Short.class;
-            case "uint16":
             case "int32":
                 return Integer.class;
-            case "uint32":
             case "int64":
                 return Long.class;
-            case "uint64":
-                return BigInteger.class;
-            case "float32":
+            case "dec32":
                 return Float.class;
-            case "float64":
+            case "dec64":
                 return Double.class;
-            case "byte":
-                return Byte.class;
+            case "bigint":
+                return BigInteger.class;
+            case "bigdec":
+                return BigDecimal.class;
             default:
                 return null;
         }
