@@ -1,6 +1,6 @@
 package io.github.artfultom.vecenta.generated.v1;
 
-import io.github.artfultom.vecenta.generated.Model1;
+import io.github.artfultom.vecenta.generated.Model3;
 
 public class SumServerImpl implements SumServer {
 
@@ -15,7 +15,7 @@ public class SumServerImpl implements SumServer {
     }
 
     @Override
-    public Model1 echo(Model1 a) {
+    public Model3 echo(Model3 a) {
         return a;
     }
 }

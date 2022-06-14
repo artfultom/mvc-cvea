@@ -1,7 +1,7 @@
 package io.github.artfultom.vecenta.generated.v1;
 
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
-import io.github.artfultom.vecenta.generated.Model1;
+import io.github.artfultom.vecenta.generated.Model3;
 import io.github.artfultom.vecenta.matcher.ConvertParamStrategy;
 import io.github.artfultom.vecenta.matcher.impl.DefaultConvertParamStrategy;
 import io.github.artfultom.vecenta.transport.Client;
@@ -53,10 +53,10 @@ public class SumClient {
         return convertParamStrategy.convertToObject(String.class, result);
     }
 
-    public Model1 echo(Model1 a) throws ConnectException, ProtocolException {
-        String name = "math.echo(Model1)->Model1";
+    public Model3 echo(Model3 a) throws ConnectException, ProtocolException {
+        String name = "math.echo(Model3)->Model3";
         List<byte[]> arguments = new ArrayList<>();
-        arguments.add(convertParamStrategy.convertToByteArray(Model1.class, a));
+        arguments.add(convertParamStrategy.convertToByteArray(Model3.class, a));
         Request req = new Request(name, arguments);
 
         Response resp = client.send(req);
@@ -65,6 +65,6 @@ public class SumClient {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(Model1.class, result);
+        return convertParamStrategy.convertToObject(Model3.class, result);
     }
 }

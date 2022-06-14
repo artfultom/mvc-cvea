@@ -11,8 +11,6 @@ import io.github.artfultom.vecenta.transport.message.Response;
 import io.github.artfultom.vecenta.util.StringUtils;
 
 import javax.lang.model.element.Modifier;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,20 +29,22 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         for (JsonFormatDto.Entity entity : dto.getEntities()) {
             for (JsonFormatDto.Entity.Model model : entity.getModels()) {
-                String name = StringUtils.capitalizeFirstLetter(model.getName());
-                String fullName = modelPackage + "." + entity.getName().toLowerCase() + "." + name;
+                String className = StringUtils.capitalizeFirstLetter(model.getName());
+                String fullName = modelPackage + "." + entity.getName().toLowerCase() + "." + className;
 
                 MethodSpec constructor = MethodSpec.constructorBuilder()
                         .addModifiers(Modifier.PUBLIC)
                         .build();
 
-                TypeSpec.Builder builder = TypeSpec.classBuilder(name)
+                TypeSpec.Builder builder = TypeSpec.classBuilder(className)
                         .addModifiers(Modifier.PUBLIC)
                         .addMethod(constructor);
 
                 for (JsonFormatDto.Entity.Param field : model.getFields()) {
                     TypeName typeName = getTypeName(modelPackage, field.getType());
-                    FieldSpec fieldSpec = FieldSpec.builder(typeName, field.getName(), Modifier.PUBLIC).build();
+
+                    FieldSpec fieldSpec = FieldSpec.builder(typeName, field.getName(), Modifier.PUBLIC)
+                            .build();
 
                     builder.addField(fieldSpec);
                     addGetterAndSetter(fieldSpec, builder);
@@ -226,10 +226,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 return Float.class;
             case "dec64":
                 return Double.class;
-            case "bigint":
-                return BigInteger.class;
-            case "bigdec":
-                return BigDecimal.class;
+            // TODO bigint and bigdec
             default:
                 return null;
         }

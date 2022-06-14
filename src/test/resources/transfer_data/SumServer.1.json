@@ -41,15 +41,15 @@
           "in": [
             {
               "name": "a",
-              "type": "Model1"
+              "type": "Model3"
             }
           ],
-          "out": "Model1"
+          "out": "Model3"
         }
       ],
       "models": [
         {
-          "name": "Model1",
+          "name": "Model3",
           "fields": [
             {
               "name": "field1",

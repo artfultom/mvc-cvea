@@ -1,7 +1,5 @@
 package test.pack.client;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 
 public class Model1 {
@@ -38,14 +36,6 @@ public class Model1 {
     public List<Double> field16;
 
     public List<Model2> field17;
-
-    public BigInteger field18;
-
-    public List<BigInteger> field19;
-
-    public BigDecimal field20;
-
-    public List<BigDecimal> field21;
 
     public Model1() {
     }
@@ -184,37 +174,5 @@ public class Model1 {
 
     public void setField17(List<Model2> field17) {
         this.field17 = field17;
-    }
-
-    public BigInteger getField18() {
-        return this.field18;
-    }
-
-    public void setField18(BigInteger field18) {
-        this.field18 = field18;
-    }
-
-    public List<BigInteger> getField19() {
-        return this.field19;
-    }
-
-    public void setField19(List<BigInteger> field19) {
-        this.field19 = field19;
-    }
-
-    public BigDecimal getField20() {
-        return this.field20;
-    }
-
-    public void setField20(BigDecimal field20) {
-        this.field20 = field20;
-    }
-
-    public List<BigDecimal> getField21() {
-        return this.field21;
-    }
-
-    public void setField21(List<BigDecimal> field21) {
-        this.field21 = field21;
     }
 }

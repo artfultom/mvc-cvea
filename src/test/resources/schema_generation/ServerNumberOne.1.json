@@ -86,22 +86,6 @@
             {
               "name": "field17",
               "type": "model2[]"
-            },
-            {
-              "name": "field18",
-              "type": "bigint"
-            },
-            {
-              "name": "field19",
-              "type": "bigint[]"
-            },
-            {
-              "name": "field20",
-              "type": "bigdec"
-            },
-            {
-              "name": "field21",
-              "type": "bigdec[]"
             }
           ]
         },

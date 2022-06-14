@@ -1,6 +1,6 @@
 package io.github.artfultom.vecenta.generated.v1;
 
-import io.github.artfultom.vecenta.generated.Model1;
+import io.github.artfultom.vecenta.generated.Model3;
 import io.github.artfultom.vecenta.matcher.RpcMethod;
 
 public interface SumServer {
@@ -23,8 +23,8 @@ public interface SumServer {
     @RpcMethod(
             entity = "math",
             name = "echo",
-            argumentTypes = {"Model1"},
-            returnType = "Model1"
+            argumentTypes = {"Model3"},
+            returnType = "Model3"
     )
-    Model1 echo(Model1 a);
+    Model3 echo(Model3 a);
 }

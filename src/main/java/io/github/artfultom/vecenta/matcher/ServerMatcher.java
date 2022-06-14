@@ -52,11 +52,12 @@ public class ServerMatcher {
 
     public void register(Class<?> serverClass) {
         for (Method method : serverClass.getDeclaredMethods()) {
-            String name = getName(method);
-
-            if (name == null) {
+            Method interfaceMethod = getInterfaceMethod(method);
+            if (interfaceMethod == null) {
                 continue;
             }
+
+            String name = getName(interfaceMethod);
 
             MethodHandler handler = new MethodHandler(name, request -> {
                 try {
@@ -109,11 +110,13 @@ public class ServerMatcher {
         return readWriteStrategy.convertToBytes(response);
     }
 
-    private String getName(Method method) {
+    private Method getInterfaceMethod(Method method) {
         List<Method> methods = Stream.of(method.getDeclaringClass().getInterfaces())
                 .map(Class::getMethods)
                 .flatMap(Arrays::stream)
                 .filter(item -> item.getName().equals(method.getName()))
+                .filter(item -> Arrays.equals(item.getParameterTypes(), method.getParameterTypes()))
+                .filter(item -> item.getAnnotation(RpcMethod.class) != null)
                 .collect(Collectors.toList());
 
         if (methods.isEmpty()) {
@@ -124,7 +127,12 @@ public class ServerMatcher {
         if (methods.size() > 1) {
             log.warn("Too many methods with name \"" + method.getName() + "\". count=" + methods.size());
         }
-        RpcMethod rpcMethod = methods.get(0).getAnnotation(RpcMethod.class);
+
+        return methods.get(0);
+    }
+
+    private String getName(Method method) {
+        RpcMethod rpcMethod = method.getAnnotation(RpcMethod.class);
 
         return String.format(
                 "%s.%s(%s)->%s",

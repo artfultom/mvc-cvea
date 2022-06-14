@@ -1,6 +1,6 @@
 package io.github.artfultom.vecenta.generated;
 
-public class Model1 {
+public class Model3 {
     public Integer field1;
 
     public Short field2;
@@ -9,7 +9,7 @@ public class Model1 {
 
     public Boolean field4;
 
-    public Model1() {
+    public Model3() {
     }
 
     public Integer getField1() {
