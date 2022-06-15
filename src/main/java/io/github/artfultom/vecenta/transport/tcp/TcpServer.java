@@ -27,7 +27,8 @@ public class TcpServer extends AbstractServer {
     @Override
     public void start(int port, ServerMatcher matcher) {
         try {
-            listener = AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(port));
+            listener = AsynchronousServerSocketChannel.open();
+            listener.bind(new InetSocketAddress(port));
             listener.accept(null, new CompletionHandler<AsynchronousSocketChannel, Void>() {
 
                 @Override
