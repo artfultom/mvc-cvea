@@ -6,6 +6,7 @@ public interface CodeGenerateStrategy {
 
     Map<String, String> generateModels(
             String modelPackage,
+            String fileName,
             JsonFormatDto dto
     );
 

@@ -8,6 +8,8 @@ public class GenerateConfiguration {
 
     private Path destinationDir;
 
+    private String modelPackage;
+
     private String serverPackage;
 
     private String clientPackage;
@@ -17,11 +19,13 @@ public class GenerateConfiguration {
     public GenerateConfiguration(
             Path schemaDir,
             Path destinationDir,
+            String modelPackage,
             String serverPackage,
             String clientPackage
     ) {
         this.schemaDir = schemaDir;
         this.destinationDir = destinationDir;
+        this.modelPackage = modelPackage;
         this.serverPackage = serverPackage;
         this.clientPackage = clientPackage;
         this.mode = GenerateMode.ALL;
@@ -30,12 +34,14 @@ public class GenerateConfiguration {
     public GenerateConfiguration(
             Path schemaDir,
             Path destinationDir,
+            String modelPackage,
             String serverPackage,
             String clientPackage,
             GenerateMode mode
     ) {
         this.schemaDir = schemaDir;
         this.destinationDir = destinationDir;
+        this.modelPackage = modelPackage;
         this.serverPackage = serverPackage;
         this.clientPackage = clientPackage;
         this.mode = mode;
@@ -55,6 +61,14 @@ public class GenerateConfiguration {
 
     public void setDestinationDir(Path destinationDir) {
         this.destinationDir = destinationDir;
+    }
+
+    public String getModelPackage() {
+        return modelPackage;
+    }
+
+    public void setModelPackage(String modelPackage) {
+        this.modelPackage = modelPackage;
     }
 
     public String getServerPackage() {

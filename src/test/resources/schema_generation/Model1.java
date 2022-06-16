@@ -1,4 +1,4 @@
-package test.pack.client;
+package test.pack.model.v1.entity1;
 
 import java.util.List;
 

@@ -4,7 +4,7 @@ import io.github.artfultom.vecenta.matcher.RpcMethod;
 
 public interface ServerNumberOne {
     @RpcMethod(
-            entity = "entity_name",
+            entity = "entity1",
             name = "method_name",
             argumentTypes = {"int32"},
             returnType = "boolean"

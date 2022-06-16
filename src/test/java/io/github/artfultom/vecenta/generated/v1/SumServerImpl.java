@@ -1,6 +1,6 @@
 package io.github.artfultom.vecenta.generated.v1;
 
-import io.github.artfultom.vecenta.generated.Model3;
+import io.github.artfultom.vecenta.generated.v1.math.Model3;
 
 public class SumServerImpl implements SumServer {
 

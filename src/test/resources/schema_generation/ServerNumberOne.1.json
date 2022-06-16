@@ -2,7 +2,7 @@
   "client": "ClientNumberOne",
   "entities": [
     {
-      "name": "entity_name",
+      "name": "entity1",
       "methods": [
         {
           "name": "method_name",

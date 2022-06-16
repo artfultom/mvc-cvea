@@ -6,8 +6,8 @@ import io.github.artfultom.vecenta.generate.DefaultCodeGenerateStrategy;
 import io.github.artfultom.vecenta.generate.FileGenerator;
 import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.generate.config.GenerateMode;
-import io.github.artfultom.vecenta.generated.Model3;
 import io.github.artfultom.vecenta.generated.v1.SumClient;
+import io.github.artfultom.vecenta.generated.v1.math.Model3;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;
 import io.github.artfultom.vecenta.transport.Client;
 import io.github.artfultom.vecenta.transport.Server;
@@ -42,6 +42,7 @@ public class ServerTest {
         GenerateConfiguration config = new GenerateConfiguration(
                 schemaDir,
                 tempDir,
+                "test.pack.model",
                 "test.pack.server",
                 "test.pack.client"
         );
@@ -74,6 +75,7 @@ public class ServerTest {
         GenerateConfiguration config = new GenerateConfiguration(
                 Path.of(res.toURI()),
                 Path.of("src", "test", "java"),
+                pack,
                 pack,
                 pack
         );
@@ -124,6 +126,7 @@ public class ServerTest {
         GenerateConfiguration config = new GenerateConfiguration(
                 Path.of(res.toURI()),
                 Path.of("src", "test", "java"),
+                pack,
                 pack,
                 pack,
                 GenerateMode.CLIENT

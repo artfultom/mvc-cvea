@@ -1,4 +1,4 @@
-package test.pack.client;
+package test.pack.model.v1.entity1;
 
 public class Model2 {
     public Model1 field1;

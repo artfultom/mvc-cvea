@@ -1,4 +1,4 @@
-package io.github.artfultom.vecenta.generated;
+package io.github.artfultom.vecenta.generated.v1.math;
 
 public class Model3 {
     public Integer field1;

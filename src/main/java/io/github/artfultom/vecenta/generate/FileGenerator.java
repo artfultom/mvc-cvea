@@ -41,7 +41,8 @@ public class FileGenerator {
                     JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
 
                     Map<String, String> models = strategy.generateModels(   // TODO replace to class
-                            config.getClientPackage(),  // TODO replace to model package
+                            config.getModelPackage(),
+                            fileName,
                             dto
                     );
                     for (Map.Entry<String, String> model : models.entrySet()) {

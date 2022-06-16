@@ -23,14 +23,18 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
     @Override
     public Map<String, String> generateModels(
             String modelPackage,
+            String fileName,
             JsonFormatDto dto
     ) {
         Map<String, String> result = new HashMap<>();
 
+        String version = fileName.split("\\.")[1];
+
         for (JsonFormatDto.Entity entity : dto.getEntities()) {
             for (JsonFormatDto.Entity.Model model : entity.getModels()) {
                 String className = StringUtils.capitalizeFirstLetter(model.getName());
-                String fullName = modelPackage + "." + entity.getName().toLowerCase() + "." + className;
+                String fullPackage = modelPackage + ".v" + version + "." + entity.getName().toLowerCase();
+                String fullName = fullPackage + "." + className;
 
                 MethodSpec constructor = MethodSpec.constructorBuilder()
                         .addModifiers(Modifier.PUBLIC)
@@ -41,7 +45,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                         .addMethod(constructor);
 
                 for (JsonFormatDto.Entity.Param field : model.getFields()) {
-                    TypeName typeName = getTypeName(modelPackage, field.getType());
+                    TypeName typeName = getTypeName(fullPackage, field.getType());
 
                     FieldSpec fieldSpec = FieldSpec.builder(typeName, field.getName(), Modifier.PUBLIC)
                             .build();
@@ -51,7 +55,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 }
 
                 JavaFile file = JavaFile
-                        .builder(modelPackage, builder.build())
+                        .builder(modelPackage + ".v" + version + "." + entity.getName().toLowerCase(), builder.build())
                         .indent("    ")
                         .skipJavaLangImports(true)
                         .build();
@@ -78,6 +82,8 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 .addModifiers(Modifier.PUBLIC);
 
         for (JsonFormatDto.Entity entity : dto.getEntities()) {
+            String fullPackage = filePackage + ".v" + version + "." + entity.getName().toLowerCase();
+
             for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
                 AnnotationSpec annotationSpec = AnnotationSpec.builder(RpcMethod.class)
                         .addMember("entity", "\"" + entity.getName() + "\"")
@@ -95,14 +101,14 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                         .addAnnotation(annotationSpec);
 
                 for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                    TypeName typeName = getTypeName(filePackage, param.getType());
+                    TypeName typeName = getTypeName(fullPackage, param.getType());
                     ParameterSpec parameterSpec = ParameterSpec.builder(typeName, param.getName()).build();
 
                     methodBuilder.addParameter(parameterSpec);
                 }
 
                 String returnTypeName = method.getOut();
-                TypeName typeName = getTypeName(filePackage, returnTypeName);
+                TypeName typeName = getTypeName(fullPackage, returnTypeName);
                 methodBuilder.returns(typeName);
 
                 builder.addMethod(methodBuilder.build());
@@ -149,6 +155,8 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         builder.addMethod(constructor);
 
         for (JsonFormatDto.Entity entity : dto.getEntities()) {
+            String fullPackage = filePackage + ".v" + version + "." + entity.getName().toLowerCase();
+
             for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
                 MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
                         .addModifiers(Modifier.PUBLIC)
@@ -156,7 +164,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                         .addException(ProtocolException.class);
 
                 for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                    TypeName typeName = getTypeName(filePackage, param.getType());
+                    TypeName typeName = getTypeName(fullPackage, param.getType());
                     ParameterSpec parameterSpec = ParameterSpec.builder(typeName, param.getName()).build();
 
                     methodBuilder.addParameter(parameterSpec);
@@ -169,7 +177,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 methodBuilder.addStatement("String name = $S", methodName);
                 methodBuilder.addStatement("$T<byte[]> arguments = new $T<>()", List.class, ArrayList.class);
                 for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                    TypeName typeName = getTypeName(filePackage, param.getType());
+                    TypeName typeName = getTypeName(fullPackage, param.getType());
                     methodBuilder.addStatement(
                             "arguments.add(convertParamStrategy.convertToByteArray($T.class, $L))",
                             typeName,
@@ -190,7 +198,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 methodBuilder.addCode("\n");
 
                 String returnTypeName = method.getOut();
-                TypeName typeName = getTypeName(filePackage, returnTypeName);
+                TypeName typeName = getTypeName(fullPackage, returnTypeName);
                 methodBuilder.returns(typeName);
                 String returnStatement = "return convertParamStrategy.convertToObject($T.class, result)";
                 methodBuilder.addStatement(returnStatement, typeName);
