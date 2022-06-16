@@ -56,7 +56,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 }
 
                 JavaFile file = JavaFile
-                        .builder(modelPackage + ".v" + version + "." + entity.getName().toLowerCase(), builder.build())
+                        .builder(fullPackage, builder.build())
                         .indent("    ")
                         .skipJavaLangImports(true)
                         .build();
