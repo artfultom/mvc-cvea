@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 
 public enum Converter {
 
-    BOOLEAN(Boolean.class) {
+    BOOLEAN(Boolean.class, "boolean") {
         @Override
         public byte[] convert(Object in) {
             byte[] result = new byte[1];
@@ -18,7 +18,7 @@ public enum Converter {
             return ByteBuffer.wrap(in).get() == 1;
         }
     },
-    BYTE(Byte.class) {
+    BYTE(Byte.class, "int8") {
         @Override
         public byte[] convert(Object in) {
             return ByteBuffer.allocate(Byte.BYTES).put((Byte) in).array();
@@ -29,7 +29,7 @@ public enum Converter {
             return ByteBuffer.wrap(in).get();
         }
     },
-    SHORT(Short.class) {
+    SHORT(Short.class, "int16") {
         @Override
         public byte[] convert(Object in) {
             return ByteBuffer.allocate(Short.BYTES).putShort((Short) in).array();
@@ -40,7 +40,7 @@ public enum Converter {
             return ByteBuffer.wrap(in).getShort();
         }
     },
-    INTEGER(Integer.class) {
+    INTEGER(Integer.class, "int32") {
         @Override
         public byte[] convert(Object in) {
             return ByteBuffer.allocate(Integer.BYTES).putInt((Integer) in).array();
@@ -51,7 +51,7 @@ public enum Converter {
             return ByteBuffer.wrap(in).getInt();
         }
     },
-    LONG(Long.class) {
+    LONG(Long.class, "int64") {
         @Override
         public byte[] convert(Object in) {
             return ByteBuffer.allocate(Long.BYTES).putLong((Long) in).array();
@@ -62,7 +62,7 @@ public enum Converter {
             return ByteBuffer.wrap(in).getLong();
         }
     },
-    FLOAT(Float.class) {
+    FLOAT(Float.class, "dec32") {
         @Override
         public byte[] convert(Object in) {
             return ByteBuffer.allocate(Float.BYTES).putFloat((Float) in).array();
@@ -73,7 +73,7 @@ public enum Converter {
             return ByteBuffer.wrap(in).getFloat();
         }
     },
-    DOUBLE(Double.class) {
+    DOUBLE(Double.class, "dec64") {
         @Override
         public byte[] convert(Object in) {
             return ByteBuffer.allocate(Double.BYTES).putDouble((Double) in).array();
@@ -84,7 +84,7 @@ public enum Converter {
             return ByteBuffer.wrap(in).getDouble();
         }
     },
-    STRING(String.class) {
+    STRING(String.class, "string") {
         @Override
         public byte[] convert(Object in) {
             return ((String) in).getBytes(StandardCharsets.UTF_8);
@@ -98,8 +98,11 @@ public enum Converter {
 
     private final Class<?> clazz;
 
-    Converter(Class<?> clazz) {
+    private final String type;
+
+    Converter(Class<?> clazz, String type) {
         this.clazz = clazz;
+        this.type = type;
     }
 
     public abstract byte[] convert(Object in);
@@ -114,5 +117,23 @@ public enum Converter {
         }
 
         return null;
+    }
+
+    public static Converter get(String type) {
+        for (Converter val : Converter.values()) {
+            if (val.type.equals(type)) {
+                return val;
+            }
+        }
+
+        return null;
+    }
+
+    public Class<?> getClazz() {
+        return clazz;
+    }
+
+    public String getType() {
+        return type;
     }
 }

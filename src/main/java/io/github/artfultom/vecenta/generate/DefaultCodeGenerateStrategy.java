@@ -3,6 +3,7 @@ package io.github.artfultom.vecenta.generate;
 import com.squareup.javapoet.*;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.matcher.ConvertParamStrategy;
+import io.github.artfultom.vecenta.matcher.Converter;
 import io.github.artfultom.vecenta.matcher.RpcMethod;
 import io.github.artfultom.vecenta.matcher.impl.DefaultConvertParamStrategy;
 import io.github.artfultom.vecenta.transport.Client;
@@ -217,27 +218,12 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
     }
 
     private Class<?> convertToTypeName(String type) {
-        switch (type) {
-            case "boolean":
-                return Boolean.class;
-            case "string":
-                return String.class;
-            case "int8":
-                return Byte.class;
-            case "int16":
-                return Short.class;
-            case "int32":
-                return Integer.class;
-            case "int64":
-                return Long.class;
-            case "dec32":
-                return Float.class;
-            case "dec64":
-                return Double.class;
-            // TODO bigint and bigdec
-            default:
-                return null;
+        Converter converter = Converter.get(type);
+        if (converter == null) {
+            return null;
         }
+
+        return converter.getClazz();
     }
 
     private TypeName getTypeName(String pack, String name) {
