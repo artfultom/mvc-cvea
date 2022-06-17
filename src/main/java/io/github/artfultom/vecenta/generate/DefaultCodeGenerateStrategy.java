@@ -31,37 +31,39 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
         String version = fileName.split("\\.")[1];
 
-        for (JsonFormatDto.Entity entity : dto.getEntities()) {
-            for (JsonFormatDto.Entity.Model model : entity.getModels()) {
-                String className = StringUtils.capitalizeFirstLetter(model.getName());
-                String fullPackage = modelPackage + ".v" + version + "." + entity.getName().toLowerCase();
-                String fullName = fullPackage + "." + className;
+        for (JsonFormatDto.Client client : dto.getClients()) {
+            for (JsonFormatDto.Entity entity : client.getEntities()) {
+                for (JsonFormatDto.Entity.Model model : entity.getModels()) {
+                    String className = StringUtils.capitalizeFirstLetter(model.getName());
+                    String fullPackage = modelPackage + ".v" + version + "." + entity.getName().toLowerCase();
+                    String fullName = fullPackage + "." + className;
 
-                MethodSpec constructor = MethodSpec.constructorBuilder()
-                        .addModifiers(Modifier.PUBLIC)
-                        .build();
-
-                TypeSpec.Builder builder = TypeSpec.classBuilder(className)
-                        .addModifiers(Modifier.PUBLIC)
-                        .addMethod(constructor);
-
-                for (JsonFormatDto.Entity.Param field : model.getFields()) {
-                    TypeName typeName = getTypeName(fullPackage, field.getType());
-
-                    FieldSpec fieldSpec = FieldSpec.builder(typeName, field.getName(), Modifier.PUBLIC)
+                    MethodSpec constructor = MethodSpec.constructorBuilder()
+                            .addModifiers(Modifier.PUBLIC)
                             .build();
 
-                    builder.addField(fieldSpec);
-                    addGetterAndSetter(fieldSpec, builder);
+                    TypeSpec.Builder builder = TypeSpec.classBuilder(className)
+                            .addModifiers(Modifier.PUBLIC)
+                            .addMethod(constructor);
+
+                    for (JsonFormatDto.Entity.Param field : model.getFields()) {
+                        TypeName typeName = getTypeName(fullPackage, field.getType());
+
+                        FieldSpec fieldSpec = FieldSpec.builder(typeName, field.getName(), Modifier.PUBLIC)
+                                .build();
+
+                        builder.addField(fieldSpec);
+                        addGetterAndSetter(fieldSpec, builder);
+                    }
+
+                    JavaFile file = JavaFile
+                            .builder(fullPackage, builder.build())
+                            .indent("    ")
+                            .skipJavaLangImports(true)
+                            .build();
+
+                    result.put(fullName, file.toString());
                 }
-
-                JavaFile file = JavaFile
-                        .builder(fullPackage, builder.build())
-                        .indent("    ")
-                        .skipJavaLangImports(true)
-                        .build();
-
-                result.put(fullName, file.toString());
             }
         }
 
@@ -82,37 +84,39 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         TypeSpec.Builder builder = TypeSpec.interfaceBuilder(name)
                 .addModifiers(Modifier.PUBLIC);
 
-        for (JsonFormatDto.Entity entity : dto.getEntities()) {
-            String fullPackage = filePackage + ".v" + version + "." + entity.getName().toLowerCase();
+        for (JsonFormatDto.Client client : dto.getClients()) {
+            for (JsonFormatDto.Entity entity : client.getEntities()) {
+                String fullPackage = filePackage + ".v" + version + "." + entity.getName().toLowerCase();
 
-            for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
-                AnnotationSpec annotationSpec = AnnotationSpec.builder(RpcMethod.class)
-                        .addMember("entity", "\"" + entity.getName() + "\"")
-                        .addMember("name", "\"" + method.getName() + "\"")
-                        .addMember("argumentTypes", "$L",
-                                method.getIn().stream()
-                                        .map(item -> CodeBlock.of("$S", item.getType()))
-                                        .collect(CodeBlock.joining(", ", "{", "}"))
-                        )
-                        .addMember("returnType", "\"" + method.getOut() + "\"")
-                        .build();
+                for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
+                    AnnotationSpec annotationSpec = AnnotationSpec.builder(RpcMethod.class)
+                            .addMember("entity", "\"" + entity.getName() + "\"")
+                            .addMember("name", "\"" + method.getName() + "\"")
+                            .addMember("argumentTypes", "$L",
+                                    method.getIn().stream()
+                                            .map(item -> CodeBlock.of("$S", item.getType()))
+                                            .collect(CodeBlock.joining(", ", "{", "}"))
+                            )
+                            .addMember("returnType", "\"" + method.getOut() + "\"")
+                            .build();
 
-                MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
-                        .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
-                        .addAnnotation(annotationSpec);
+                    MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
+                            .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                            .addAnnotation(annotationSpec);
 
-                for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                    TypeName typeName = getTypeName(fullPackage, param.getType());
-                    ParameterSpec parameterSpec = ParameterSpec.builder(typeName, param.getName()).build();
+                    for (JsonFormatDto.Entity.Param param : method.getIn()) {
+                        TypeName typeName = getTypeName(fullPackage, param.getType());
+                        ParameterSpec parameterSpec = ParameterSpec.builder(typeName, param.getName()).build();
 
-                    methodBuilder.addParameter(parameterSpec);
+                        methodBuilder.addParameter(parameterSpec);
+                    }
+
+                    String returnTypeName = method.getOut();
+                    TypeName typeName = getTypeName(fullPackage, returnTypeName);
+                    methodBuilder.returns(typeName);
+
+                    builder.addMethod(methodBuilder.build());
                 }
-
-                String returnTypeName = method.getOut();
-                TypeName typeName = getTypeName(fullPackage, returnTypeName);
-                methodBuilder.returns(typeName);
-
-                builder.addMethod(methodBuilder.build());
             }
         }
 
@@ -126,95 +130,101 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
     }
 
     @Override
-    public GeneratedCode generateClientCode(
+    public List<GeneratedCode> generateClientCode(
             String filePackage,
             String fileName,
             JsonFormatDto dto
     ) {
-        String clientName = dto.getClient();
-        String version = fileName.split("\\.")[1];
+        List<GeneratedCode> result = new ArrayList<>();
 
-        String name = StringUtils.capitalizeFirstLetter(clientName);
+        for (JsonFormatDto.Client client : dto.getClients()) {
+            String clientName = client.getName();
+            String version = fileName.split("\\.")[1];
 
-        TypeSpec.Builder builder = TypeSpec.classBuilder(name)
-                .addModifiers(Modifier.PUBLIC);
+            String name = StringUtils.capitalizeFirstLetter(clientName);
 
-        builder.addField(Client.class, "client", Modifier.PRIVATE, Modifier.FINAL);
+            TypeSpec.Builder builder = TypeSpec.classBuilder(name)
+                    .addModifiers(Modifier.PUBLIC);
 
-        FieldSpec convertParamStrategyField = FieldSpec
-                .builder(ConvertParamStrategy.class, "convertParamStrategy")
-                .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-                .initializer("new $T()", DefaultConvertParamStrategy.class)
-                .build();
-        builder.addField(convertParamStrategyField);
+            builder.addField(Client.class, "client", Modifier.PRIVATE, Modifier.FINAL);
 
-        MethodSpec constructor = MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(Client.class, "client")
-                .addStatement("this.client = client")
-                .build();
-        builder.addMethod(constructor);
+            FieldSpec convertParamStrategyField = FieldSpec
+                    .builder(ConvertParamStrategy.class, "convertParamStrategy")
+                    .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+                    .initializer("new $T()", DefaultConvertParamStrategy.class)
+                    .build();
+            builder.addField(convertParamStrategyField);
 
-        for (JsonFormatDto.Entity entity : dto.getEntities()) {
-            String fullPackage = filePackage + ".v" + version + "." + entity.getName().toLowerCase();
+            MethodSpec constructor = MethodSpec.constructorBuilder()
+                    .addModifiers(Modifier.PUBLIC)
+                    .addParameter(Client.class, "client")
+                    .addStatement("this.client = client")
+                    .build();
+            builder.addMethod(constructor);
 
-            for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
-                MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
-                        .addModifiers(Modifier.PUBLIC)
-                        .addException(ConnectException.class)
-                        .addException(ProtocolException.class);
+            for (JsonFormatDto.Entity entity : client.getEntities()) {
+                String fullPackage = filePackage + ".v" + version + "." + entity.getName().toLowerCase();
 
-                for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                    TypeName typeName = getTypeName(fullPackage, param.getType());
-                    ParameterSpec parameterSpec = ParameterSpec.builder(typeName, param.getName()).build();
+                for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
+                    MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
+                            .addModifiers(Modifier.PUBLIC)
+                            .addException(ConnectException.class)
+                            .addException(ProtocolException.class);
 
-                    methodBuilder.addParameter(parameterSpec);
+                    for (JsonFormatDto.Entity.Param param : method.getIn()) {
+                        TypeName typeName = getTypeName(fullPackage, param.getType());
+                        ParameterSpec parameterSpec = ParameterSpec.builder(typeName, param.getName()).build();
+
+                        methodBuilder.addParameter(parameterSpec);
+                    }
+
+                    String paramNames = method.getIn().stream()
+                            .map(JsonFormatDto.Entity.Param::getType)
+                            .collect(Collectors.joining(","));
+                    String methodName = entity.getName() + "." + method.getName() + "(" + paramNames + ")->" + method.getOut();
+                    methodBuilder.addStatement("String name = $S", methodName);
+                    methodBuilder.addStatement("$T<byte[]> arguments = new $T<>()", List.class, ArrayList.class);
+                    for (JsonFormatDto.Entity.Param param : method.getIn()) {
+                        TypeName typeName = getTypeName(fullPackage, param.getType());
+                        methodBuilder.addStatement(
+                                "arguments.add(convertParamStrategy.convertToByteArray($T.class, $L))",
+                                typeName,
+                                param.getName()
+                        );
+                    }
+                    methodBuilder.addStatement("$T req = new $T(name, arguments)", Request.class, Request.class);
+                    methodBuilder.addCode("\n");
+
+                    methodBuilder.addStatement("$T resp = client.send(req)", Response.class);
+                    methodBuilder.addStatement("byte[] result = resp.getResult()");
+                    CodeBlock ifNullBlock = CodeBlock.builder()
+                            .beginControlFlow("if (result == null)")
+                            .addStatement("throw new $T(resp.getError())", ProtocolException.class)
+                            .endControlFlow()
+                            .build();
+                    methodBuilder.addCode(ifNullBlock);
+                    methodBuilder.addCode("\n");
+
+                    String returnTypeName = method.getOut();
+                    TypeName typeName = getTypeName(fullPackage, returnTypeName);
+                    methodBuilder.returns(typeName);
+                    String returnStatement = "return convertParamStrategy.convertToObject($T.class, result)";
+                    methodBuilder.addStatement(returnStatement, typeName);
+
+                    builder.addMethod(methodBuilder.build());
                 }
-
-                String paramNames = method.getIn().stream()
-                        .map(JsonFormatDto.Entity.Param::getType)
-                        .collect(Collectors.joining(","));
-                String methodName = entity.getName() + "." + method.getName() + "(" + paramNames + ")->" + method.getOut();
-                methodBuilder.addStatement("String name = $S", methodName);
-                methodBuilder.addStatement("$T<byte[]> arguments = new $T<>()", List.class, ArrayList.class);
-                for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                    TypeName typeName = getTypeName(fullPackage, param.getType());
-                    methodBuilder.addStatement(
-                            "arguments.add(convertParamStrategy.convertToByteArray($T.class, $L))",
-                            typeName,
-                            param.getName()
-                    );
-                }
-                methodBuilder.addStatement("$T req = new $T(name, arguments)", Request.class, Request.class);
-                methodBuilder.addCode("\n");
-
-                methodBuilder.addStatement("$T resp = client.send(req)", Response.class);
-                methodBuilder.addStatement("byte[] result = resp.getResult()");
-                CodeBlock ifNullBlock = CodeBlock.builder()
-                        .beginControlFlow("if (result == null)")
-                        .addStatement("throw new $T(resp.getError())", ProtocolException.class)
-                        .endControlFlow()
-                        .build();
-                methodBuilder.addCode(ifNullBlock);
-                methodBuilder.addCode("\n");
-
-                String returnTypeName = method.getOut();
-                TypeName typeName = getTypeName(fullPackage, returnTypeName);
-                methodBuilder.returns(typeName);
-                String returnStatement = "return convertParamStrategy.convertToObject($T.class, result)";
-                methodBuilder.addStatement(returnStatement, typeName);
-
-                builder.addMethod(methodBuilder.build());
             }
+
+            JavaFile file = JavaFile
+                    .builder(filePackage + ".v" + version, builder.build())
+                    .indent("    ")
+                    .skipJavaLangImports(true)
+                    .build();
+
+            result.add(new GeneratedCode(clientName, file.toString(), version));
         }
 
-        JavaFile file = JavaFile
-                .builder(filePackage + ".v" + version, builder.build())
-                .indent("    ")
-                .skipJavaLangImports(true)
-                .build();
-
-        return new GeneratedCode(clientName, file.toString(), version);
+        return result;
     }
 
     private Class<?> convertToTypeName(String type) {

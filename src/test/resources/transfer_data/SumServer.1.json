@@ -1,71 +1,75 @@
 {
-  "client": "SumClient",
-  "entities": [
+  "clients": [
     {
-      "name": "math",
-      "methods": [
+      "name": "SumClient",
+      "entities": [
         {
-          "name": "sum",
-          "in": [
+          "name": "math",
+          "methods": [
             {
-              "name": "a",
-              "type": "int32"
+              "name": "sum",
+              "in": [
+                {
+                  "name": "a",
+                  "type": "int32"
+                },
+                {
+                  "name": "b",
+                  "type": "int32"
+                }
+              ],
+              "out": "int32"
             },
             {
-              "name": "b",
-              "type": "int32"
+              "name": "concat",
+              "in": [
+                {
+                  "name": "a",
+                  "type": "string"
+                },
+                {
+                  "name": "b",
+                  "type": "string"
+                },
+                {
+                  "name": "c",
+                  "type": "string"
+                }
+              ],
+              "out": "string"
+            },
+            {
+              "name": "echo",
+              "in": [
+                {
+                  "name": "a",
+                  "type": "Model3"
+                }
+              ],
+              "out": "Model3"
             }
           ],
-          "out": "int32"
-        },
-        {
-          "name": "concat",
-          "in": [
+          "models": [
             {
-              "name": "a",
-              "type": "string"
-            },
-            {
-              "name": "b",
-              "type": "string"
-            },
-            {
-              "name": "c",
-              "type": "string"
-            }
-          ],
-          "out": "string"
-        },
-        {
-          "name": "echo",
-          "in": [
-            {
-              "name": "a",
-              "type": "Model3"
-            }
-          ],
-          "out": "Model3"
-        }
-      ],
-      "models": [
-        {
-          "name": "Model3",
-          "fields": [
-            {
-              "name": "field1",
-              "type": "int32"
-            },
-            {
-              "name": "field2",
-              "type": "int16"
-            },
-            {
-              "name": "field3",
-              "type": "string"
-            },
-            {
-              "name": "field4",
-              "type": "boolean"
+              "name": "Model3",
+              "fields": [
+                {
+                  "name": "field1",
+                  "type": "int32"
+                },
+                {
+                  "name": "field2",
+                  "type": "int16"
+                },
+                {
+                  "name": "field3",
+                  "type": "string"
+                },
+                {
+                  "name": "field4",
+                  "type": "boolean"
+                }
+              ]
             }
           ]
         }

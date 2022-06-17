@@ -1,0 +1,24 @@
+{
+  "clients": [
+    {
+      "name": "FirstClient",
+      "entities": [
+        {
+          "name": "entity2",
+          "methods": [
+            {
+              "name": "method_name",
+              "in": [
+                {
+                  "name": "argument_name",
+                  "type": "int32"
+                }
+              ],
+              "out": "int32"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,100 +1,104 @@
 {
-  "client": "ClientNumberOne",
-  "entities": [
+  "clients": [
     {
-      "name": "entity1",
-      "methods": [
+      "name": "ClientNumberOne",
+      "entities": [
         {
-          "name": "method_name",
-          "in": [
+          "name": "entity1",
+          "methods": [
             {
-              "name": "argument_name",
-              "type": "int32"
+              "name": "method_name",
+              "in": [
+                {
+                  "name": "argument_name",
+                  "type": "int32"
+                }
+              ],
+              "out": "boolean"
             }
           ],
-          "out": "boolean"
-        }
-      ],
-      "models": [
-        {
-          "name": "model1",
-          "fields": [
+          "models": [
             {
-              "name": "field1",
-              "type": "boolean"
+              "name": "model1",
+              "fields": [
+                {
+                  "name": "field1",
+                  "type": "boolean"
+                },
+                {
+                  "name": "field2",
+                  "type": "boolean[]"
+                },
+                {
+                  "name": "field3",
+                  "type": "string"
+                },
+                {
+                  "name": "field4",
+                  "type": "string[]"
+                },
+                {
+                  "name": "field5",
+                  "type": "int8"
+                },
+                {
+                  "name": "field6",
+                  "type": "int8[]"
+                },
+                {
+                  "name": "field7",
+                  "type": "int16"
+                },
+                {
+                  "name": "field8",
+                  "type": "int16[]"
+                },
+                {
+                  "name": "field9",
+                  "type": "int32"
+                },
+                {
+                  "name": "field10",
+                  "type": "int32[]"
+                },
+                {
+                  "name": "field11",
+                  "type": "int64"
+                },
+                {
+                  "name": "field12",
+                  "type": "int64[]"
+                },
+                {
+                  "name": "field13",
+                  "type": "dec32"
+                },
+                {
+                  "name": "field14",
+                  "type": "dec32[]"
+                },
+                {
+                  "name": "field15",
+                  "type": "dec64"
+                },
+                {
+                  "name": "field16",
+                  "type": "dec64[]"
+                },
+                {
+                  "name": "field17",
+                  "type": "model2[]"
+                }
+              ]
             },
             {
-              "name": "field2",
-              "type": "boolean[]"
-            },
-            {
-              "name": "field3",
-              "type": "string"
-            },
-            {
-              "name": "field4",
-              "type": "string[]"
-            },
-            {
-              "name": "field5",
-              "type": "int8"
-            },
-            {
-              "name": "field6",
-              "type": "int8[]"
-            },
-            {
-              "name": "field7",
-              "type": "int16"
-            },
-            {
-              "name": "field8",
-              "type": "int16[]"
-            },
-            {
-              "name": "field9",
-              "type": "int32"
-            },
-            {
-              "name": "field10",
-              "type": "int32[]"
-            },
-            {
-              "name": "field11",
-              "type": "int64"
-            },
-            {
-              "name": "field12",
-              "type": "int64[]"
-            },
-            {
-              "name": "field13",
-              "type": "dec32"
-            },
-            {
-              "name": "field14",
-              "type": "dec32[]"
-            },
-            {
-              "name": "field15",
-              "type": "dec64"
-            },
-            {
-              "name": "field16",
-              "type": "dec64[]"
-            },
-            {
-              "name": "field17",
-              "type": "model2[]"
-            }
-          ]
-        },
-        {
-          "name": "model2",
-          "fields": [
-            {
-              "name": "field1",
-              "type": "model1"
+              "name": "model2",
+              "fields": [
+                {
+                  "name": "field1",
+                  "type": "model1"
+                }
+              ]
             }
           ]
         }

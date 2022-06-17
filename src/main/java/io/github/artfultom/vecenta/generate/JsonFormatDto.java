@@ -7,26 +7,38 @@ import java.util.List;
 
 public class JsonFormatDto {
 
-    @JsonProperty("client")
-    private String client;
+    private List<Client> clients;
 
-    @JsonProperty("entities")
-    private List<Entity> entities;
-
-    public String getClient() {
-        return client;
+    public List<Client> getClients() {
+        return clients;
     }
 
-    public void setClient(String client) {
-        this.client = client;
+    public void setClients(List<Client> clients) {
+        this.clients = clients;
     }
 
-    public List<Entity> getEntities() {
-        return entities;
-    }
+    public static class Client {
+        @JsonProperty("name")
+        private String name;
 
-    public void setEntities(List<Entity> entities) {
-        this.entities = entities;
+        @JsonProperty("entities")
+        private List<Entity> entities;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public List<Entity> getEntities() {
+            return entities;
+        }
+
+        public void setEntities(List<Entity> entities) {
+            this.entities = entities;
+        }
     }
 
     public static class Entity {

@@ -70,19 +70,23 @@ public class FileGenerator {
                     }
 
                     if (config.getMode() != GenerateMode.SERVER) {
-                        GeneratedCode clientCode = strategy.generateClientCode(
+                        List<GeneratedCode> clients = strategy.generateClientCode(
                                 config.getClientPackage(),
                                 fileName,
                                 dto
                         );
-                        String other = config.getClientPackage()
-                                .replace(".", "/") +
-                                "/v" + clientCode.getVersion() + "/" +
-                                clientCode.getName() + ".java";
-                        Path clientFile = config.getDestinationDir().resolve(other);
-                        Files.createDirectories(clientFile.getParent());
-                        clientFile = Files.writeString(clientFile, clientCode.getRpcBody());
-                        result.add(clientFile);
+
+                        for (GeneratedCode client : clients) {
+                            String other = config.getClientPackage()
+                                    .replace(".", "/") +
+                                    "/v" + client.getVersion() + "/" +
+                                    client.getName() + ".java";
+                            Path clientFile = config.getDestinationDir().resolve(other);
+                            Files.createDirectories(clientFile.getParent());
+                            clientFile = Files.writeString(clientFile, client.getRpcBody());
+
+                            result.add(clientFile);
+                        }
                     }
                 }
             }

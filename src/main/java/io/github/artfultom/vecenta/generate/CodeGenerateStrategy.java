@@ -1,5 +1,6 @@
 package io.github.artfultom.vecenta.generate;
 
+import java.util.List;
 import java.util.Map;
 
 public interface CodeGenerateStrategy {
@@ -16,7 +17,7 @@ public interface CodeGenerateStrategy {
             JsonFormatDto dto
     );
 
-    GeneratedCode generateClientCode(
+    List<GeneratedCode> generateClientCode(
             String filePackage,
             String fileName,
             JsonFormatDto dto
