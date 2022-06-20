@@ -1,5 +1,10 @@
 package test.pack.model.v1.entity1;
 
+import io.github.artfultom.vecenta.matcher.Model;
+
+@Model(
+        order = {"field1"}
+)
 public class Model2 {
     public Model1 field1;
 

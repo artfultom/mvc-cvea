@@ -2,6 +2,7 @@ package io.github.artfultom.vecenta.matcher.impl;
 
 import io.github.artfultom.vecenta.matcher.ConvertParamStrategy;
 import io.github.artfultom.vecenta.matcher.Converter;
+import io.github.artfultom.vecenta.matcher.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,8 +14,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DefaultConvertParamStrategy implements ConvertParamStrategy {
@@ -27,10 +28,22 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
 
         Converter converter = Converter.get(clazz);
         if (converter == null) {
-            List<Method> methods = Arrays.stream(clazz.getDeclaredMethods())
+            Model model = clazz.getAnnotation(Model.class);
+            if (model == null) {
+                log.error("Cannot find an order of fields in model " + clazz.getName());
+                return new byte[0];
+            }
+
+            Map<String, Method> methodMap = Arrays.stream(clazz.getDeclaredMethods())
                     .filter(item -> item.getName().startsWith("get") && item.getParameterTypes().length == 0)
                     .filter(item -> Modifier.isPublic(item.getModifiers()))
-                    .sorted(Comparator.comparing(Method::getName))
+                    .collect(Collectors.toMap(
+                            item -> item.getName().replace("get", "").toLowerCase(),
+                            item -> item
+                    ));
+
+            List<Method> methods = Arrays.stream(model.order())
+                    .map(item -> methodMap.get(item.toLowerCase()))
                     .collect(Collectors.toList());
 
             try (
@@ -64,14 +77,26 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
 
         Converter converter = Converter.get(clazz);
         if (converter == null) {
-            List<Method> methods = Arrays.stream(clazz.getDeclaredMethods())
+            Model model = clazz.getAnnotation(Model.class);
+            if (model == null) {
+                log.error("Cannot find an order of fields in model " + clazz.getName());
+                return null;
+            }
+
+            Map<String, Method> methodMap = Arrays.stream(clazz.getDeclaredMethods())
                     .filter(item -> item.getName().startsWith("set") && item.getParameterTypes().length == 1)
                     .filter(item -> Modifier.isPublic(item.getModifiers()))
-                    .sorted(Comparator.comparing(Method::getName))
+                    .collect(Collectors.toMap(
+                            item -> item.getName().replace("set", "").toLowerCase(),
+                            item -> item
+                    ));
+
+            List<Method> methods = Arrays.stream(model.order())
+                    .map(item -> methodMap.get(item.toLowerCase()))
                     .collect(Collectors.toList());
 
             try {
-                T model = clazz.getDeclaredConstructor().newInstance();
+                T obj = clazz.getDeclaredConstructor().newInstance();
 
                 ByteBuffer buf = ByteBuffer.wrap(in);
                 for (Method method : methods) {
@@ -80,10 +105,10 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
                     buf.get(dst);
 
                     Class<?> type = method.getParameterTypes()[0];
-                    method.invoke(model, convertToObject(type, dst));
+                    method.invoke(obj, convertToObject(type, dst));
                 }
 
-                result = model;
+                result = obj;
             } catch (
                     InvocationTargetException |
                     InstantiationException |

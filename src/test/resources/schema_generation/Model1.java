@@ -1,7 +1,11 @@
 package test.pack.model.v1.entity1;
 
+import io.github.artfultom.vecenta.matcher.Model;
 import java.util.List;
 
+@Model(
+        order = {"field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "field11", "field12", "field13", "field14", "field15", "field16", "field17"}
+)
 public class Model1 {
     public Boolean field1;
 

@@ -4,6 +4,7 @@ import com.squareup.javapoet.*;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.matcher.ConvertParamStrategy;
 import io.github.artfultom.vecenta.matcher.Converter;
+import io.github.artfultom.vecenta.matcher.Model;
 import io.github.artfultom.vecenta.matcher.RpcMethod;
 import io.github.artfultom.vecenta.matcher.impl.DefaultConvertParamStrategy;
 import io.github.artfultom.vecenta.transport.Client;
@@ -42,9 +43,18 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                             .addModifiers(Modifier.PUBLIC)
                             .build();
 
+                    AnnotationSpec annotationSpec = AnnotationSpec.builder(Model.class)
+                            .addMember("order", "$L",
+                                    model.getFields().stream()
+                                            .map(item -> CodeBlock.of("$S", item.getName()))
+                                            .collect(CodeBlock.joining(", ", "{", "}"))
+                            )
+                            .build();
+
                     TypeSpec.Builder builder = TypeSpec.classBuilder(className)
                             .addModifiers(Modifier.PUBLIC)
-                            .addMethod(constructor);
+                            .addMethod(constructor)
+                            .addAnnotation(annotationSpec);
 
                     for (JsonFormatDto.Entity.Param field : model.getFields()) {
                         TypeName typeName = getTypeName(fullPackage, field.getType());

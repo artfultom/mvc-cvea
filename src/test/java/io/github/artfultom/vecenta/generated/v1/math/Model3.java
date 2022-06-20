@@ -1,5 +1,10 @@
 package io.github.artfultom.vecenta.generated.v1.math;
 
+import io.github.artfultom.vecenta.matcher.Model;
+
+@Model(
+        order = {"field1", "field2", "field3", "field4"}
+)
 public class Model3 {
     public Integer field1;
 
