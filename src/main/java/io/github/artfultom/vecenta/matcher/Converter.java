@@ -17,6 +17,11 @@ public enum Converter {
         public Boolean convert(byte[] in) {
             return ByteBuffer.wrap(in).get() == 1;
         }
+
+        @Override
+        public Integer getBytes() {
+            return 1;
+        }
     },
     BYTE(Byte.class, "int8") {
         @Override
@@ -27,6 +32,11 @@ public enum Converter {
         @Override
         public Byte convert(byte[] in) {
             return ByteBuffer.wrap(in).get();
+        }
+
+        @Override
+        public Integer getBytes() {
+            return Byte.BYTES;
         }
     },
     SHORT(Short.class, "int16") {
@@ -39,6 +49,11 @@ public enum Converter {
         public Short convert(byte[] in) {
             return ByteBuffer.wrap(in).getShort();
         }
+
+        @Override
+        public Integer getBytes() {
+            return Short.BYTES;
+        }
     },
     INTEGER(Integer.class, "int32") {
         @Override
@@ -49,6 +64,11 @@ public enum Converter {
         @Override
         public Integer convert(byte[] in) {
             return ByteBuffer.wrap(in).getInt();
+        }
+
+        @Override
+        public Integer getBytes() {
+            return Integer.BYTES;
         }
     },
     LONG(Long.class, "int64") {
@@ -61,6 +81,11 @@ public enum Converter {
         public Long convert(byte[] in) {
             return ByteBuffer.wrap(in).getLong();
         }
+
+        @Override
+        public Integer getBytes() {
+            return Long.BYTES;
+        }
     },
     FLOAT(Float.class, "dec32") {
         @Override
@@ -71,6 +96,11 @@ public enum Converter {
         @Override
         public Float convert(byte[] in) {
             return ByteBuffer.wrap(in).getFloat();
+        }
+
+        @Override
+        public Integer getBytes() {
+            return Float.BYTES;
         }
     },
     DOUBLE(Double.class, "dec64") {
@@ -83,6 +113,11 @@ public enum Converter {
         public Double convert(byte[] in) {
             return ByteBuffer.wrap(in).getDouble();
         }
+
+        @Override
+        public Integer getBytes() {
+            return Double.BYTES;
+        }
     },
     STRING(String.class, "string") {
         @Override
@@ -93,6 +128,11 @@ public enum Converter {
         @Override
         public String convert(byte[] in) {
             return new String(in, StandardCharsets.UTF_8);
+        }
+
+        @Override
+        public Integer getBytes() {
+            return null;
         }
     };
 
@@ -108,6 +148,8 @@ public enum Converter {
     public abstract byte[] convert(Object in);
 
     public abstract Object convert(byte[] in);
+
+    public abstract Integer getBytes();
 
     public static Converter get(Class<?> clazz) {
         for (Converter val : Converter.values()) {
