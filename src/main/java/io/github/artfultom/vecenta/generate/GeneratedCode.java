@@ -2,14 +2,22 @@ package io.github.artfultom.vecenta.generate;
 
 public class GeneratedCode {
 
+    private String pack;
     private String name;
-    private String rpcBody;
-    private String version;
+    private String body;
 
-    public GeneratedCode(String name, String rpcBody, String version) {
+    public GeneratedCode(String pack, String name, String body) {
+        this.pack = pack;
         this.name = name;
-        this.rpcBody = rpcBody;
-        this.version = version;
+        this.body = body;
+    }
+
+    public String getPack() {
+        return pack;
+    }
+
+    public void setPack(String pack) {
+        this.pack = pack;
     }
 
     public String getName() {
@@ -20,19 +28,12 @@ public class GeneratedCode {
         this.name = name;
     }
 
-    public String getRpcBody() {
-        return rpcBody;
+    public String getBody() {
+        return body;
     }
 
-    public void setRpcBody(String rpcBody) {
-        this.rpcBody = rpcBody;
+    public void setBody(String body) {
+        this.body = body;
     }
 
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
 }

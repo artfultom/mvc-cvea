@@ -15,20 +15,18 @@ import io.github.artfultom.vecenta.util.StringUtils;
 import javax.lang.model.element.Modifier;
 import java.net.ConnectException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
 
     @Override
-    public Map<String, String> generateModels(
+    public List<GeneratedCode> generateModels(
             String modelPackage,
             String fileName,
             JsonFormatDto dto
     ) {
-        Map<String, String> result = new HashMap<>();
+        List<GeneratedCode> result = new ArrayList<>();
 
         String version = fileName.split("\\.")[1];
 
@@ -36,8 +34,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
             for (JsonFormatDto.Entity entity : client.getEntities()) {
                 for (JsonFormatDto.Entity.Model model : entity.getModels()) {
                     String className = StringUtils.capitalizeFirstLetter(model.getName());
-                    String fullPackage = modelPackage + ".v" + version + "." + entity.getName().toLowerCase();
-                    String fullName = fullPackage + "." + className;
+                    String pack = modelPackage + ".v" + version + "." + entity.getName().toLowerCase();
 
                     MethodSpec constructor = MethodSpec.constructorBuilder()
                             .addModifiers(Modifier.PUBLIC)
@@ -57,7 +54,7 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                             .addAnnotation(annotationSpec);
 
                     for (JsonFormatDto.Entity.Param field : model.getFields()) {
-                        TypeName typeName = getTypeName(fullPackage, field.getType());
+                        TypeName typeName = getTypeName(pack, field.getType());
 
                         FieldSpec fieldSpec = FieldSpec.builder(typeName, field.getName(), Modifier.PUBLIC)
                                 .build();
@@ -67,12 +64,16 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                     }
 
                     JavaFile file = JavaFile
-                            .builder(fullPackage, builder.build())
+                            .builder(pack, builder.build())
                             .indent("    ")
                             .skipJavaLangImports(true)
                             .build();
 
-                    result.put(fullName, file.toString());
+                    result.add(new GeneratedCode(
+                            file.packageName,
+                            file.typeSpec.name,
+                            file.toString()
+                    ));
                 }
             }
         }
@@ -94,9 +95,11 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         TypeSpec.Builder builder = TypeSpec.interfaceBuilder(name)
                 .addModifiers(Modifier.PUBLIC);
 
+        String pack = filePackage + ".v" + version;
+
         for (JsonFormatDto.Client client : dto.getClients()) {
             for (JsonFormatDto.Entity entity : client.getEntities()) {
-                String fullPackage = filePackage + ".v" + version + "." + entity.getName().toLowerCase();
+                String packWithEntity = pack + "." + entity.getName().toLowerCase();
 
                 for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
                     AnnotationSpec annotationSpec = AnnotationSpec.builder(RpcMethod.class)
@@ -115,14 +118,14 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                             .addAnnotation(annotationSpec);
 
                     for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                        TypeName typeName = getTypeName(fullPackage, param.getType());
+                        TypeName typeName = getTypeName(packWithEntity, param.getType());
                         ParameterSpec parameterSpec = ParameterSpec.builder(typeName, param.getName()).build();
 
                         methodBuilder.addParameter(parameterSpec);
                     }
 
                     String returnTypeName = method.getOut();
-                    TypeName typeName = getTypeName(fullPackage, returnTypeName);
+                    TypeName typeName = getTypeName(packWithEntity, returnTypeName);
                     methodBuilder.returns(typeName);
 
                     builder.addMethod(methodBuilder.build());
@@ -131,12 +134,16 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
         }
 
         JavaFile file = JavaFile
-                .builder(filePackage + ".v" + version, builder.build())
+                .builder(pack, builder.build())
                 .indent("    ")
                 .skipJavaLangImports(true)
                 .build();
 
-        return new GeneratedCode(serverName, file.toString(), version);
+        return new GeneratedCode(
+                file.packageName,
+                file.typeSpec.name,
+                file.toString()
+        );
     }
 
     @Override
@@ -225,13 +232,19 @@ public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
                 }
             }
 
+            String pack = filePackage + ".v" + version;
+
             JavaFile file = JavaFile
-                    .builder(filePackage + ".v" + version, builder.build())
+                    .builder(pack, builder.build())
                     .indent("    ")
                     .skipJavaLangImports(true)
                     .build();
 
-            result.add(new GeneratedCode(clientName, file.toString(), version));
+            result.add(new GeneratedCode(
+                    file.packageName,
+                    file.typeSpec.name,
+                    file.toString()
+            ));
         }
 
         return result;

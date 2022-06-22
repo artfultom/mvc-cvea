@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,16 +39,17 @@ public class FileGenerator {
                     String body = Files.readString(p);
                     JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
 
-                    Map<String, String> models = strategy.generateModels(   // TODO replace to class
+                    List<GeneratedCode> models = strategy.generateModels(
                             config.getModelPackage(),
                             fileName,
                             dto
                     );
-                    for (Map.Entry<String, String> model : models.entrySet()) {
-                        String other = model.getKey().replace(".", "/") + ".java";
+                    for (GeneratedCode model : models) {
+                        String other = (model.getPack() + "." + model.getName())
+                                .replace(".", "/") + ".java";
                         Path modelFile = config.getDestinationDir().resolve(other);
                         Files.createDirectories(modelFile.getParent());
-                        modelFile = Files.writeString(modelFile, model.getValue());
+                        modelFile = Files.writeString(modelFile, model.getBody());
                         result.add(modelFile);
                     }
 
@@ -59,13 +59,12 @@ public class FileGenerator {
                                 fileName,
                                 dto
                         );
-                        String other = config.getServerPackage()
-                                .replace(".", "/") +
-                                "/v" + serverCode.getVersion() + "/" +
+                        String other = serverCode.getPack()
+                                .replace(".", "/") + "/" +
                                 serverCode.getName() + ".java";
                         Path serverFile = config.getDestinationDir().resolve(other);
                         Files.createDirectories(serverFile.getParent());
-                        serverFile = Files.writeString(serverFile, serverCode.getRpcBody());
+                        serverFile = Files.writeString(serverFile, serverCode.getBody());
                         result.add(serverFile);
                     }
 
@@ -77,13 +76,12 @@ public class FileGenerator {
                         );
 
                         for (GeneratedCode client : clients) {
-                            String other = config.getClientPackage()
-                                    .replace(".", "/") +
-                                    "/v" + client.getVersion() + "/" +
+                            String other = client.getPack()
+                                    .replace(".", "/") + "/" +
                                     client.getName() + ".java";
                             Path clientFile = config.getDestinationDir().resolve(other);
                             Files.createDirectories(clientFile.getParent());
-                            clientFile = Files.writeString(clientFile, client.getRpcBody());
+                            clientFile = Files.writeString(clientFile, client.getBody());
 
                             result.add(clientFile);
                         }

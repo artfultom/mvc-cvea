@@ -1,11 +1,10 @@
 package io.github.artfultom.vecenta.generate;
 
 import java.util.List;
-import java.util.Map;
 
 public interface CodeGenerateStrategy {
 
-    Map<String, String> generateModels(
+    List<GeneratedCode> generateModels(
             String modelPackage,
             String fileName,
             JsonFormatDto dto
