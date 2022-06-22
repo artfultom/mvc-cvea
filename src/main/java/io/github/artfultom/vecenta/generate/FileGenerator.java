@@ -44,25 +44,17 @@ public class FileGenerator {
                             fileName,
                             dto
                     );
-                    for (GeneratedCode model : models) {
-                        String other = model.getFullPath();
-                        Path modelFile = config.getDestinationDir().resolve(other);
-                        Files.createDirectories(modelFile.getParent());
-                        modelFile = Files.writeString(modelFile, model.getBody());
-                        result.add(modelFile);
-                    }
+
+                    result.addAll(saveModels(config, models));
 
                     if (config.getMode() != GenerateMode.CLIENT) {
-                        GeneratedCode serverCode = strategy.generateServerCode(
+                        GeneratedCode server = strategy.generateServerCode(
                                 config.getServerPackage(),
                                 fileName,
                                 dto
                         );
-                        String other = serverCode.getFullPath();
-                        Path serverFile = config.getDestinationDir().resolve(other);
-                        Files.createDirectories(serverFile.getParent());
-                        serverFile = Files.writeString(serverFile, serverCode.getBody());
-                        result.add(serverFile);
+
+                        result.add(saveServer(config, server));
                     }
 
                     if (config.getMode() != GenerateMode.SERVER) {
@@ -72,17 +64,48 @@ public class FileGenerator {
                                 dto
                         );
 
-                        for (GeneratedCode client : clients) {
-                            String other = client.getFullPath();
-                            Path clientFile = config.getDestinationDir().resolve(other);
-                            Files.createDirectories(clientFile.getParent());
-                            clientFile = Files.writeString(clientFile, client.getBody());
-
-                            result.add(clientFile);
-                        }
+                        result.addAll(saveClients(config, clients));
                     }
                 }
             }
+        }
+
+        return result;
+    }
+
+    private List<Path> saveModels(GenerateConfiguration config, List<GeneratedCode> models) throws IOException {
+        List<Path> result = new ArrayList<>();
+
+        for (GeneratedCode model : models) {
+            String other = model.getFullPath();
+            Path modelFile = config.getDestinationDir().resolve(other);
+            Files.createDirectories(modelFile.getParent());
+
+            Path file = Files.writeString(modelFile, model.getBody());
+            result.add(file);
+        }
+
+        return result;
+    }
+
+    private Path saveServer(GenerateConfiguration config, GeneratedCode server) throws IOException {
+        String other = server.getFullPath();
+        Path serverFile = config.getDestinationDir().resolve(other);
+        Files.createDirectories(serverFile.getParent());
+
+        return Files.writeString(serverFile, server.getBody());
+    }
+
+    private List<Path> saveClients(GenerateConfiguration config, List<GeneratedCode> clients) throws IOException {
+        List<Path> result = new ArrayList<>();
+
+        for (GeneratedCode client : clients) {
+            String other = client.getFullPath();
+            Path clientFile = config.getDestinationDir().resolve(other);
+            Files.createDirectories(clientFile.getParent());
+
+            Path file = Files.writeString(clientFile, client.getBody());
+            result.add(file);
         }
 
         return result;
