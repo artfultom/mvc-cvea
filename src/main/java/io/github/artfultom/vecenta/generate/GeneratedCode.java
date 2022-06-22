@@ -36,4 +36,8 @@ public class GeneratedCode {
         this.body = body;
     }
 
+    public String getFullPath() {
+        return (pack + "." + name).replace(".", "/") + ".java";
+    }
+
 }

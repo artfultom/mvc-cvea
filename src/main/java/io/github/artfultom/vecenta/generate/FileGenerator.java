@@ -45,8 +45,7 @@ public class FileGenerator {
                             dto
                     );
                     for (GeneratedCode model : models) {
-                        String other = (model.getPack() + "." + model.getName())
-                                .replace(".", "/") + ".java";
+                        String other = model.getFullPath();
                         Path modelFile = config.getDestinationDir().resolve(other);
                         Files.createDirectories(modelFile.getParent());
                         modelFile = Files.writeString(modelFile, model.getBody());
@@ -59,9 +58,7 @@ public class FileGenerator {
                                 fileName,
                                 dto
                         );
-                        String other = serverCode.getPack()
-                                .replace(".", "/") + "/" +
-                                serverCode.getName() + ".java";
+                        String other = serverCode.getFullPath();
                         Path serverFile = config.getDestinationDir().resolve(other);
                         Files.createDirectories(serverFile.getParent());
                         serverFile = Files.writeString(serverFile, serverCode.getBody());
@@ -76,9 +73,7 @@ public class FileGenerator {
                         );
 
                         for (GeneratedCode client : clients) {
-                            String other = client.getPack()
-                                    .replace(".", "/") + "/" +
-                                    client.getName() + ".java";
+                            String other = client.getFullPath();
                             Path clientFile = config.getDestinationDir().resolve(other);
                             Files.createDirectories(clientFile.getParent());
                             clientFile = Files.writeString(clientFile, client.getBody());
