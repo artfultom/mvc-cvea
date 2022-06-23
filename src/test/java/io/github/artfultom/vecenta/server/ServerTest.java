@@ -2,7 +2,7 @@ package io.github.artfultom.vecenta.server;
 
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.generate.CodeGenerateStrategy;
-import io.github.artfultom.vecenta.generate.DefaultCodeGenerateStrategy;
+import io.github.artfultom.vecenta.generate.JavapoetCodeGenerateStrategy;
 import io.github.artfultom.vecenta.generate.FileGenerator;
 import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.generate.config.GenerateMode;
@@ -38,7 +38,7 @@ public class ServerTest {
         Path schemaDir = Path.of(schemaRes.toURI());
         Path tempDir = Files.createTempDirectory("test_" + System.currentTimeMillis());
 
-        CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
+        CodeGenerateStrategy strategy = new JavapoetCodeGenerateStrategy();
         GenerateConfiguration config = new GenerateConfiguration(
                 schemaDir,
                 tempDir,
@@ -66,7 +66,7 @@ public class ServerTest {
 
     @Test
     public void testServer() throws URISyntaxException, IOException, ProtocolException {
-        CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
+        CodeGenerateStrategy strategy = new JavapoetCodeGenerateStrategy();
 
         URL res = getClass().getResource("/transfer_data");
         assertNotNull(res);
@@ -117,7 +117,7 @@ public class ServerTest {
 
     @Test
     public void testServerFail() throws URISyntaxException, IOException {
-        CodeGenerateStrategy strategy = new DefaultCodeGenerateStrategy();
+        CodeGenerateStrategy strategy = new JavapoetCodeGenerateStrategy();
 
         URL res = getClass().getResource("/transfer_data");
         assertNotNull(res);

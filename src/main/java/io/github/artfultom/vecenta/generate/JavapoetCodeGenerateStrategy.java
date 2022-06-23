@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DefaultCodeGenerateStrategy implements CodeGenerateStrategy {
+public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
 
     @Override
     public List<GeneratedCode> generateModels(
