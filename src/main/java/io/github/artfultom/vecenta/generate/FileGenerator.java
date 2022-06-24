@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.artfultom.vecenta.Configuration;
 import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.generate.config.GenerateMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -19,10 +21,19 @@ public class FileGenerator {
 
     private static final int MAX_DEPTH = Configuration.getInt("generate.walk_max_depth");
 
-    private final CodeGenerateStrategy strategy;
+    private CodeGenerateStrategy generateStrategy = new JavapoetCodeGenerateStrategy();
+    private ValidateStrategy validateStrategy = new DefaultValidateStrategy();
 
-    public FileGenerator(CodeGenerateStrategy strategy) {
-        this.strategy = strategy;
+    public FileGenerator setStrategy(CodeGenerateStrategy generateStrategy) {
+        this.generateStrategy = generateStrategy;
+
+        return this;
+    }
+
+    public FileGenerator setStrategy(ValidateStrategy validateStrategy) {
+        this.validateStrategy = validateStrategy;
+
+        return this;
     }
 
     public List<Path> generateFiles(GenerateConfiguration config) throws IOException {
@@ -36,19 +47,25 @@ public class FileGenerator {
             for (Path p : walk.collect(Collectors.toList())) {
                 if (Files.isRegularFile(p) && matcher.matches(p)) {
                     String fileName = p.getFileName().toString();
+                    if (!validateStrategy.isCorrect(fileName)) {
+                        continue;
+                    }
+
                     String body = Files.readString(p);
                     JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
+                    if (!validateStrategy.isCorrect(dto)) {
+                        continue;
+                    }
 
-                    List<GeneratedCode> models = strategy.generateModels(
+                    List<GeneratedCode> models = generateStrategy.generateModels(
                             config.getModelPackage(),
                             fileName,
                             dto
                     );
-
                     result.addAll(saveModels(config, models));
 
                     if (config.getMode() != GenerateMode.CLIENT) {
-                        GeneratedCode server = strategy.generateServerCode(
+                        GeneratedCode server = generateStrategy.generateServerCode(
                                 config.getServerPackage(),
                                 fileName,
                                 dto
@@ -58,7 +75,7 @@ public class FileGenerator {
                     }
 
                     if (config.getMode() != GenerateMode.SERVER) {
-                        List<GeneratedCode> clients = strategy.generateClientCode(
+                        List<GeneratedCode> clients = generateStrategy.generateClientCode(
                                 config.getClientPackage(),
                                 fileName,
                                 dto

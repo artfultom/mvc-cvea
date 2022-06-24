@@ -1,8 +1,6 @@
 package io.github.artfultom.vecenta.server;
 
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
-import io.github.artfultom.vecenta.generate.CodeGenerateStrategy;
-import io.github.artfultom.vecenta.generate.JavapoetCodeGenerateStrategy;
 import io.github.artfultom.vecenta.generate.FileGenerator;
 import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.generate.config.GenerateMode;
@@ -38,7 +36,6 @@ public class ServerTest {
         Path schemaDir = Path.of(schemaRes.toURI());
         Path tempDir = Files.createTempDirectory("test_" + System.currentTimeMillis());
 
-        CodeGenerateStrategy strategy = new JavapoetCodeGenerateStrategy();
         GenerateConfiguration config = new GenerateConfiguration(
                 schemaDir,
                 tempDir,
@@ -47,7 +44,7 @@ public class ServerTest {
                 "test.pack.client"
         );
 
-        List<Path> files = new FileGenerator(strategy).generateFiles(config);
+        List<Path> files = new FileGenerator().generateFiles(config);
 
         for (Path file : files) {
             String expectedFileName = file.getFileName().toString();
@@ -66,8 +63,6 @@ public class ServerTest {
 
     @Test
     public void testServer() throws URISyntaxException, IOException, ProtocolException {
-        CodeGenerateStrategy strategy = new JavapoetCodeGenerateStrategy();
-
         URL res = getClass().getResource("/transfer_data");
         assertNotNull(res);
 
@@ -80,7 +75,7 @@ public class ServerTest {
                 pack
         );
 
-        List<Path> files = new FileGenerator(strategy).generateFiles(config);
+        List<Path> files = new FileGenerator().generateFiles(config);
         assertNotNull(files);
         assertEquals(3, files.size());
 
@@ -117,8 +112,6 @@ public class ServerTest {
 
     @Test
     public void testServerFail() throws URISyntaxException, IOException {
-        CodeGenerateStrategy strategy = new JavapoetCodeGenerateStrategy();
-
         URL res = getClass().getResource("/transfer_data");
         assertNotNull(res);
 
@@ -132,7 +125,7 @@ public class ServerTest {
                 GenerateMode.CLIENT
         );
 
-        List<Path> files = new FileGenerator(strategy).generateFiles(config);
+        List<Path> files = new FileGenerator().generateFiles(config);
         assertNotNull(files);
         assertEquals(2, files.size());
 
