@@ -15,4 +15,14 @@ public enum MessageError {
     public String getMessage() {
         return message;
     }
+
+    public static MessageError get(int order) {
+        for (MessageError item : MessageError.values()) {
+            if (item.ordinal() == order) {
+                return item;
+            }
+        }
+
+        return null;
+    }
 }

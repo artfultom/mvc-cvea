@@ -1,11 +1,15 @@
 package io.github.artfultom.vecenta.transport;
 
 import io.github.artfultom.vecenta.transport.error.MessageError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 public abstract class AbstractServer implements Server {
+
+    private static final Logger log = LoggerFactory.getLogger(AbstractServer.class);
 
     public static final int PROTOCOL_VERSION = 1;
     public static final String PROTOCOL_NAME = "vcea";
@@ -22,41 +26,26 @@ public abstract class AbstractServer implements Server {
                 int protocolVersion = buf.getInt();
 
                 if (protocolVersion == PROTOCOL_VERSION) {
-                    byte flags = buf.get();
-                    setFlags(flags);
-
-                    ByteBuffer bb = ByteBuffer.allocate(4);
+                    ByteBuffer bb = ByteBuffer.allocate(Integer.BYTES);
                     bb.putInt(0);
 
                     stream.sendMessage(bb.array());
                 } else {
-                    ByteBuffer bb = ByteBuffer.allocate(4);
+                    ByteBuffer bb = ByteBuffer.allocate(Integer.BYTES);
                     bb.putInt(MessageError.WRONG_PROTOCOL_VERSION.ordinal());
 
                     stream.sendMessage(bb.array());
+
+                    log.error("Wrong protocol version: " + protocolVersion);
                 }
 
                 return;
             }
         }
 
-        ByteBuffer bb = ByteBuffer.allocate(4);
+        ByteBuffer bb = ByteBuffer.allocate(Integer.BYTES);
         bb.putInt(MessageError.WRONG_PROTOCOL.ordinal());
 
         stream.sendMessage(bb.array());
-    }
-
-    private void setFlags(byte flags) {
-        boolean[] bs = new boolean[8];
-        bs[0] = (flags & 0x80) != 0;
-        bs[1] = (flags & 0x40) != 0;
-        bs[2] = (flags & 0x20) != 0;
-        bs[3] = (flags & 0x10) != 0;
-        bs[4] = (flags & 0x8) != 0;
-        bs[5] = (flags & 0x4) != 0;
-        bs[6] = (flags & 0x2) != 0;
-        bs[7] = (flags & 0x1) != 0;
-
-        // TODO handshake logic
     }
 }
