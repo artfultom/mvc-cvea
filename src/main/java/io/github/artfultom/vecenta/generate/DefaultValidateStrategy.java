@@ -9,7 +9,28 @@ public class DefaultValidateStrategy implements ValidateStrategy {
 
     @Override
     public boolean isCorrect(String fileName) {
-        // TODO logic
+        if (fileName == null || fileName.isEmpty()) {
+            return false;
+        }
+        String[] words = fileName.split("\\.");
+        if (words.length != 3) {
+            return false;
+        }
+        if (words[0].isEmpty()) {
+            return false;
+        }
+        if (words[1].isEmpty()) {
+            return false;
+        }
+        try {
+            Integer.parseInt(words[1]);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        if (!words[2].equalsIgnoreCase("json")) {
+            return false;
+        }
+
         return true;
     }
 
