@@ -1,0 +1,38 @@
+{
+  "clients": [
+    {
+      "name": "Client",
+      "entities": [
+        {
+          "name": "entity",
+          "methods": [
+            {
+              "name": "method",
+              "in": [
+                {
+                  "name": "a",
+                  "type": "int32"
+                },
+                {
+                  "name": "b",
+                  "type": "Model10"
+                }
+              ],
+              "out": "int32"
+            }
+          ],
+          "models": [
+            {
+              "name": "Model42",
+              "fields": []
+            },
+            {
+              "name": "Model42",
+              "fields": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

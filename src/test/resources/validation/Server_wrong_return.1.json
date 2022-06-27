@@ -1,0 +1,39 @@
+{
+  "clients": [
+    {
+      "name": "Client",
+      "entities": [
+        {
+          "name": "entity",
+          "methods": [
+            {
+              "name": "method",
+              "in": [
+                {
+                  "name": "a",
+                  "type": "int32"
+                },
+                {
+                  "name": "b",
+                  "type": "Model10"
+                }
+              ],
+              "out": "WRONG_MODEL_NAME"
+            }
+          ],
+          "models": [
+            {
+              "name": "Model10",
+              "fields": [
+                {
+                  "name": "field1",
+                  "type": "int32"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
