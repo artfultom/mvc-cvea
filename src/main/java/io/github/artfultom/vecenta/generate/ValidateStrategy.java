@@ -1,9 +1,11 @@
 package io.github.artfultom.vecenta.generate;
 
+import io.github.artfultom.vecenta.exceptions.ValidateException;
+
 public interface ValidateStrategy {
 
-    boolean isCorrect(String fileName);
+    void check(String fileName) throws ValidateException;
 
-    boolean isCorrect(JsonFormatDto dto);
+    void check(JsonFormatDto dto) throws ValidateException;
 
 }
