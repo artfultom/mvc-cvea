@@ -6,11 +6,11 @@ import java.util.Random;
 
 import static org.junit.Assert.*;
 
-public class ConverterTest {
+public class TypeConverterTest {
 
     @Test
     public void convert() {
-        for (Converter converter : Converter.values()) {
+        for (TypeConverter converter : TypeConverter.values()) {
             for (int i = 0; i < 100; i++) {
                 switch (converter) {
                     case STRING:
@@ -44,15 +44,15 @@ public class ConverterTest {
 
     @Test
     public void getByType() {
-        assertEquals(Converter.BOOLEAN, Converter.get("boolean"));
-        assertEquals(Converter.INTEGER, Converter.get("int32"));
-        assertNull(Converter.get("unknown"));
+        assertEquals(TypeConverter.BOOLEAN, TypeConverter.get("boolean"));
+        assertEquals(TypeConverter.INTEGER, TypeConverter.get("int32"));
+        assertNull(TypeConverter.get("unknown"));
     }
 
     @Test
     public void getByClass() {
-        assertEquals(Converter.BOOLEAN, Converter.get(Boolean.class));
-        assertEquals(Converter.INTEGER, Converter.get(Integer.class));
-        assertNull(Converter.get(Thread.class));
+        assertEquals(TypeConverter.BOOLEAN, TypeConverter.get(Boolean.class));
+        assertEquals(TypeConverter.INTEGER, TypeConverter.get(Integer.class));
+        assertNull(TypeConverter.get(Thread.class));
     }
 }

@@ -3,7 +3,7 @@ package io.github.artfultom.vecenta.generate;
 import com.squareup.javapoet.*;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.matcher.ConvertParamStrategy;
-import io.github.artfultom.vecenta.matcher.Converter;
+import io.github.artfultom.vecenta.matcher.TypeConverter;
 import io.github.artfultom.vecenta.matcher.Model;
 import io.github.artfultom.vecenta.matcher.RpcMethod;
 import io.github.artfultom.vecenta.matcher.impl.DefaultConvertParamStrategy;
@@ -251,7 +251,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
     }
 
     private Class<?> convertToTypeName(String type) {
-        Converter converter = Converter.get(type);
+        TypeConverter converter = TypeConverter.get(type);
         if (converter == null) {
             return null;
         }

@@ -1,7 +1,7 @@
 package io.github.artfultom.vecenta.matcher.impl;
 
 import io.github.artfultom.vecenta.matcher.ConvertParamStrategy;
-import io.github.artfultom.vecenta.matcher.Converter;
+import io.github.artfultom.vecenta.matcher.TypeConverter;
 import io.github.artfultom.vecenta.matcher.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
     public byte[] convertToByteArray(Class<?> clazz, Object in) {
         byte[] result = null;
 
-        Converter converter = Converter.get(clazz);
+        TypeConverter converter = TypeConverter.get(clazz);
         if (converter == null) {
             Model model = clazz.getAnnotation(Model.class);
             if (model == null) {
@@ -75,7 +75,7 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
     public <T> T convertToObject(Class<T> clazz, byte[] in) {
         T result = null;
 
-        Converter converter = Converter.get(clazz);
+        TypeConverter converter = TypeConverter.get(clazz);
         if (converter == null) {
             Model model = clazz.getAnnotation(Model.class);
             if (model == null) {

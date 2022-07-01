@@ -1,7 +1,7 @@
 package io.github.artfultom.vecenta.generate;
 
 import io.github.artfultom.vecenta.exceptions.ValidateException;
-import io.github.artfultom.vecenta.matcher.Converter;
+import io.github.artfultom.vecenta.matcher.TypeConverter;
 
 import java.util.Collection;
 import java.util.List;
@@ -53,7 +53,7 @@ public class DefaultValidateStrategy implements ValidateStrategy {
     private void checkUniqueModel(JsonFormatDto.Entity entity) throws ValidateException {
         Set<String> modelNames = entity.getModels().stream()
                 .map(JsonFormatDto.Entity.Model::getName)
-                .filter(item -> Converter.get(item) == null)
+                .filter(item -> TypeConverter.get(item) == null)
                 .collect(Collectors.toSet());
 
         if (modelNames.size() < entity.getModels().size()) {
@@ -64,12 +64,12 @@ public class DefaultValidateStrategy implements ValidateStrategy {
     private void checkMethods(JsonFormatDto.Entity entity) throws ValidateException {
         Set<String> modelNames = entity.getModels().stream()
                 .map(JsonFormatDto.Entity.Model::getName)
-                .filter(item -> Converter.get(item) == null)
+                .filter(item -> TypeConverter.get(item) == null)
                 .collect(Collectors.toSet());
 
         for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
             String returnType = method.getOut();
-            if (Converter.get(returnType) == null && !modelNames.contains(returnType)) {
+            if (TypeConverter.get(returnType) == null && !modelNames.contains(returnType)) {
                 throw new ValidateException(String.format(
                         "Incorrect return type %s of method %s.",
                         returnType,
@@ -78,7 +78,7 @@ public class DefaultValidateStrategy implements ValidateStrategy {
             }
 
             for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                if (Converter.get(param.getType()) == null && !modelNames.contains(param.getType())) {
+                if (TypeConverter.get(param.getType()) == null && !modelNames.contains(param.getType())) {
                     throw new ValidateException(String.format(
                             "Incorrect argument type %s of method %s.",
                             param.getType(),
@@ -92,12 +92,12 @@ public class DefaultValidateStrategy implements ValidateStrategy {
     private void checkFields(JsonFormatDto.Entity entity) throws ValidateException {
         Set<String> modelNames = entity.getModels().stream()
                 .map(JsonFormatDto.Entity.Model::getName)
-                .filter(item -> Converter.get(item) == null)
+                .filter(item -> TypeConverter.get(item) == null)
                 .collect(Collectors.toSet());
 
         for (JsonFormatDto.Entity.Model model : entity.getModels()) {
             for (JsonFormatDto.Entity.Param param : model.getFields()) {
-                if (Converter.get(param.getType()) == null && !modelNames.contains(param.getType())) {
+                if (TypeConverter.get(param.getType()) == null && !modelNames.contains(param.getType())) {
                     throw new ValidateException(String.format("Unknown type %s.", param.getType()));
                 }
             }
@@ -115,7 +115,7 @@ public class DefaultValidateStrategy implements ValidateStrategy {
             models = models.stream()
                     .map(JsonFormatDto.Entity.Model::getFields)
                     .flatMap(Collection::stream)
-                    .filter(item -> Converter.get(item.getType()) == null)
+                    .filter(item -> TypeConverter.get(item.getType()) == null)
                     .map(item -> modelMap.get(item.getType()))
                     .collect(Collectors.toList());
         }

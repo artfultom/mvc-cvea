@@ -3,7 +3,7 @@ package io.github.artfultom.vecenta.matcher;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-public enum Converter {
+public enum TypeConverter {
 
     BOOLEAN(Boolean.class, "boolean") {
         @Override
@@ -140,7 +140,7 @@ public enum Converter {
 
     private final String type;
 
-    Converter(Class<?> clazz, String type) {
+    TypeConverter(Class<?> clazz, String type) {
         this.clazz = clazz;
         this.type = type;
     }
@@ -151,8 +151,8 @@ public enum Converter {
 
     public abstract Integer getBytes();
 
-    public static Converter get(Class<?> clazz) {
-        for (Converter val : Converter.values()) {
+    public static TypeConverter get(Class<?> clazz) {
+        for (TypeConverter val : TypeConverter.values()) {
             if (val.clazz.equals(clazz)) {
                 return val;
             }
@@ -161,8 +161,8 @@ public enum Converter {
         return null;
     }
 
-    public static Converter get(String type) {
-        for (Converter val : Converter.values()) {
+    public static TypeConverter get(String type) {
+        for (TypeConverter val : TypeConverter.values()) {
             if (val.type.equals(type)) {
                 return val;
             }
