@@ -2,6 +2,7 @@ package io.github.artfultom.vecenta.matcher;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -25,18 +26,18 @@ public class TypeConverterTest {
                     case BOOLEAN:
                         Boolean boolVal = new Random().nextBoolean();
                         byte[] boolBytes = converter.convert(boolVal);
-                        assertEquals((int) converter.getBytes(), boolBytes.length);
+                        assertEquals(Byte.BYTES, boolBytes.length);
 
                         Boolean boolVal2 = (Boolean) converter.convert(boolBytes);
                         assertEquals(boolVal, boolVal2);
 
                         break;
                     default:
-                        byte[] bytes = new byte[converter.getBytes()];
+                        byte[] bytes = new byte[100];
                         new Random().nextBytes(bytes);
                         Object val = converter.convert(bytes);
                         byte[] bytes2 = converter.convert(val);
-                        assertArrayEquals(bytes, bytes2);
+                        assertArrayEquals(Arrays.copyOf(bytes, bytes2.length), bytes2);
                 }
             }
         }

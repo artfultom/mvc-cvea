@@ -1,8 +1,8 @@
 package io.github.artfultom.vecenta.matcher.impl;
 
 import io.github.artfultom.vecenta.matcher.ConvertParamStrategy;
-import io.github.artfultom.vecenta.matcher.TypeConverter;
 import io.github.artfultom.vecenta.matcher.Model;
+import io.github.artfultom.vecenta.matcher.TypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
