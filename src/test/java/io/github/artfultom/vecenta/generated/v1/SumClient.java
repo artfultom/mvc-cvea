@@ -23,8 +23,8 @@ public class SumClient {
     public Integer sum(Integer a, Integer b) throws ConnectException, ProtocolException {
         String name = "math.sum(int32,int32)->int32";
         List<byte[]> arguments = new ArrayList<>();
-        arguments.add(convertParamStrategy.convertToByteArray(Integer.class, a));
-        arguments.add(convertParamStrategy.convertToByteArray(Integer.class, b));
+        arguments.add(convertParamStrategy.convertToByteArray(a));
+        arguments.add(convertParamStrategy.convertToByteArray(b));
         Request req = new Request(name, arguments);
 
         Response resp = client.send(req);
@@ -39,9 +39,9 @@ public class SumClient {
     public String concat(String a, String b, String c) throws ConnectException, ProtocolException {
         String name = "math.concat(string,string,string)->string";
         List<byte[]> arguments = new ArrayList<>();
-        arguments.add(convertParamStrategy.convertToByteArray(String.class, a));
-        arguments.add(convertParamStrategy.convertToByteArray(String.class, b));
-        arguments.add(convertParamStrategy.convertToByteArray(String.class, c));
+        arguments.add(convertParamStrategy.convertToByteArray(a));
+        arguments.add(convertParamStrategy.convertToByteArray(b));
+        arguments.add(convertParamStrategy.convertToByteArray(c));
         Request req = new Request(name, arguments);
 
         Response resp = client.send(req);
@@ -56,7 +56,7 @@ public class SumClient {
     public Model3 echo(Model3 a) throws ConnectException, ProtocolException {
         String name = "math.echo(Model3)->Model3";
         List<byte[]> arguments = new ArrayList<>();
-        arguments.add(convertParamStrategy.convertToByteArray(Model3.class, a));
+        arguments.add(convertParamStrategy.convertToByteArray(a));
         Request req = new Request(name, arguments);
 
         Response resp = client.send(req);

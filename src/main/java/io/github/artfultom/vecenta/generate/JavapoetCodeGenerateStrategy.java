@@ -202,10 +202,8 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                     methodBuilder.addStatement("String name = $S", methodName);
                     methodBuilder.addStatement("$T<byte[]> arguments = new $T<>()", List.class, ArrayList.class);
                     for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                        TypeName typeName = getTypeName(fullPackage, param.getType());
                         methodBuilder.addStatement(
-                                "arguments.add(convertParamStrategy.convertToByteArray($T.class, $L))",
-                                typeName,
+                                "arguments.add(convertParamStrategy.convertToByteArray($L))",
                                 param.getName()
                         );
                     }

@@ -22,7 +22,7 @@ public class FirstClient {
     public Integer method_name(Integer argument_name) throws ConnectException, ProtocolException {
         String name = "entity2.method_name(int32)->int32";
         List<byte[]> arguments = new ArrayList<>();
-        arguments.add(convertParamStrategy.convertToByteArray(Integer.class, argument_name));
+        arguments.add(convertParamStrategy.convertToByteArray(argument_name));
         Request req = new Request(name, arguments);
 
         Response resp = client.send(req);

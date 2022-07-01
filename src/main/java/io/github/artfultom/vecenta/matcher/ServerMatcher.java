@@ -73,8 +73,7 @@ public class ServerMatcher {
                             requestParams.toArray()
                     );
 
-                    Class<?> returnType = method.getReturnType();
-                    byte[] responseParam = convertParamStrategy.convertToByteArray(returnType, result);
+                    byte[] responseParam = convertParamStrategy.convertToByteArray(result);
 
                     return new Response(responseParam);
                 } catch (

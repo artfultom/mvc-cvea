@@ -23,18 +23,18 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
     private static final Logger log = LoggerFactory.getLogger(DefaultConvertParamStrategy.class);
 
     @Override
-    public byte[] convertToByteArray(Class<?> clazz, Object in) {
+    public byte[] convertToByteArray(Object in) {
         byte[] result = null;
 
-        TypeConverter converter = TypeConverter.get(clazz);
+        TypeConverter converter = TypeConverter.get(in.getClass());
         if (converter == null) {
-            Model model = clazz.getAnnotation(Model.class);
+            Model model = in.getClass().getAnnotation(Model.class);
             if (model == null) {
-                log.error("Cannot find an order of fields in model " + clazz.getName());
+                log.error("Cannot find an order of fields in model " + in.getClass().getName());
                 return new byte[0];
             }
 
-            Map<String, Method> methodMap = Arrays.stream(clazz.getDeclaredMethods())
+            Map<String, Method> methodMap = Arrays.stream(in.getClass().getDeclaredMethods())
                     .filter(item -> item.getName().startsWith("get") && item.getParameterTypes().length == 0)
                     .filter(item -> Modifier.isPublic(item.getModifiers()))
                     .collect(Collectors.toMap(
@@ -52,7 +52,7 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
             ) {
                 for (Method method : methods) {
                     Object val = method.invoke(in);
-                    byte[] bytes = convertToByteArray(method.getReturnType(), val);
+                    byte[] bytes = convertToByteArray(val);
 
                     dataStream.writeInt(bytes.length);
                     dataStream.write(bytes);
@@ -60,9 +60,9 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
 
                 result = out.toByteArray();
             } catch (IOException e) {
-                log.error("Cannot open binary stream for type " + clazz.getName(), e);
+                log.error("Cannot open binary stream for type " + in.getClass().getName(), e);
             } catch (InvocationTargetException | IllegalAccessException e) {
-                log.error("Cannot invoke method. Type " + clazz.getName(), e);
+                log.error("Cannot invoke method. Type " + in.getClass().getName(), e);
             }
         } else {
             result = converter.convert(in);

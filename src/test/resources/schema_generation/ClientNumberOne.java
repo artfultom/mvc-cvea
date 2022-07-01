@@ -22,7 +22,7 @@ public class ClientNumberOne {
     public Boolean method_name(Integer argument_name) throws ConnectException, ProtocolException {
         String name = "entity1.method_name(int32)->boolean";
         List<byte[]> arguments = new ArrayList<>();
-        arguments.add(convertParamStrategy.convertToByteArray(Integer.class, argument_name));
+        arguments.add(convertParamStrategy.convertToByteArray(argument_name));
         Request req = new Request(name, arguments);
 
         Response resp = client.send(req);
