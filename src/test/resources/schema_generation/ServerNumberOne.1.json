@@ -96,7 +96,7 @@
               "fields": [
                 {
                   "name": "field1",
-                  "type": "model1"
+                  "type": "[int32]"
                 }
               ]
             }

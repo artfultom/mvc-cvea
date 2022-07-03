@@ -2,6 +2,7 @@ package io.github.artfultom.vecenta.generate;
 
 import io.github.artfultom.vecenta.exceptions.ValidateException;
 import io.github.artfultom.vecenta.matcher.TypeConverter;
+import io.github.artfultom.vecenta.util.StringUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -97,8 +98,10 @@ public class DefaultValidateStrategy implements ValidateStrategy {
 
         for (JsonFormatDto.Entity.Model model : entity.getModels()) {
             for (JsonFormatDto.Entity.Param param : model.getFields()) {
-                if (TypeConverter.get(param.getType()) == null && !modelNames.contains(param.getType())) {
-                    throw new ValidateException(String.format("Unknown type %s.", param.getType()));
+                for (String type : StringUtils.getSimpleTypes(param.getType())) {
+                    if (TypeConverter.get(type) == null && !modelNames.contains(type)) {
+                        throw new ValidateException(String.format("Unknown type %s.", type));
+                    }
                 }
             }
         }
@@ -110,13 +113,16 @@ public class DefaultValidateStrategy implements ValidateStrategy {
                         JsonFormatDto.Entity.Model::getName,
                         item -> item
                 ));
+
         List<JsonFormatDto.Entity.Model> models = entity.getModels();
         for (int i = 0; i < MAX_DEPTH_OF_RECURSION; i++) {
             models = models.stream()
                     .map(JsonFormatDto.Entity.Model::getFields)
                     .flatMap(Collection::stream)
-                    .filter(item -> TypeConverter.get(item.getType()) == null)
-                    .map(item -> modelMap.get(item.getType()))
+                    .map(item -> StringUtils.getSimpleTypes(item.getType()))
+                    .flatMap(Collection::stream)
+                    .filter(item -> TypeConverter.get(item) == null)
+                    .map(modelMap::get)
                     .collect(Collectors.toList());
         }
         if (!models.isEmpty()) {

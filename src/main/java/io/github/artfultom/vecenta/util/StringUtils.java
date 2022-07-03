@@ -1,5 +1,9 @@
 package io.github.artfultom.vecenta.util;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class StringUtils {
 
     private StringUtils() {
@@ -14,5 +18,16 @@ public class StringUtils {
         }
 
         return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
+    public static List<String> getSimpleTypes(String type) {
+        String[] rawSimpleTypes = type
+                .replace("[", "'")
+                .replace("]", "'")
+                .split("'");
+
+        return Arrays.stream(rawSimpleTypes)
+                .filter(item -> item != null && !item.isEmpty())
+                .collect(Collectors.toList());
     }
 }
