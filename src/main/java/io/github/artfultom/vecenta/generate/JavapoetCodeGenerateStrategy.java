@@ -13,6 +13,7 @@ import javax.lang.model.element.Modifier;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
@@ -272,11 +273,22 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
             result = TypeName.get(type);
         }
 
-        if (CollectionType.get(name) == CollectionType.LIST) {
-            return ParameterizedTypeName.get(ClassName.get(List.class), result);
+        CollectionType collectionType = CollectionType.get(name);
+        if (collectionType == null) {
+            return null;
         }
 
-        // TODO add map
+        if (collectionType == CollectionType.LIST) {
+            result = ParameterizedTypeName.get(ClassName.get(List.class), result);
+        }
+
+        if (collectionType == CollectionType.MAP) {
+            result = ParameterizedTypeName.get(
+                    ClassName.get(Map.class),
+                    result,
+                    getTypeName(pack, collectionType.getSecond())
+            );
+        }
 
         return result;
     }
