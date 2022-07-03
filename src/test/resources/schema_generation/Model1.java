@@ -1,44 +1,96 @@
 package test.pack.model.v1.entity1;
 
 import io.github.artfultom.vecenta.matcher.Model;
+import io.github.artfultom.vecenta.matcher.ModelField;
 import java.util.List;
 
 @Model(
         order = {"field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "field11", "field12", "field13", "field14", "field15", "field16", "field17"}
 )
 public class Model1 {
+    @ModelField(
+            type = "boolean"
+    )
     public Boolean field1;
 
+    @ModelField(
+            type = "boolean[]"
+    )
     public List<Boolean> field2;
 
+    @ModelField(
+            type = "string"
+    )
     public String field3;
 
+    @ModelField(
+            type = "string[]"
+    )
     public List<String> field4;
 
+    @ModelField(
+            type = "int8"
+    )
     public Byte field5;
 
+    @ModelField(
+            type = "int8[]"
+    )
     public List<Byte> field6;
 
+    @ModelField(
+            type = "int16"
+    )
     public Short field7;
 
+    @ModelField(
+            type = "int16[]"
+    )
     public List<Short> field8;
 
+    @ModelField(
+            type = "int32"
+    )
     public Integer field9;
 
+    @ModelField(
+            type = "int32[]"
+    )
     public List<Integer> field10;
 
+    @ModelField(
+            type = "int64"
+    )
     public Long field11;
 
+    @ModelField(
+            type = "int64[]"
+    )
     public List<Long> field12;
 
+    @ModelField(
+            type = "dec32"
+    )
     public Float field13;
 
+    @ModelField(
+            type = "dec32[]"
+    )
     public List<Float> field14;
 
+    @ModelField(
+            type = "dec64"
+    )
     public Double field15;
 
+    @ModelField(
+            type = "dec64[]"
+    )
     public List<Double> field16;
 
+    @ModelField(
+            type = "model2[]"
+    )
     public List<Model2> field17;
 
     public Model1() {

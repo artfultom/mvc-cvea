@@ -45,6 +45,7 @@ public class ServerTest {
         );
 
         List<Path> files = new FileGenerator().generateFiles(config);
+        assertEquals(6, files.size());
 
         for (Path file : files) {
             String expectedFileName = file.getFileName().toString();

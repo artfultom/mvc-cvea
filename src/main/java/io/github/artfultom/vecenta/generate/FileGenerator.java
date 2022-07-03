@@ -50,21 +50,21 @@ public class FileGenerator {
             for (Path p : walk.collect(Collectors.toList())) {
                 if (Files.isRegularFile(p) && matcher.matches(p)) {
                     String fileName = p.getFileName().toString();
-                    try {
-                        validateStrategy.check(fileName);
-                    } catch (ValidateException e) {
-                        log.error(e.getMessage(), e);
-                        continue;
-                    }
+//                    try {
+//                        validateStrategy.check(fileName);
+//                    } catch (ValidateException e) {
+//                        log.error(e.getMessage(), e);
+//                        continue;
+//                    }
 
                     String body = Files.readString(p);
                     JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
-                    try {
-                        validateStrategy.check(dto);
-                    } catch (ValidateException e) {
-                        log.error(e.getMessage(), e);
-                        continue;
-                    }
+//                    try {
+//                        validateStrategy.check(dto);
+//                    } catch (ValidateException e) {
+//                        log.error(e.getMessage(), e);
+//                        continue;
+//                    }
 
                     List<GeneratedCode> models = generateStrategy.generateModels(
                             config.getModelPackage(),

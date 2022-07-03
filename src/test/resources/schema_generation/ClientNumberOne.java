@@ -31,6 +31,6 @@ public class ClientNumberOne {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(Boolean.class, result);
+        return convertParamStrategy.convertToObject(result, "boolean", Boolean.class);
     }
 }
