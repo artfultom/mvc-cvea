@@ -4,5 +4,5 @@ public interface ConvertParamStrategy {
 
     byte[] convertToByteArray(Object in);
 
-    <T> T convertToObject(Class<T> clazz, byte[] in);
+    <T> T convertToObject(byte[] in, String type, Class<T> target);
 }

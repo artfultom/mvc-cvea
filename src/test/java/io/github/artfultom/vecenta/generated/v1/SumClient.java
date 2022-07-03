@@ -33,7 +33,7 @@ public class SumClient {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(Integer.class, result);
+        return convertParamStrategy.convertToObject(result, "int32", Integer.class);
     }
 
     public String concat(String a, String b, String c) throws ConnectException, ProtocolException {
@@ -50,7 +50,7 @@ public class SumClient {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(String.class, result);
+        return convertParamStrategy.convertToObject(result, "string", String.class);
     }
 
     public Model3 echo(Model3 a) throws ConnectException, ProtocolException {
@@ -65,6 +65,6 @@ public class SumClient {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(Model3.class, result);
+        return convertParamStrategy.convertToObject(result, "Model3", Model3.class);
     }
 }

@@ -7,11 +7,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ReflectionUtils {
@@ -19,6 +18,14 @@ public class ReflectionUtils {
     private static final Logger log = LoggerFactory.getLogger(ReflectionUtils.class);
 
     private ReflectionUtils() {
+    }
+
+    public static Field getField(Class<?> clazz, Method method) {
+        Optional<Field> fieldOptional = Arrays.stream(clazz.getDeclaredFields())
+                .filter(item -> item.getName().equalsIgnoreCase(method.getName().substring(3)))
+                .findFirst();
+
+        return fieldOptional.orElse(null);
     }
 
     public static List<Class<?>> findServerClasses(String packageName) throws IOException {

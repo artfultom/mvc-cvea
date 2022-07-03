@@ -56,16 +56,20 @@ public class ServerMatcher {
             if (interfaceMethod == null) {
                 continue;
             }
+            RpcMethod rpcMethod = interfaceMethod.getAnnotation(RpcMethod.class);
 
-            String name = getName(interfaceMethod);
-
+            String name = getName(rpcMethod);
             MethodHandler handler = new MethodHandler(name, request -> {
                 try {
                     List<Object> requestParams = new ArrayList<>();
                     for (int i = 0; i < request.getParams().size(); i++) {
                         byte[] param = request.getParams().get(i);
 
-                        requestParams.add(convertParamStrategy.convertToObject(method.getParameterTypes()[i], param));
+                        requestParams.add(convertParamStrategy.convertToObject(
+                                param,
+                                rpcMethod.argumentTypes()[i],
+                                method.getParameterTypes()[i]
+                        ));
                     }
 
                     Object result = method.invoke(
@@ -130,9 +134,7 @@ public class ServerMatcher {
         return methods.get(0);
     }
 
-    private String getName(Method method) {
-        RpcMethod rpcMethod = method.getAnnotation(RpcMethod.class);
-
+    private String getName(RpcMethod rpcMethod) {
         return String.format(
                 "%s.%s(%s)->%s",
                 rpcMethod.entity(),

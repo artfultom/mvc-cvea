@@ -31,6 +31,6 @@ public class FirstClient {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(Integer.class, result);
+        return convertParamStrategy.convertToObject(result, "int32", Integer.class);
     }
 }

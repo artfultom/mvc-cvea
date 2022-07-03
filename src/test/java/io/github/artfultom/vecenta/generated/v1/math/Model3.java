@@ -1,17 +1,30 @@
 package io.github.artfultom.vecenta.generated.v1.math;
 
 import io.github.artfultom.vecenta.matcher.Model;
+import io.github.artfultom.vecenta.matcher.ModelField;
 
 @Model(
         order = {"field1", "field2", "field3", "field4"}
 )
 public class Model3 {
+    @ModelField(
+            type = "int32"
+    )
     public Integer field1;
 
+    @ModelField(
+            type = "int16"
+    )
     public Short field2;
 
+    @ModelField(
+            type = "string"
+    )
     public String field3;
 
+    @ModelField(
+            type = "boolean"
+    )
     public Boolean field4;
 
     public Model3() {

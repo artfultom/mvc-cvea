@@ -1,14 +1,14 @@
 package io.github.artfultom.vecenta.matcher.impl;
 
-import io.github.artfultom.vecenta.matcher.ConvertParamStrategy;
-import io.github.artfultom.vecenta.matcher.Model;
-import io.github.artfultom.vecenta.matcher.TypeConverter;
+import io.github.artfultom.vecenta.matcher.*;
+import io.github.artfultom.vecenta.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -34,6 +34,7 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
                 return new byte[0];
             }
 
+            // TODO to utils
             Map<String, Method> methodMap = Arrays.stream(in.getClass().getDeclaredMethods())
                     .filter(item -> item.getName().startsWith("get") && item.getParameterTypes().length == 0)
                     .filter(item -> Modifier.isPublic(item.getModifiers()))
@@ -72,55 +73,70 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
     }
 
     @Override
-    public <T> T convertToObject(Class<T> clazz, byte[] in) {
-        T result = null;
+    public <T> T convertToObject(byte[] in, String type, Class<T> target) {
+        // TODO NPE CollectionType.get(type)
 
-        TypeConverter converter = TypeConverter.get(clazz);
-        if (converter == null) {
-            Model model = clazz.getAnnotation(Model.class);
-            if (model == null) {
-                log.error("Cannot find an order of fields in model " + clazz.getName());
-                return null;
-            }
-
-            Map<String, Method> methodMap = Arrays.stream(clazz.getDeclaredMethods())
-                    .filter(item -> item.getName().startsWith("set") && item.getParameterTypes().length == 1)
-                    .filter(item -> Modifier.isPublic(item.getModifiers()))
-                    .collect(Collectors.toMap(
-                            item -> item.getName().replace("set", "").toLowerCase(),
-                            item -> item
-                    ));
-
-            List<Method> methods = Arrays.stream(model.order())
-                    .map(item -> methodMap.get(item.toLowerCase()))
-                    .collect(Collectors.toList());
-
-            try {
-                T obj = clazz.getDeclaredConstructor().newInstance();
-
-                ByteBuffer buf = ByteBuffer.wrap(in);
-                for (Method method : methods) {
-                    int size = buf.getInt();
-                    byte[] dst = new byte[size];
-                    buf.get(dst);
-
-                    Class<?> type = method.getParameterTypes()[0];
-                    method.invoke(obj, convertToObject(type, dst));
+        switch (CollectionType.get(type)) {
+            case SIMPLE:
+                TypeConverter converter = TypeConverter.get(type);
+                if (converter != null) {
+                    return (T) converter.convert(in);
                 }
 
-                result = obj;
-            } catch (
-                    InvocationTargetException |
-                    InstantiationException |
-                    IllegalAccessException |
-                    NoSuchMethodException e
-            ) {
-                log.error("Cannot invoke method. Type " + clazz.getName(), e);
-            }
-        } else {
-            result = (T) converter.convert(in);
+                Model model = target.getAnnotation(Model.class);
+                if (model == null) {
+                    log.error("Cannot find an order of fields in model " + target.getName());
+                    return null;
+                }
+
+                // TODO to utils
+                Map<String, Method> methodMap = Arrays.stream(target.getDeclaredMethods())
+                        .filter(item -> item.getName().startsWith("set") && item.getParameterTypes().length == 1)
+                        .filter(item -> Modifier.isPublic(item.getModifiers()))
+                        .collect(Collectors.toMap(
+                                item -> item.getName().replace("set", "").toLowerCase(),
+                                item -> item
+                        ));
+
+                List<Method> methods = Arrays.stream(model.order())
+                        .map(item -> methodMap.get(item.toLowerCase()))
+                        .collect(Collectors.toList());
+
+                try {
+                    T obj = target.getDeclaredConstructor().newInstance();
+
+                    ByteBuffer buf = ByteBuffer.wrap(in);
+                    for (Method method : methods) {
+                        int size = buf.getInt();
+                        byte[] dst = new byte[size];
+                        buf.get(dst);
+
+                        Field field = ReflectionUtils.getField(target, method);
+                        ModelField modelField = field.getAnnotation(ModelField.class);
+
+                        Class<?> parameterType = method.getParameterTypes()[0];
+                        method.invoke(obj, convertToObject(dst, modelField.type(), parameterType));
+                    }
+
+                    return obj;
+                } catch (
+                        InvocationTargetException |
+                        InstantiationException |
+                        IllegalAccessException |
+                        NoSuchMethodException e
+                ) {
+                    log.error("Cannot invoke method. Type " + target.getName(), e);
+                }
+
+                break;
+            case LIST:
+                break;
+            case MAP:
+                break;
+            default:
+                // TODO error
         }
 
-        return result;
+        return null;
     }
 }

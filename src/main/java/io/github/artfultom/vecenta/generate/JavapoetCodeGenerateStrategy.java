@@ -2,10 +2,7 @@ package io.github.artfultom.vecenta.generate;
 
 import com.squareup.javapoet.*;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
-import io.github.artfultom.vecenta.matcher.ConvertParamStrategy;
-import io.github.artfultom.vecenta.matcher.TypeConverter;
-import io.github.artfultom.vecenta.matcher.Model;
-import io.github.artfultom.vecenta.matcher.RpcMethod;
+import io.github.artfultom.vecenta.matcher.*;
 import io.github.artfultom.vecenta.matcher.impl.DefaultConvertParamStrategy;
 import io.github.artfultom.vecenta.transport.Client;
 import io.github.artfultom.vecenta.transport.message.Request;
@@ -40,7 +37,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                             .addModifiers(Modifier.PUBLIC)
                             .build();
 
-                    AnnotationSpec annotationSpec = AnnotationSpec.builder(Model.class)
+                    AnnotationSpec madelAnnotation = AnnotationSpec.builder(Model.class)
                             .addMember("order", "$L",
                                     model.getFields().stream()
                                             .map(item -> CodeBlock.of("$S", item.getName()))
@@ -51,12 +48,16 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                     TypeSpec.Builder builder = TypeSpec.classBuilder(className)
                             .addModifiers(Modifier.PUBLIC)
                             .addMethod(constructor)
-                            .addAnnotation(annotationSpec);
+                            .addAnnotation(madelAnnotation);
 
                     for (JsonFormatDto.Entity.Param field : model.getFields()) {
                         TypeName typeName = getTypeName(pack, field.getType());
 
+                        AnnotationSpec fieldAnnotation = AnnotationSpec.builder(ModelField.class)
+                                .addMember("type", "$S", field.getType())
+                                .build();
                         FieldSpec fieldSpec = FieldSpec.builder(typeName, field.getName(), Modifier.PUBLIC)
+                                .addAnnotation(fieldAnnotation)
                                 .build();
 
                         builder.addField(fieldSpec);
@@ -223,8 +224,8 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                     String returnTypeName = method.getOut();
                     TypeName typeName = getTypeName(fullPackage, returnTypeName);
                     methodBuilder.returns(typeName);
-                    String returnStatement = "return convertParamStrategy.convertToObject($T.class, result)";
-                    methodBuilder.addStatement(returnStatement, typeName);
+                    String returnStatement = "return convertParamStrategy.convertToObject(result, $S, $T.class)";
+                    methodBuilder.addStatement(returnStatement, method.getOut(), typeName);
 
                     builder.addMethod(methodBuilder.build());
                 }
