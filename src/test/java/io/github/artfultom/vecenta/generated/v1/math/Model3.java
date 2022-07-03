@@ -10,22 +10,22 @@ public class Model3 {
     @ModelField(
             type = "int32"
     )
-    public Integer field1;
+    private Integer field1;
 
     @ModelField(
             type = "int16"
     )
-    public Short field2;
+    private Short field2;
 
     @ModelField(
             type = "string"
     )
-    public String field3;
+    private String field3;
 
     @ModelField(
             type = "boolean"
     )
-    public Boolean field4;
+    private Boolean field4;
 
     public Model3() {
     }

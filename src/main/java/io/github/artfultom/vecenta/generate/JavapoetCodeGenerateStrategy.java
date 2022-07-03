@@ -56,7 +56,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                         AnnotationSpec fieldAnnotation = AnnotationSpec.builder(ModelField.class)
                                 .addMember("type", "$S", field.getType())
                                 .build();
-                        FieldSpec fieldSpec = FieldSpec.builder(typeName, field.getName(), Modifier.PUBLIC)
+                        FieldSpec fieldSpec = FieldSpec.builder(typeName, field.getName(), Modifier.PRIVATE)
                                 .addAnnotation(fieldAnnotation)
                                 .build();
 
@@ -261,21 +261,22 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
     private TypeName getTypeName(String pack, String name) {
         TypeName result;
 
-        boolean isArray = name.endsWith("[]");
-        String simpleName = name.replace("[]", "");
+        List<String> names = StringUtils.getSimpleTypes(name);
 
-        Class<?> type = convertToTypeName(simpleName);
+        Class<?> type = convertToTypeName(names.get(0));
         if (type == null) {
-            String capitalType = StringUtils.capitalizeFirstLetter(simpleName);
+            String capitalType = StringUtils.capitalizeFirstLetter(names.get(0));
 
             result = ClassName.get(pack, capitalType).box();
         } else {
             result = TypeName.get(type);
         }
 
-        if (isArray) {
+        if (CollectionType.get(name) == CollectionType.LIST) {
             return ParameterizedTypeName.get(ClassName.get(List.class), result);
         }
+
+        // TODO add map
 
         return result;
     }

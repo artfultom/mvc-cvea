@@ -11,87 +11,87 @@ public class Model1 {
     @ModelField(
             type = "boolean"
     )
-    public Boolean field1;
+    private Boolean field1;
 
     @ModelField(
-            type = "boolean[]"
+            type = "[boolean]"
     )
-    public List<Boolean> field2;
+    private List<Boolean> field2;
 
     @ModelField(
             type = "string"
     )
-    public String field3;
+    private String field3;
 
     @ModelField(
-            type = "string[]"
+            type = "[string]"
     )
-    public List<String> field4;
+    private List<String> field4;
 
     @ModelField(
             type = "int8"
     )
-    public Byte field5;
+    private Byte field5;
 
     @ModelField(
-            type = "int8[]"
+            type = "[int8]"
     )
-    public List<Byte> field6;
+    private List<Byte> field6;
 
     @ModelField(
             type = "int16"
     )
-    public Short field7;
+    private Short field7;
 
     @ModelField(
-            type = "int16[]"
+            type = "[int16]"
     )
-    public List<Short> field8;
+    private List<Short> field8;
 
     @ModelField(
             type = "int32"
     )
-    public Integer field9;
+    private Integer field9;
 
     @ModelField(
-            type = "int32[]"
+            type = "[int32]"
     )
-    public List<Integer> field10;
+    private List<Integer> field10;
 
     @ModelField(
             type = "int64"
     )
-    public Long field11;
+    private Long field11;
 
     @ModelField(
-            type = "int64[]"
+            type = "[int64]"
     )
-    public List<Long> field12;
+    private List<Long> field12;
 
     @ModelField(
             type = "dec32"
     )
-    public Float field13;
+    private Float field13;
 
     @ModelField(
-            type = "dec32[]"
+            type = "[dec32]"
     )
-    public List<Float> field14;
+    private List<Float> field14;
 
     @ModelField(
             type = "dec64"
     )
-    public Double field15;
+    private Double field15;
 
     @ModelField(
-            type = "dec64[]"
+            type = "[dec64]"
     )
-    public List<Double> field16;
+    private List<Double> field16;
 
     @ModelField(
-            type = "model2[]"
+            type = "[model2]"
     )
-    public List<Model2> field17;
+    private List<Model2> field17;
 
     public Model1() {
     }
