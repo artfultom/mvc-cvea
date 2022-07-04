@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,6 +19,20 @@ public class ReflectionUtils {
     private static final Logger log = LoggerFactory.getLogger(ReflectionUtils.class);
 
     private ReflectionUtils() {
+    }
+
+    public static List<Method> getPublicGetters(Class<?> clazz) {
+        return Arrays.stream(clazz.getDeclaredMethods())
+                .filter(item -> item.getName().startsWith("get") && item.getParameterTypes().length == 0)
+                .filter(item -> Modifier.isPublic(item.getModifiers()))
+                .collect(Collectors.toList());
+    }
+
+    public static List<Method> getPublicSetters(Class<?> clazz) {
+        return Arrays.stream(clazz.getDeclaredMethods())
+                .filter(item -> item.getName().startsWith("set") && item.getParameterTypes().length == 1)
+                .filter(item -> Modifier.isPublic(item.getModifiers()))
+                .collect(Collectors.toList());
     }
 
     public static Field getField(Class<?> clazz, Method method) {

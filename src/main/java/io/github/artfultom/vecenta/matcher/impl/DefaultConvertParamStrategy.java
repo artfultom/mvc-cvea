@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
@@ -34,10 +33,7 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
                 return new byte[0];
             }
 
-            // TODO to utils
-            Map<String, Method> methodMap = Arrays.stream(in.getClass().getDeclaredMethods())
-                    .filter(item -> item.getName().startsWith("get") && item.getParameterTypes().length == 0)
-                    .filter(item -> Modifier.isPublic(item.getModifiers()))
+            Map<String, Method> methodMap = ReflectionUtils.getPublicGetters(in.getClass()).stream()
                     .collect(Collectors.toMap(
                             item -> item.getName().replace("get", "").toLowerCase(),
                             item -> item
@@ -89,10 +85,7 @@ public class DefaultConvertParamStrategy implements ConvertParamStrategy {
                     return null;
                 }
 
-                // TODO to utils
-                Map<String, Method> methodMap = Arrays.stream(target.getDeclaredMethods())
-                        .filter(item -> item.getName().startsWith("set") && item.getParameterTypes().length == 1)
-                        .filter(item -> Modifier.isPublic(item.getModifiers()))
+                Map<String, Method> methodMap = ReflectionUtils.getPublicSetters(target).stream()
                         .collect(Collectors.toMap(
                                 item -> item.getName().replace("set", "").toLowerCase(),
                                 item -> item
