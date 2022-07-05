@@ -67,4 +67,36 @@ public class SumClient {
 
         return convertParamStrategy.convertToObject(result, "Model3", Model3.class);
     }
+
+    public List<Integer> echo(List<Integer> a) throws ConnectException, ProtocolException {
+        String name = "math.echo([int32])->[int32]";
+        List<byte[]> arguments = new ArrayList<>();
+        arguments.add(convertParamStrategy.convertToByteArray(a));
+        Request req = new Request(name, arguments);
+
+        Response resp = client.send(req);
+        byte[] result = resp.getResult();
+        if (result == null) {
+            throw new ProtocolException(resp.getError());
+        }
+
+        return convertParamStrategy.convertToObject(result, "[int32]", List.class);
+    }
+
+    public List<Model3> echo(List<Model3> a, List<Model3> b) throws ConnectException,
+            ProtocolException {
+        String name = "math.echo([Model3],[Model3])->[Model3]";
+        List<byte[]> arguments = new ArrayList<>();
+        arguments.add(convertParamStrategy.convertToByteArray(a));
+        arguments.add(convertParamStrategy.convertToByteArray(b));
+        Request req = new Request(name, arguments);
+
+        Response resp = client.send(req);
+        byte[] result = resp.getResult();
+        if (result == null) {
+            throw new ProtocolException(resp.getError());
+        }
+
+        return convertParamStrategy.convertToObject(result, "[Model3]", List.class);
+    }
 }

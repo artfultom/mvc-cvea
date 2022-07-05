@@ -5,6 +5,7 @@ import io.github.artfultom.vecenta.matcher.ModelField;
 import java.util.List;
 
 @Model(
+        name = "model2",
         order = {"field1"}
 )
 public class Model2 {

@@ -2,6 +2,7 @@ package io.github.artfultom.vecenta.generate;
 
 import com.squareup.javapoet.*;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
+import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.matcher.*;
 import io.github.artfultom.vecenta.matcher.impl.DefaultConvertParamStrategy;
 import io.github.artfultom.vecenta.transport.Client;
@@ -18,9 +19,13 @@ import java.util.stream.Collectors;
 
 public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
 
-    @Override
+    private final GenerateConfiguration configuration;
+
+    public JavapoetCodeGenerateStrategy(GenerateConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
     public List<GeneratedCode> generateModels(
-            String modelPackage,
             String fileName,
             JsonFormatDto dto
     ) {
@@ -32,13 +37,15 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
             for (JsonFormatDto.Entity entity : client.getEntities()) {
                 for (JsonFormatDto.Entity.Model model : entity.getModels()) {
                     String className = StringUtils.capitalizeFirstLetter(model.getName());
-                    String pack = modelPackage + ".v" + version + "." + entity.getName().toLowerCase();
+                    String pack = configuration.getModelPackage() + ".v" + version + "." + entity.getName().toLowerCase();
 
                     MethodSpec constructor = MethodSpec.constructorBuilder()
                             .addModifiers(Modifier.PUBLIC)
                             .build();
 
+//                    String modelName = String.format("%s.%s.%s", client.getName(), entity.getName(), model.getName());
                     AnnotationSpec madelAnnotation = AnnotationSpec.builder(Model.class)
+                            .addMember("name", "$S", model.getName())   // TODO
                             .addMember("order", "$L",
                                     model.getFields().stream()
                                             .map(item -> CodeBlock.of("$S", item.getName()))
@@ -85,7 +92,6 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
 
     @Override
     public GeneratedCode generateServerCode(
-            String filePackage,
             String fileName,
             JsonFormatDto dto
     ) {
@@ -97,7 +103,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
         TypeSpec.Builder builder = TypeSpec.interfaceBuilder(name)
                 .addModifiers(Modifier.PUBLIC);
 
-        String pack = filePackage + ".v" + version;
+        String pack = configuration.getServerPackage() + ".v" + version;
 
         for (JsonFormatDto.Client client : dto.getClients()) {
             for (JsonFormatDto.Entity entity : client.getEntities()) {
@@ -150,7 +156,6 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
 
     @Override
     public List<GeneratedCode> generateClientCode(
-            String filePackage,
             String fileName,
             JsonFormatDto dto
     ) {
@@ -182,7 +187,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
             builder.addMethod(constructor);
 
             for (JsonFormatDto.Entity entity : client.getEntities()) {
-                String fullPackage = filePackage + ".v" + version + "." + entity.getName().toLowerCase();
+                String fullPackage = configuration.getClientPackage() + ".v" + version + "." + entity.getName().toLowerCase();
 
                 for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
                     MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
@@ -226,13 +231,19 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                     TypeName typeName = getTypeName(fullPackage, returnTypeName);
                     methodBuilder.returns(typeName);
                     String returnStatement = "return convertParamStrategy.convertToObject(result, $S, $T.class)";
-                    methodBuilder.addStatement(returnStatement, method.getOut(), typeName);
+
+                    TypeName targetType = typeName;
+                    if (targetType instanceof ParameterizedTypeName) {
+                        targetType = ((ParameterizedTypeName) typeName).rawType;
+                    }
+
+                    methodBuilder.addStatement(returnStatement, method.getOut(), targetType);
 
                     builder.addMethod(methodBuilder.build());
                 }
             }
 
-            String pack = filePackage + ".v" + version;
+            String pack = configuration.getClientPackage() + ".v" + version;
 
             JavaFile file = JavaFile
                     .builder(pack, builder.build())

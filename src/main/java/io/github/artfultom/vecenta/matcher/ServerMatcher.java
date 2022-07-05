@@ -40,7 +40,7 @@ public class ServerMatcher {
 
     public void register(String pack) {
         try {
-            List<Class<?>> classes = ReflectionUtils.findServerClasses(pack);
+            Set<Class<?>> classes = ReflectionUtils.findServerClasses(pack);
 
             for (Class<?> clazz : classes) {
                 register(clazz);
@@ -51,7 +51,7 @@ public class ServerMatcher {
     }
 
     public void register(Class<?> serverClass) {
-        for (Method method : serverClass.getDeclaredMethods()) {
+        for (Method method : serverClass.getDeclaredMethods()) {    // TODO maybe public methods of interface?
             Method interfaceMethod = getInterfaceMethod(method);
             if (interfaceMethod == null) {
                 continue;

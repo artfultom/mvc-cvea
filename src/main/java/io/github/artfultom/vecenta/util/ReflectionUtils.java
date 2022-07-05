@@ -1,5 +1,6 @@
 package io.github.artfultom.vecenta.util;
 
+import io.github.artfultom.vecenta.matcher.Model;
 import io.github.artfultom.vecenta.matcher.RpcMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +44,41 @@ public class ReflectionUtils {
         return fieldOptional.orElse(null);
     }
 
-    public static List<Class<?>> findServerClasses(String packageName) throws IOException {
-        List<Class<?>> result = new ArrayList<>();
+    public static Set<Class<?>> findModelClasses() throws IOException {
+        Set<Class<?>> result = new HashSet<>();
+
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        List<String> packNames = Arrays.stream(classLoader.getDefinedPackages())
+                .map(item -> item.getName().split("\\.")[0])
+                .distinct()
+                .collect(Collectors.toList());
+        for (String pack : packNames) {
+            Enumeration<URL> resources = classLoader.getResources(pack.replace('.', '/'));
+
+            List<File> dirs = new ArrayList<>();
+            while (resources.hasMoreElements()) {
+                URL resource = resources.nextElement();
+
+                dirs.add(new File(resource.getFile()));
+            }
+
+            for (File directory : dirs) {
+                List<Class<?>> classes = findClasses(directory, pack);
+
+                classes = classes.stream()
+                        .filter(item -> item.isAnnotationPresent(Model.class))
+                        .collect(Collectors.toList());
+
+                result.addAll(classes);
+            }
+        }
+
+        return result;
+    }
+
+    public static Set<Class<?>> findServerClasses(String packageName) throws IOException {
+        Set<Class<?>> result = new HashSet<>();
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 

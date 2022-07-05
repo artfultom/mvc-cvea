@@ -47,6 +47,30 @@
                 }
               ],
               "out": "Model3"
+            },
+            {
+              "name": "echo",
+              "in": [
+                {
+                  "name": "a",
+                  "type": "[int32]"
+                }
+              ],
+              "out": "[int32]"
+            },
+            {
+              "name": "echo",
+              "in": [
+                {
+                  "name": "a",
+                  "type": "[Model3]"
+                },
+                {
+                  "name": "b",
+                  "type": "[Model3]"
+                }
+              ],
+              "out": "[Model3]"
             }
           ],
           "models": [

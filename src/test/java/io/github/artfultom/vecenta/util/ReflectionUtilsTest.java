@@ -2,6 +2,7 @@ package io.github.artfultom.vecenta.util;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -70,5 +71,10 @@ public class ReflectionUtilsTest {
             assertNotNull(TestClass.class.getDeclaredField(field.getName()));
             assertTrue(method.getName().toLowerCase().contains(field.getName().toLowerCase()));
         }
+    }
+
+    @Test
+    public void findModelClasses() {
+        // TODO
     }
 }

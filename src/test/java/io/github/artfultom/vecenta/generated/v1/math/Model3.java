@@ -4,6 +4,7 @@ import io.github.artfultom.vecenta.matcher.Model;
 import io.github.artfultom.vecenta.matcher.ModelField;
 
 @Model(
+        name = "Model3",
         order = {"field1", "field2", "field3", "field4"}
 )
 public class Model3 {

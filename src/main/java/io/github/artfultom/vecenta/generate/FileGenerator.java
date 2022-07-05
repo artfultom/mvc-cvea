@@ -2,7 +2,6 @@ package io.github.artfultom.vecenta.generate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.artfultom.vecenta.Configuration;
-import io.github.artfultom.vecenta.exceptions.ValidateException;
 import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.generate.config.GenerateMode;
 import org.slf4j.Logger;
@@ -24,8 +23,16 @@ public class FileGenerator {
 
     private static final int MAX_DEPTH = Configuration.getInt("generate.walk_max_depth");
 
-    private CodeGenerateStrategy generateStrategy = new JavapoetCodeGenerateStrategy();
-    private ValidateStrategy validateStrategy = new DefaultValidateStrategy();
+    private CodeGenerateStrategy generateStrategy;
+    private ValidateStrategy validateStrategy;
+
+    private final GenerateConfiguration config;
+
+    public FileGenerator(GenerateConfiguration config) {
+        this.config = config;
+        this.generateStrategy = new JavapoetCodeGenerateStrategy(config);
+        this.validateStrategy = new DefaultValidateStrategy();
+    }
 
     public FileGenerator setStrategy(CodeGenerateStrategy generateStrategy) {
         this.generateStrategy = generateStrategy;
@@ -39,7 +46,7 @@ public class FileGenerator {
         return this;
     }
 
-    public List<Path> generateFiles(GenerateConfiguration config) throws IOException {
+    public List<Path> generateFiles() throws IOException {
         List<Path> result = new ArrayList<>();
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.json");
         ObjectMapper mapper = new ObjectMapper();
@@ -50,24 +57,23 @@ public class FileGenerator {
             for (Path p : walk.collect(Collectors.toList())) {
                 if (Files.isRegularFile(p) && matcher.matches(p)) {
                     String fileName = p.getFileName().toString();
-                    try {
-                        validateStrategy.check(fileName);
-                    } catch (ValidateException e) {
-                        log.error(e.getMessage(), e);
-                        continue;
-                    }
+//                    try {
+//                        validateStrategy.check(fileName);
+//                    } catch (ValidateException e) {
+//                        log.error(e.getMessage(), e);
+//                        continue;
+//                    }
 
                     String body = Files.readString(p);
                     JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
-                    try {
-                        validateStrategy.check(dto);
-                    } catch (ValidateException e) {
-                        log.error(e.getMessage(), e);
-                        continue;
-                    }
+//                    try {
+//                        validateStrategy.check(dto);
+//                    } catch (ValidateException e) {
+//                        log.error(e.getMessage(), e);
+//                        continue;
+//                    }
 
                     List<GeneratedCode> models = generateStrategy.generateModels(
-                            config.getModelPackage(),
                             fileName,
                             dto
                     );
@@ -75,7 +81,6 @@ public class FileGenerator {
 
                     if (config.getMode() != GenerateMode.CLIENT) {
                         GeneratedCode server = generateStrategy.generateServerCode(
-                                config.getServerPackage(),
                                 fileName,
                                 dto
                         );
@@ -85,7 +90,6 @@ public class FileGenerator {
 
                     if (config.getMode() != GenerateMode.SERVER) {
                         List<GeneratedCode> clients = generateStrategy.generateClientCode(
-                                config.getClientPackage(),
                                 fileName,
                                 dto
                         );

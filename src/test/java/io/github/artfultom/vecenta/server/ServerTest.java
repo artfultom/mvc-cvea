@@ -1,7 +1,7 @@
 package io.github.artfultom.vecenta.server;
 
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
-import io.github.artfultom.vecenta.generate.FileGenerator;
+import io.github.artfultom.vecenta.generate.*;
 import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.generate.config.GenerateMode;
 import io.github.artfultom.vecenta.generated.v1.SumClient;
@@ -44,7 +44,7 @@ public class ServerTest {
                 "test.pack.client"
         );
 
-        List<Path> files = new FileGenerator().generateFiles(config);
+        List<Path> files = new FileGenerator(config).generateFiles();
         assertEquals(6, files.size());
 
         for (Path file : files) {
@@ -76,7 +76,7 @@ public class ServerTest {
                 pack
         );
 
-        List<Path> files = new FileGenerator().generateFiles(config);
+        List<Path> files = new FileGenerator(config).generateFiles();
         assertNotNull(files);
         assertEquals(3, files.size());
 
@@ -108,6 +108,13 @@ public class ServerTest {
             Assert.assertEquals(model.getField2(), result3.getField2());
             Assert.assertEquals(model.getField3(), result3.getField3());
             Assert.assertEquals(model.getField4(), result3.getField4());
+
+            List<Integer> list = List.of(1,2,3);
+            List<Integer> result4 = clientConnector.echo(list);
+            Assert.assertEquals(list, result4);
+
+            List<Model3> result5 = clientConnector.echo(List.of(new Model3()), List.of(new Model3()));
+            Assert.assertEquals(2, result5.size());
         }
     }
 
@@ -126,7 +133,7 @@ public class ServerTest {
                 GenerateMode.CLIENT
         );
 
-        List<Path> files = new FileGenerator().generateFiles(config);
+        List<Path> files = new FileGenerator(config).generateFiles();
         assertNotNull(files);
         assertEquals(2, files.size());
 

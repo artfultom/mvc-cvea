@@ -7,6 +7,8 @@ import java.lang.annotation.*;
 @Inherited
 public @interface Model {
 
+    String name();
+
     String[] order();
 
 }
