@@ -130,22 +130,8 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
             return null;
         }
 
-        TypeConverter firstTypeConverter = TypeConverter.get(collectionType.getFirst());
-        TypeConverter secondTypeConverter = TypeConverter.get(collectionType.getSecond());
-
-        Class<?> firstElementClass;
-        if (firstTypeConverter == null) {
-            firstElementClass = models.get(collectionType.getFirst());
-        } else {
-            firstElementClass = firstTypeConverter.getClazz();
-        }
-
-        Class<?> secondElementClass;
-        if (secondTypeConverter == null) {
-            secondElementClass = models.get(collectionType.getSecond());
-        } else {
-            secondElementClass = secondTypeConverter.getClazz();
-        }
+        Class<?> firstElementClass = getElementClass(collectionType.getFirst());
+        Class<?> secondElementClass = getElementClass(collectionType.getSecond());
 
         switch (collectionType) {
             case SIMPLE:
@@ -247,5 +233,15 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
         }
 
         return null;
+    }
+
+    private Class<?> getElementClass(String type) {
+        TypeConverter firstTypeConverter = TypeConverter.get(type);
+
+        if (firstTypeConverter == null) {
+            return models.get(type);
+        } else {
+            return firstTypeConverter.getClazz();
+        }
     }
 }
