@@ -3,6 +3,7 @@ package io.github.artfultom.vecenta.generated.v1;
 import io.github.artfultom.vecenta.generated.v1.math.Model3;
 import io.github.artfultom.vecenta.matcher.RpcMethod;
 import java.util.List;
+import java.util.Map;
 
 public interface SumServer {
     @RpcMethod(
@@ -44,4 +45,20 @@ public interface SumServer {
             returnType = "[Model3]"
     )
     List<Model3> echo(List<Model3> a, List<Model3> b);
+
+    @RpcMethod(
+            entity = "math",
+            name = "echo",
+            argumentTypes = {"[int32]Model3"},
+            returnType = "[int32]Model3"
+    )
+    Map<Integer, Model3> echo(Map<Integer, Model3> a);
+
+    @RpcMethod(
+            entity = "math",
+            name = "echo",
+            argumentTypes = {"[int32][Model3]", "[int32][Model3]"},
+            returnType = "[int32][Model3]"
+    )
+    Map<Integer, List<Model3>> echo(Map<Integer, List<Model3>> a, Map<Integer, List<Model3>> b);
 }

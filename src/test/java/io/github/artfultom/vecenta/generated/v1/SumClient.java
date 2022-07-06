@@ -10,6 +10,7 @@ import io.github.artfultom.vecenta.transport.message.Response;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SumClient {
     private final Client client;
@@ -98,5 +99,38 @@ public class SumClient {
         }
 
         return convertParamStrategy.convertToObject(result, "[Model3]", List.class);
+    }
+
+    public Map<Integer, Model3> echo(Map<Integer, Model3> a) throws ConnectException,
+            ProtocolException {
+        String name = "math.echo([int32]Model3)->[int32]Model3";
+        List<byte[]> arguments = new ArrayList<>();
+        arguments.add(convertParamStrategy.convertToByteArray(a));
+        Request req = new Request(name, arguments);
+
+        Response resp = client.send(req);
+        byte[] result = resp.getResult();
+        if (result == null) {
+            throw new ProtocolException(resp.getError());
+        }
+
+        return convertParamStrategy.convertToObject(result, "[int32]Model3", Map.class);
+    }
+
+    public Map<Integer, List<Model3>> echo(Map<Integer, List<Model3>> a,
+            Map<Integer, List<Model3>> b) throws ConnectException, ProtocolException {
+        String name = "math.echo([int32][Model3],[int32][Model3])->[int32][Model3]";
+        List<byte[]> arguments = new ArrayList<>();
+        arguments.add(convertParamStrategy.convertToByteArray(a));
+        arguments.add(convertParamStrategy.convertToByteArray(b));
+        Request req = new Request(name, arguments);
+
+        Response resp = client.send(req);
+        byte[] result = resp.getResult();
+        if (result == null) {
+            throw new ProtocolException(resp.getError());
+        }
+
+        return convertParamStrategy.convertToObject(result, "[int32][Model3]", Map.class);
     }
 }

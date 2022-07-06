@@ -3,6 +3,7 @@ package io.github.artfultom.vecenta.generated.v1;
 import io.github.artfultom.vecenta.generated.v1.math.Model3;
 
 import java.util.List;
+import java.util.Map;
 
 public class SumServerImpl implements SumServer {
 
@@ -29,6 +30,18 @@ public class SumServerImpl implements SumServer {
     @Override
     public List<Model3> echo(List<Model3> a, List<Model3> b) {
         a.addAll(b);
+
+        return a;
+    }
+
+    @Override
+    public Map<Integer, Model3> echo(Map<Integer, Model3> a) {
+        return a;
+    }
+
+    @Override
+    public Map<Integer, List<Model3>> echo(Map<Integer, List<Model3>> a, Map<Integer, List<Model3>> b) {
+        a.putAll(b);
 
         return a;
     }

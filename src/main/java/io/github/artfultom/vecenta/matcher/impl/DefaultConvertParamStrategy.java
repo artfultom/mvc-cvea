@@ -12,10 +12,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
@@ -51,7 +48,33 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
             }
         }
 
-        // TODO MAP
+        if (Map.class.isAssignableFrom(in.getClass())) {
+            Map<?, ?> map = (Map<?, ?>) in;
+
+            try (
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    DataOutputStream dataStream = new DataOutputStream(out)
+            ) {
+                dataStream.writeInt(map.size());
+
+                for (Map.Entry<?, ?> entry : map.entrySet()) {
+                    byte[] keyBytes = convertToByteArray(entry.getKey());
+
+                    dataStream.writeInt(keyBytes.length);
+                    dataStream.write(keyBytes);
+
+                    byte[] valBytes = convertToByteArray(entry.getValue());
+
+                    dataStream.writeInt(valBytes.length);
+                    dataStream.write(valBytes);
+                }
+
+                return out.toByteArray();
+            } catch (IOException e) {
+                log.error("Cannot open binary stream for type " + in.getClass().getName(), e);
+                return new byte[0];
+            }
+        }
 
         TypeConverter converter = TypeConverter.get(in.getClass());
         if (converter != null) {
@@ -107,6 +130,23 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
             return null;
         }
 
+        TypeConverter firstTypeConverter = TypeConverter.get(collectionType.getFirst());
+        TypeConverter secondTypeConverter = TypeConverter.get(collectionType.getSecond());
+
+        Class<?> firstElementClass;
+        if (firstTypeConverter == null) {
+            firstElementClass = models.get(collectionType.getFirst());
+        } else {
+            firstElementClass = firstTypeConverter.getClazz();
+        }
+
+        Class<?> secondElementClass;
+        if (secondTypeConverter == null) {
+            secondElementClass = models.get(collectionType.getSecond());
+        } else {
+            secondElementClass = secondTypeConverter.getClazz();
+        }
+
         switch (collectionType) {
             case SIMPLE:
                 TypeConverter converter = TypeConverter.get(type);
@@ -158,34 +198,50 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
 
                 break;
             case LIST:
-                TypeConverter typeConverter = TypeConverter.get(collectionType.getFirst());
-
-                Class<?> elementClass;
-                if (typeConverter == null) {
-                    elementClass = models.get(collectionType.getFirst());
-                } else {
-                    elementClass = typeConverter.getClazz();
-                }
-                if (elementClass == null) {
+                if (firstElementClass == null) {
                     // TODO
                 }
 
-                ByteBuffer buf = ByteBuffer.wrap(in);
+                ByteBuffer listBuffer = ByteBuffer.wrap(in);
 
-                int listSize = buf.getInt();
+                int listSize = listBuffer.getInt();
 
-                List<Object> result = new ArrayList<>(listSize);
+                List<Object> resultList = new ArrayList<>(listSize);
                 for (int i = 0; i < listSize; i++) {
-                    int size = buf.getInt();
-                    byte[] dst = new byte[size];
-                    buf.get(dst);
+                    int size = listBuffer.getInt();
+                    byte[] listByteArray = new byte[size];
+                    listBuffer.get(listByteArray);
 
-                    result.add(convertToObject(dst, collectionType.getFirst(), elementClass));
+                    resultList.add(convertToObject(listByteArray, collectionType.getFirst(), firstElementClass));
                 }
 
-                return (T) result;
+                return (T) resultList;
             case MAP:
-                break;
+                if (firstElementClass == null || secondElementClass == null) {
+                    // TODO
+                }
+
+                ByteBuffer mapBuffer = ByteBuffer.wrap(in);
+
+                int mapSize = mapBuffer.getInt();
+
+                Map<Object, Object> resultMap = new HashMap<>(mapSize);
+                for (int i = 0; i < mapSize; i++) {
+                    int keySize = mapBuffer.getInt();
+                    byte[] keyArray = new byte[keySize];
+                    mapBuffer.get(keyArray);
+
+                    int valSize = mapBuffer.getInt();
+                    byte[] valArray = new byte[valSize];
+                    mapBuffer.get(valArray);
+
+                    resultMap.put(
+                            convertToObject(keyArray, collectionType.getFirst(), firstElementClass),
+                            convertToObject(valArray, collectionType.getSecond(), secondElementClass)
+                    );
+                }
+
+                return (T) resultMap;
             default:
                 // TODO error
         }
