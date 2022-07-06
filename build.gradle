@@ -1,5 +1,5 @@
-apply plugin: 'java-library'
-apply plugin: 'maven-publish'
+apply plugin: "java-library"
+apply plugin: "maven-publish"
 
 group = "io.github.artfultom"
 version = "0.0.3"
@@ -9,12 +9,13 @@ repositories {
 }
 
 dependencies {
-    api 'com.squareup:javapoet:1.13.0'
+    api "com.squareup:javapoet:1.13.0"
 
-    api 'com.fasterxml.jackson.core:jackson-databind:2.10.3'
-    api "org.slf4j:slf4j-api:1.7.32"
+    api "com.fasterxml.jackson.core:jackson-databind:2.10.3"
+    api "org.slf4j:slf4j-api:1.7.36"
 
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "org.slf4j:slf4j-simple:1.7.36"
 }
 
 publishing {

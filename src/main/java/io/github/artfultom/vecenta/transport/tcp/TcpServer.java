@@ -61,7 +61,7 @@ public class TcpServer extends AbstractServer {
 
                 @Override
                 public void failed(Throwable e, Void att) {
-                    log.error(e.getMessage(), e);
+                    log.warn(e.getMessage(), e);
                 }
             });
         } catch (IOException e) {
