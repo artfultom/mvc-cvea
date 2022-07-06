@@ -25,13 +25,13 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
             return new byte[0];
         }
 
-        if (List.class.isAssignableFrom(in.getClass())) {
-            List<?> list = (List<?>) in;
+        try (
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                DataOutputStream dataStream = new DataOutputStream(out)
+        ) {
+            if (List.class.isAssignableFrom(in.getClass())) {
+                List<?> list = (List<?>) in;
 
-            try (
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    DataOutputStream dataStream = new DataOutputStream(out)
-            ) {
                 dataStream.writeInt(list.size());
 
                 for (Object obj : list) {
@@ -42,19 +42,11 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                 }
 
                 return out.toByteArray();
-            } catch (IOException e) {
-                log.error("Cannot open binary stream for type " + in.getClass().getName(), e);
-                return new byte[0];
             }
-        }
 
-        if (Map.class.isAssignableFrom(in.getClass())) {
-            Map<?, ?> map = (Map<?, ?>) in;
+            if (Map.class.isAssignableFrom(in.getClass())) {
+                Map<?, ?> map = (Map<?, ?>) in;
 
-            try (
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    DataOutputStream dataStream = new DataOutputStream(out)
-            ) {
                 dataStream.writeInt(map.size());
 
                 for (Map.Entry<?, ?> entry : map.entrySet()) {
@@ -70,37 +62,29 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                 }
 
                 return out.toByteArray();
-            } catch (IOException e) {
-                log.error("Cannot open binary stream for type " + in.getClass().getName(), e);
+            }
+
+            TypeConverter converter = TypeConverter.get(in.getClass());
+            if (converter != null) {
+                return converter.convert(in);
+            }
+
+            Model model = in.getClass().getAnnotation(Model.class);
+            if (model == null) {
+                log.error("Cannot find an order of fields in model " + in.getClass().getName());
                 return new byte[0];
             }
-        }
 
-        TypeConverter converter = TypeConverter.get(in.getClass());
-        if (converter != null) {
-            return converter.convert(in);
-        }
+            Map<String, Method> methodMap = ReflectionUtils.getPublicGetters(in.getClass()).stream()
+                    .collect(Collectors.toMap(
+                            item -> item.getName().replace("get", "").toLowerCase(),
+                            item -> item
+                    ));
 
-        Model model = in.getClass().getAnnotation(Model.class);
-        if (model == null) {
-            log.error("Cannot find an order of fields in model " + in.getClass().getName());
-            return new byte[0];
-        }
+            List<Method> methods = Arrays.stream(model.order())
+                    .map(item -> methodMap.get(item.toLowerCase()))
+                    .collect(Collectors.toList());
 
-        Map<String, Method> methodMap = ReflectionUtils.getPublicGetters(in.getClass()).stream()
-                .collect(Collectors.toMap(
-                        item -> item.getName().replace("get", "").toLowerCase(),
-                        item -> item
-                ));
-
-        List<Method> methods = Arrays.stream(model.order())
-                .map(item -> methodMap.get(item.toLowerCase()))
-                .collect(Collectors.toList());
-
-        try (
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                DataOutputStream dataStream = new DataOutputStream(out)
-        ) {
             for (Method method : methods) {
                 Object val = method.invoke(in);
                 byte[] bytes = convertToByteArray(val);
@@ -185,7 +169,7 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                 break;
             case LIST:
                 if (firstElementClass == null) {
-                    // TODO
+                    log.error("Element class must not be null. Target=" + target.getName() + "; type=" + type);
                 }
 
                 ByteBuffer listBuffer = ByteBuffer.wrap(in);
@@ -204,7 +188,7 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                 return (T) resultList;
             case MAP:
                 if (firstElementClass == null || secondElementClass == null) {
-                    // TODO
+                    log.error("Element class must not be null. Target=" + target.getName() + "; type=" + type);
                 }
 
                 ByteBuffer mapBuffer = ByteBuffer.wrap(in);
@@ -229,7 +213,7 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
 
                 return (T) resultMap;
             default:
-                // TODO error
+                log.error("Unknown type of CollectionType - " + collectionType);
         }
 
         return null;
