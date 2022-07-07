@@ -2,6 +2,7 @@ package io.github.artfultom.vecenta.generate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.artfultom.vecenta.Configuration;
+import io.github.artfultom.vecenta.exceptions.ValidateException;
 import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.generate.config.GenerateMode;
 import org.slf4j.Logger;
@@ -57,21 +58,21 @@ public class FileGenerator {
             for (Path p : walk.collect(Collectors.toList())) {
                 if (Files.isRegularFile(p) && matcher.matches(p)) {
                     String fileName = p.getFileName().toString();
-//                    try {
-//                        validateStrategy.check(fileName);
-//                    } catch (ValidateException e) {
-//                        log.error(e.getMessage(), e);
-//                        continue;
-//                    }
+                    try {
+                        validateStrategy.check(fileName);
+                    } catch (ValidateException e) {
+                        log.error(e.getMessage(), e);
+                        continue;
+                    }
 
                     String body = Files.readString(p);
                     JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
-//                    try {
-//                        validateStrategy.check(dto);
-//                    } catch (ValidateException e) {
-//                        log.error(e.getMessage(), e);
-//                        continue;
-//                    }
+                    try {
+                        validateStrategy.check(dto);
+                    } catch (ValidateException e) {
+                        log.error(e.getMessage(), e);
+                        continue;
+                    }
 
                     List<GeneratedCode> models = generateStrategy.generateModels(
                             fileName,

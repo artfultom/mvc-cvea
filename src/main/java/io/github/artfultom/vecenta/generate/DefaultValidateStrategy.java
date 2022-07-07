@@ -70,21 +70,26 @@ public class DefaultValidateStrategy implements ValidateStrategy {
 
         for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
             String returnType = method.getOut();
-            if (TypeConverter.get(returnType) == null && !modelNames.contains(returnType)) {
-                throw new ValidateException(String.format(
-                        "Incorrect return type %s of method %s.",
-                        returnType,
-                        method.getName()
-                ));
+
+            for (String name : StringUtils.getSimpleTypes(returnType)) {
+                if (TypeConverter.get(name) == null && !modelNames.contains(name)) {
+                    throw new ValidateException(String.format(
+                            "Incorrect return type %s of method %s.",
+                            returnType,
+                            method.getName()
+                    ));
+                }
             }
 
             for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                if (TypeConverter.get(param.getType()) == null && !modelNames.contains(param.getType())) {
-                    throw new ValidateException(String.format(
-                            "Incorrect argument type %s of method %s.",
-                            param.getType(),
-                            method.getName()
-                    ));
+                for (String name : StringUtils.getSimpleTypes(param.getType())) {
+                    if (TypeConverter.get(name) == null && !modelNames.contains(name)) {
+                        throw new ValidateException(String.format(
+                                "Incorrect argument type %s of method %s.",
+                                param.getType(),
+                                method.getName()
+                        ));
+                    }
                 }
             }
         }
