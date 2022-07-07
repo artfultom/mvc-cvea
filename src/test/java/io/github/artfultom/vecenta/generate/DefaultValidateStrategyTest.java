@@ -74,7 +74,7 @@ public class DefaultValidateStrategyTest {
         Assert.assertNotNull(dto);
 
         ValidateException ex = Assert.assertThrows(ValidateException.class, () -> strategy.check(dto));
-        Assert.assertEquals("Incorrect argument type WRONG_MODEL_NAME of method method.", ex.getMessage());
+        Assert.assertEquals("Incorrect type WRONG_MODEL_NAME.", ex.getMessage());
     }
 
     @Test
@@ -125,6 +125,6 @@ public class DefaultValidateStrategyTest {
         Assert.assertNotNull(dto);
 
         ValidateException ex = Assert.assertThrows(ValidateException.class, () -> strategy.check(dto));
-        Assert.assertEquals("Incorrect return type WRONG_MODEL_NAME of method method.", ex.getMessage());
+        Assert.assertEquals("Incorrect type WRONG_MODEL_NAME.", ex.getMessage());
     }
 }

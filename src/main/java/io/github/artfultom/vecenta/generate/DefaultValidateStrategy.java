@@ -70,27 +70,10 @@ public class DefaultValidateStrategy implements ValidateStrategy {
 
         for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
             String returnType = method.getOut();
-
-            for (String name : StringUtils.getSimpleTypes(returnType)) {
-                if (TypeConverter.get(name) == null && !modelNames.contains(name)) {
-                    throw new ValidateException(String.format(
-                            "Incorrect return type %s of method %s.",
-                            returnType,
-                            method.getName()
-                    ));
-                }
-            }
+            checkType(returnType, modelNames);
 
             for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                for (String name : StringUtils.getSimpleTypes(param.getType())) {
-                    if (TypeConverter.get(name) == null && !modelNames.contains(name)) {
-                        throw new ValidateException(String.format(
-                                "Incorrect argument type %s of method %s.",
-                                param.getType(),
-                                method.getName()
-                        ));
-                    }
-                }
+                checkType(param.getType(), modelNames);
             }
         }
     }
@@ -103,11 +86,7 @@ public class DefaultValidateStrategy implements ValidateStrategy {
 
         for (JsonFormatDto.Entity.Model model : entity.getModels()) {
             for (JsonFormatDto.Entity.Param param : model.getFields()) {
-                for (String type : StringUtils.getSimpleTypes(param.getType())) {
-                    if (TypeConverter.get(type) == null && !modelNames.contains(type)) {
-                        throw new ValidateException(String.format("Unknown type %s.", type));
-                    }
-                }
+                checkType(param.getType(), modelNames);
             }
         }
     }
@@ -132,6 +111,14 @@ public class DefaultValidateStrategy implements ValidateStrategy {
         }
         if (!models.isEmpty()) {
             throw new ValidateException("There is a circle!");
+        }
+    }
+
+    private void checkType(String type, Set<String> modelNames) throws ValidateException {
+        for (String name : StringUtils.getSimpleTypes(type)) {
+            if (TypeConverter.get(name) == null && !modelNames.contains(name)) {
+                throw new ValidateException(String.format("Incorrect type %s.", type));
+            }
         }
     }
 }
