@@ -25,13 +25,12 @@ public abstract class AbstractServer implements Server {
             if (PROTOCOL_NAME.equals(new String(protocolNameArr, StandardCharsets.UTF_8))) {
                 int protocolVersion = buf.getInt();
 
+                ByteBuffer bb = ByteBuffer.allocate(Integer.BYTES);
                 if (protocolVersion == PROTOCOL_VERSION) {
-                    ByteBuffer bb = ByteBuffer.allocate(Integer.BYTES);
                     bb.putInt(0);
 
                     stream.sendMessage(bb.array());
                 } else {
-                    ByteBuffer bb = ByteBuffer.allocate(Integer.BYTES);
                     bb.putInt(MessageError.WRONG_PROTOCOL_VERSION.ordinal());
 
                     stream.sendMessage(bb.array());
