@@ -57,17 +57,12 @@ public class FileGenerator {
         try (Stream<Path> walk = Files.walk(path, MAX_DEPTH)) {
             for (Path p : walk.collect(Collectors.toList())) {
                 if (Files.isRegularFile(p) && matcher.matches(p)) {
+                    String body = Files.readString(p);
+                    JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
+
                     String fileName = p.getFileName().toString();
                     try {
                         validateStrategy.check(fileName);
-                    } catch (ValidateException e) {
-                        log.error(e.getMessage(), e);
-                        continue;
-                    }
-
-                    String body = Files.readString(p);
-                    JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
-                    try {
                         validateStrategy.check(dto);
                     } catch (ValidateException e) {
                         log.error(e.getMessage(), e);
