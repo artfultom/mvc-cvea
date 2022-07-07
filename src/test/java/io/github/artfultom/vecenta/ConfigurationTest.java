@@ -22,4 +22,20 @@ public class ConfigurationTest {
             assertEquals("property wrong_prop not found", e.getMessage());
         }
     }
+
+    @Test
+    public void get() {
+        String value = Configuration.get("send.attempt_count");
+        assertEquals("10", value);
+    }
+
+    @Test
+    public void getError() {
+        try {
+            Configuration.get("wrong_prop");
+            fail();
+        } catch (Exception e) {
+            assertEquals("property wrong_prop not found", e.getMessage());
+        }
+    }
 }
