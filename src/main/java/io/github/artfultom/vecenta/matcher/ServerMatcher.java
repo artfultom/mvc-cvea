@@ -1,5 +1,6 @@
 package io.github.artfultom.vecenta.matcher;
 
+import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.matcher.impl.DefaultConvertParamStrategy;
 import io.github.artfultom.vecenta.matcher.impl.DefaultReadWriteStrategy;
 import io.github.artfultom.vecenta.transport.MethodHandler;
@@ -51,12 +52,16 @@ public class ServerMatcher {
     }
 
     public void register(Class<?> serverClass) {
-        for (Method method : serverClass.getDeclaredMethods()) {    // TODO maybe public methods of interface?
+        for (Method method : serverClass.getDeclaredMethods()) {
             Method interfaceMethod = getInterfaceMethod(method);
             if (interfaceMethod == null) {
                 continue;
             }
+
             RpcMethod rpcMethod = interfaceMethod.getAnnotation(RpcMethod.class);
+            if (rpcMethod == null) {
+                continue;
+            }
 
             String name = getName(rpcMethod);
             MethodHandler handler = new MethodHandler(name, request -> {
@@ -81,10 +86,8 @@ public class ServerMatcher {
 
                     return new Response(responseParam);
                 } catch (
-                        IllegalAccessException |
-                        InstantiationException |
-                        NoSuchMethodException |
-                        InvocationTargetException e
+                        IllegalAccessException | InstantiationException | NoSuchMethodException |
+                        InvocationTargetException | ConvertException e
                 ) {
                     log.error("Cannot register a server class " + serverClass.getName(), e);
                 }
@@ -123,8 +126,6 @@ public class ServerMatcher {
                 .collect(Collectors.toList());
 
         if (methods.isEmpty()) {
-            log.error(String.format("No methods with name \"%s\"", method.getName()));
-
             return null;
         }
         if (methods.size() > 1) {

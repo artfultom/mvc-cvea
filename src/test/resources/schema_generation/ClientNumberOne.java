@@ -1,5 +1,6 @@
 package test.pack.client.v1;
 
+import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.matcher.ConvertParamStrategy;
 import io.github.artfultom.vecenta.matcher.impl.DefaultConvertParamStrategy;
@@ -19,7 +20,8 @@ public class ClientNumberOne {
         this.client = client;
     }
 
-    public Boolean method_name(Integer argument_name) throws ConnectException, ProtocolException {
+    public Boolean method_name(Integer argument_name) throws ConnectException, ProtocolException,
+            ConvertException {
         String name = "entity1.method_name(int32)->boolean";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(argument_name));

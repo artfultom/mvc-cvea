@@ -1,6 +1,7 @@
 package io.github.artfultom.vecenta.generate;
 
 import com.squareup.javapoet.*;
+import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.matcher.*;
@@ -193,7 +194,8 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                     MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
                             .addModifiers(Modifier.PUBLIC)
                             .addException(ConnectException.class)
-                            .addException(ProtocolException.class);
+                            .addException(ProtocolException.class)
+                            .addException(ConvertException.class);
 
                     for (JsonFormatDto.Entity.Param param : method.getIn()) {
                         TypeName typeName = getTypeName(fullPackage, param.getType());

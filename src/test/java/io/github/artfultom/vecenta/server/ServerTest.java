@@ -1,5 +1,6 @@
 package io.github.artfultom.vecenta.server;
 
+import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.generate.FileGenerator;
 import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
@@ -64,7 +65,7 @@ public class ServerTest {
     }
 
     @Test
-    public void testServer() throws URISyntaxException, IOException, ProtocolException {
+    public void testServer() throws URISyntaxException, IOException, ProtocolException, ConvertException {
         URL res = getClass().getResource("/transfer_data");
         assertNotNull(res);
 
@@ -120,13 +121,16 @@ public class ServerTest {
             Map<Integer, Model3> result6 = clientConnector.echo(Map.of(1, new Model3()));
             Assert.assertEquals(1, result6.size());
 
-            Map<Integer, Model3> result7 = clientConnector.echo(Map.of(1, new Model3(), 2, new Model3()));
+            Map<Integer, List<Model3>> result7 = clientConnector.echo(
+                    Map.of(1, List.of(new Model3())),
+                    Map.of(2, List.of(new Model3()))
+            );
             Assert.assertEquals(2, result7.size());
         }
     }
 
     @Test
-    public void testServerFail() throws URISyntaxException, IOException {
+    public void testServerFail() throws URISyntaxException, IOException, ConvertException {
         URL res = getClass().getResource("/transfer_data");
         assertNotNull(res);
 

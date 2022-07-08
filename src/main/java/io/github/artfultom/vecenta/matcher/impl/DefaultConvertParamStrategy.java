@@ -1,5 +1,6 @@
 package io.github.artfultom.vecenta.matcher.impl;
 
+import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.matcher.*;
 import io.github.artfultom.vecenta.util.ReflectionUtils;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
     private static final Logger log = LoggerFactory.getLogger(DefaultConvertParamStrategy.class);
 
     @Override
-    public byte[] convertToByteArray(Object in) {
+    public byte[] convertToByteArray(Object in) throws ConvertException {
         if (in == null) {
             return new byte[0];
         }
@@ -71,8 +72,7 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
 
             Model model = in.getClass().getAnnotation(Model.class);
             if (model == null) {
-                log.error("Cannot find an order of fields in model " + in.getClass().getName());
-                return new byte[0];
+                throw new ConvertException("Cannot find an order of fields in model " + in.getClass().getName());
             }
 
             Map<String, Method> methodMap = ReflectionUtils.getPublicGetters(in.getClass()).stream()
@@ -104,7 +104,11 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
     }
 
     @Override
-    public <T> T convertToObject(byte[] in, String type, Class<T> target) {
+    public <T> T convertToObject(
+            byte[] in,
+            String type,
+            Class<T> target
+    ) throws ConvertException {
         if (in.length == 0) {
             return null;
         }
@@ -115,19 +119,23 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
         }
 
         Class<?> firstElementClass = getElementClass(collectionType.getFirst());
-        Class<?> secondElementClass = getElementClass(collectionType.getSecond());
 
         switch (collectionType) {
             case SIMPLE:
                 TypeConverter converter = TypeConverter.get(type);
                 if (converter != null) {
-                    return (T) converter.convert(in);
+                    Object obj = converter.convert(in);
+
+                    if (target.isInstance(obj)) {
+                        return target.cast(obj);
+                    } else {
+                        throw new ConvertException(String.format("%s must be an instance of %s", obj, target.getName()));
+                    }
                 }
 
                 Model model = target.getAnnotation(Model.class);
                 if (model == null) {
-                    log.error("Cannot find an order of fields in model " + target.getName());
-                    return null;
+                    throw new ConvertException("Cannot find an order of fields in model " + target.getName());
                 }
 
                 Map<String, Method> methodMap = ReflectionUtils.getPublicSetters(target).stream()
@@ -169,7 +177,7 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                 break;
             case LIST:
                 if (firstElementClass == null) {
-                    log.error("Element class must not be null. Target=" + target.getName() + "; type=" + type);
+                    throw new ConvertException("Element class must not be null. Target=" + target.getName() + "; type=" + type);
                 }
 
                 ByteBuffer listBuffer = ByteBuffer.wrap(in);
@@ -185,10 +193,33 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                     resultList.add(convertToObject(listByteArray, collectionType.getFirst(), firstElementClass));
                 }
 
-                return (T) resultList;
+                if (target.isInstance(resultList)) {
+                    return target.cast(resultList);
+                } else {
+                    throw new ConvertException(resultList + " must be an instance of " + target.getName());
+                }
             case MAP:
-                if (firstElementClass == null || secondElementClass == null) {
-                    log.error("Element class must not be null. Target=" + target.getName() + "; type=" + type);
+                if (firstElementClass == null) {
+                    throw new ConvertException("Element class must not be null. Target=" + target.getName() + "; type=" + type);
+                }
+
+                Class<?> secondElementClass = getElementClass(collectionType.getSecond());
+                if (secondElementClass == null) {
+                    CollectionType secondCollectionType = CollectionType.get(collectionType.getSecond());
+                    if (secondCollectionType == null) {
+                        throw new ConvertException("Unknown CollectionType for " + collectionType.getSecond());
+                    }
+
+                    switch (secondCollectionType) {
+                        case LIST:
+                            secondElementClass = List.class;
+                            break;
+                        case MAP:
+                            secondElementClass = Map.class;
+                            break;
+                        default:
+                            throw new ConvertException("Unknown CollectionType for " + collectionType.getSecond());
+                    }
                 }
 
                 ByteBuffer mapBuffer = ByteBuffer.wrap(in);
@@ -211,21 +242,25 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                     );
                 }
 
-                return (T) resultMap;
+                if (target.isInstance(resultMap)) {
+                    return target.cast(resultMap);
+                } else {
+                    throw new ConvertException(resultMap + " must be an instance of " + target.getName());
+                }
             default:
-                log.error("Unknown type of CollectionType - " + collectionType);
+                throw new ConvertException("Unknown type of CollectionType - " + collectionType);
         }
 
         return null;
     }
 
     private Class<?> getElementClass(String type) {
-        TypeConverter firstTypeConverter = TypeConverter.get(type);
+        TypeConverter typeConverter = TypeConverter.get(type);
 
-        if (firstTypeConverter == null) {
+        if (typeConverter == null) {
             return models.get(type);
         } else {
-            return firstTypeConverter.getClazz();
+            return typeConverter.getClazz();
         }
     }
 }
