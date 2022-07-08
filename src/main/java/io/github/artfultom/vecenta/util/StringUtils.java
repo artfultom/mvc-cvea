@@ -1,6 +1,9 @@
 package io.github.artfultom.vecenta.util;
 
+import io.github.artfultom.vecenta.matcher.TypeConverter;
+
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,5 +32,18 @@ public class StringUtils {
         return Arrays.stream(rawSimpleTypes)
                 .filter(item -> item != null && !item.isEmpty())
                 .collect(Collectors.toList());
+    }
+
+    public static String fillModelName(List<String> path, String type) {
+        for (String simple : new HashSet<>(getSimpleTypes(type))) {
+            if (TypeConverter.get(simple) == null) {
+                type = type.replaceAll(
+                        "\\b" + simple + "\\b",
+                        String.join(".", path) + "." + simple
+                );
+            }
+        }
+
+        return type;
     }
 }

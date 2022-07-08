@@ -25,4 +25,16 @@ public class StringUtilsTest {
         assertEquals(List.of("test", "test1"), StringUtils.getSimpleTypes("[test]test1"));
         assertEquals(List.of("test", "test1"), StringUtils.getSimpleTypes("[test][test1]"));
     }
+
+    @Test
+    public void fillModelName() {
+        assertEquals("int32", StringUtils.fillModelName(List.of("client", "entity"),"int32"));
+        assertEquals("client.entity.Model", StringUtils.fillModelName(List.of("client", "entity"),"Model"));
+        assertEquals("[int32]", StringUtils.fillModelName(List.of("client", "entity"),"[int32]"));
+        assertEquals("[client.entity.Model]", StringUtils.fillModelName(List.of("client", "entity"),"[Model]"));
+        assertEquals("[int32]int32", StringUtils.fillModelName(List.of("client", "entity"),"[int32]int32"));
+        assertEquals("[client.entity.Model]client.entity.Model", StringUtils.fillModelName(List.of("client", "entity"),"[Model]Model"));
+        assertEquals("[client.entity.Model][client.entity.Model]", StringUtils.fillModelName(List.of("client", "entity"),"[Model][Model]"));
+    }
+
 }

@@ -25,8 +25,8 @@ public interface SumServer {
     @RpcMethod(
             entity = "math",
             name = "echo",
-            argumentTypes = {"Model3"},
-            returnType = "Model3"
+            argumentTypes = {"SumClient.math.Model3"},
+            returnType = "SumClient.math.Model3"
     )
     Model3 echo(Model3 a);
 
@@ -41,24 +41,24 @@ public interface SumServer {
     @RpcMethod(
             entity = "math",
             name = "echo",
-            argumentTypes = {"[Model3]", "[Model3]"},
-            returnType = "[Model3]"
+            argumentTypes = {"[SumClient.math.Model3]", "[SumClient.math.Model3]"},
+            returnType = "[SumClient.math.Model3]"
     )
     List<Model3> echo(List<Model3> a, List<Model3> b);
 
     @RpcMethod(
             entity = "math",
             name = "echo",
-            argumentTypes = {"[int32]Model3"},
-            returnType = "[int32]Model3"
+            argumentTypes = {"[int32]SumClient.math.Model3"},
+            returnType = "[int32]SumClient.math.Model3"
     )
     Map<Integer, Model3> echo(Map<Integer, Model3> a);
 
     @RpcMethod(
             entity = "math",
             name = "echo",
-            argumentTypes = {"[int32][Model3]", "[int32][Model3]"},
-            returnType = "[int32][Model3]"
+            argumentTypes = {"[int32][SumClient.math.Model3]", "[int32][SumClient.math.Model3]"},
+            returnType = "[int32][SumClient.math.Model3]"
     )
     Map<Integer, List<Model3>> echo(Map<Integer, List<Model3>> a, Map<Integer, List<Model3>> b);
 }

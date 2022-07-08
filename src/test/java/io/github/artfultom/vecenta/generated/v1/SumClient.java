@@ -58,7 +58,7 @@ public class SumClient {
     }
 
     public Model3 echo(Model3 a) throws ConnectException, ProtocolException, ConvertException {
-        String name = "math.echo(Model3)->Model3";
+        String name = "math.echo(SumClient.math.Model3)->SumClient.math.Model3";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(a));
         Request req = new Request(name, arguments);
@@ -69,7 +69,7 @@ public class SumClient {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(result, "Model3", Model3.class);
+        return convertParamStrategy.convertToObject(result, "SumClient.math.Model3", Model3.class);
     }
 
     public List<Integer> echo(List<Integer> a) throws ConnectException, ProtocolException,
@@ -90,7 +90,7 @@ public class SumClient {
 
     public List<Model3> echo(List<Model3> a, List<Model3> b) throws ConnectException,
             ProtocolException, ConvertException {
-        String name = "math.echo([Model3],[Model3])->[Model3]";
+        String name = "math.echo([SumClient.math.Model3],[SumClient.math.Model3])->[SumClient.math.Model3]";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(a));
         arguments.add(convertParamStrategy.convertToByteArray(b));
@@ -102,12 +102,12 @@ public class SumClient {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(result, "[Model3]", List.class);
+        return convertParamStrategy.convertToObject(result, "[SumClient.math.Model3]", List.class);
     }
 
     public Map<Integer, Model3> echo(Map<Integer, Model3> a) throws ConnectException,
             ProtocolException, ConvertException {
-        String name = "math.echo([int32]Model3)->[int32]Model3";
+        String name = "math.echo([int32]SumClient.math.Model3)->[int32]SumClient.math.Model3";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(a));
         Request req = new Request(name, arguments);
@@ -118,13 +118,13 @@ public class SumClient {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(result, "[int32]Model3", Map.class);
+        return convertParamStrategy.convertToObject(result, "[int32]SumClient.math.Model3", Map.class);
     }
 
     public Map<Integer, List<Model3>> echo(Map<Integer, List<Model3>> a,
             Map<Integer, List<Model3>> b) throws ConnectException, ProtocolException,
             ConvertException {
-        String name = "math.echo([int32][Model3],[int32][Model3])->[int32][Model3]";
+        String name = "math.echo([int32][SumClient.math.Model3],[int32][SumClient.math.Model3])->[int32][SumClient.math.Model3]";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(a));
         arguments.add(convertParamStrategy.convertToByteArray(b));
@@ -136,6 +136,6 @@ public class SumClient {
             throw new ProtocolException(resp.getError());
         }
 
-        return convertParamStrategy.convertToObject(result, "[int32][Model3]", Map.class);
+        return convertParamStrategy.convertToObject(result, "[int32][SumClient.math.Model3]", Map.class);
     }
 }
