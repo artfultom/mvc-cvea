@@ -119,7 +119,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                                             .map(item -> CodeBlock.of("$S", item.getType()))
                                             .collect(CodeBlock.joining(", ", "{", "}"))
                             )
-                            .addMember("returnType", "\"" + method.getOut() + "\"")
+                            .addMember("returnType", "$S", method.getOut())
                             .build();
 
                     MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
