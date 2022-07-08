@@ -1,11 +1,13 @@
 package io.github.artfultom.vecenta.util;
 
+import io.github.artfultom.vecenta.matcher.Model;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -74,7 +76,15 @@ public class ReflectionUtilsTest {
     }
 
     @Test
-    public void findModelClasses() {
-        // TODO
+    public void findModelClasses() throws IOException {
+        Set<Class<?>> classes = ReflectionUtils.findModelClasses();
+        assertNotNull(classes);
+        assertEquals(1, classes.size());
+
+        for (Class<?> clazz : classes) {
+            if (!clazz.isAnnotationPresent(Model.class)) {
+                fail();
+            }
+        }
     }
 }
