@@ -54,48 +54,46 @@ public class ServerMatcher {
     public void register(Class<?> serverClass) {
         for (Method method : serverClass.getDeclaredMethods()) {
             Method interfaceMethod = getInterfaceMethod(method);
-            if (interfaceMethod == null) {
-                continue;
-            }
 
-            RpcMethod rpcMethod = interfaceMethod.getAnnotation(RpcMethod.class);
-            if (rpcMethod == null) {
-                continue;
-            }
+            if (interfaceMethod != null) {
+                RpcMethod rpcMethod = interfaceMethod.getAnnotation(RpcMethod.class);
 
-            String name = getName(rpcMethod);
-            MethodHandler handler = new MethodHandler(name, request -> {
-                try {
-                    List<Object> requestParams = new ArrayList<>();
-                    for (int i = 0; i < request.getParams().size(); i++) {
-                        byte[] param = request.getParams().get(i);
+                if (rpcMethod != null) {
+                    String name = getName(rpcMethod);
+                    MethodHandler handler = new MethodHandler(name, request -> {
+                        try {
+                            List<Object> requestParams = new ArrayList<>();
+                            for (int i = 0; i < request.getParams().size(); i++) {
+                                byte[] param = request.getParams().get(i);
 
-                        requestParams.add(convertParamStrategy.convertToObject(
-                                param,
-                                rpcMethod.argumentTypes()[i],
-                                method.getParameterTypes()[i]
-                        ));
-                    }
+                                requestParams.add(convertParamStrategy.convertToObject(
+                                        param,
+                                        rpcMethod.argumentTypes()[i],
+                                        method.getParameterTypes()[i]
+                                ));
+                            }
 
-                    Object result = method.invoke(
-                            serverClass.getDeclaredConstructor().newInstance(),
-                            requestParams.toArray()
-                    );
+                            Object result = method.invoke(
+                                    serverClass.getDeclaredConstructor().newInstance(),
+                                    requestParams.toArray()
+                            );
 
-                    byte[] responseParam = convertParamStrategy.convertToByteArray(result);
+                            byte[] responseParam = convertParamStrategy.convertToByteArray(result);
 
-                    return new Response(responseParam);
-                } catch (
-                        IllegalAccessException | InstantiationException | NoSuchMethodException |
-                        InvocationTargetException | ConvertException e
-                ) {
-                    log.error("Cannot register a server class " + serverClass.getName(), e);
+                            return new Response(responseParam);
+                        } catch (
+                                IllegalAccessException | InstantiationException | NoSuchMethodException |
+                                InvocationTargetException | ConvertException e
+                        ) {
+                            log.error("Cannot register a server class " + serverClass.getName(), e);
+                        }
+
+                        return new Response(MessageError.WRONG_METHOD_NAME);
+                    });
+
+                    register(handler);
                 }
-
-                return new Response(MessageError.WRONG_METHOD_NAME);
-            });
-
-            register(handler);
+            }
         }
     }
 
@@ -129,7 +127,7 @@ public class ServerMatcher {
             return null;
         }
         if (methods.size() > 1) {
-            log.warn("Too many methods with name \"" + method.getName() + "\". count=" + methods.size());
+            log.warn(String.format("Too many methods with name \"%s\". count=%d", method.getName(), methods.size()));
         }
 
         return methods.get(0);

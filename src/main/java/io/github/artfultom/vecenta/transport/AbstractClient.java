@@ -33,7 +33,7 @@ public abstract class AbstractClient implements Client {
         int result = bb.asIntBuffer().get();
 
         if (result != 0) {
-            log.error("Handshake error: " + MessageError.get(result));
+            log.error(String.format("Handshake error: %s", MessageError.get(result)));
         }
     }
 }

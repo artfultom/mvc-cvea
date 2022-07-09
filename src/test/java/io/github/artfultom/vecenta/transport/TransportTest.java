@@ -118,7 +118,7 @@ public class TransportTest {
     }
 
     @Test
-    public void error2Clients() {
+    public void error2Clients() throws IOException {
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams().get(0))));
 
@@ -127,13 +127,12 @@ public class TransportTest {
 
         try (Client client = new TcpClient()) {
             client.startConnection("127.0.0.1", 5550);
-
             server.close();
 
-            client.send(new Request("echo", new ArrayList<>()));
-
-            Assert.fail();
-        } catch (IOException ignored) {
+            Assert.assertThrows(
+                    IOException.class,
+                    () -> client.send(new Request("echo", new ArrayList<>()))
+            );
         }
     }
 

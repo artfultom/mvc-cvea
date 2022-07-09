@@ -35,7 +35,7 @@ public abstract class AbstractServer implements Server {
 
                     stream.sendMessage(bb.array());
 
-                    log.error("Wrong protocol version: " + protocolVersion);
+                    log.error(String.format("Wrong protocol version: %d", protocolVersion));
                 }
 
                 return;
