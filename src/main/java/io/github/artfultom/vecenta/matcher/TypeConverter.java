@@ -21,12 +21,12 @@ public enum TypeConverter {
     BYTE(Byte.class, "int8") {
         @Override
         public byte[] convert(Object in) {
-            return ByteBuffer.allocate(Byte.BYTES).put((Byte) in).array();
+            return new byte[]{(byte) in};
         }
 
         @Override
         public Byte convert(byte[] in) {
-            return ByteBuffer.wrap(in).get();
+            return in[0];
         }
     },
     SHORT(Short.class, "int16") {
