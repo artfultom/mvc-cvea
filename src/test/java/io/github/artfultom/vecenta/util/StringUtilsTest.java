@@ -3,6 +3,7 @@ package io.github.artfultom.vecenta.util;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -19,11 +20,10 @@ public class StringUtilsTest {
 
     @Test
     public void getSimpleTypes() {
-        assertEquals(List.of("test"), StringUtils.getSimpleTypes("test"));
-        assertEquals(List.of("test"), StringUtils.getSimpleTypes("[test]"));
-        assertEquals(List.of("test", "test"), StringUtils.getSimpleTypes("[test]test"));
-        assertEquals(List.of("test", "test1"), StringUtils.getSimpleTypes("[test]test1"));
-        assertEquals(List.of("test", "test1"), StringUtils.getSimpleTypes("[test][test1]"));
+        assertEquals(Set.of("test"), StringUtils.getSimpleTypes("test"));
+        assertEquals(Set.of("test"), StringUtils.getSimpleTypes("[test]"));
+        assertEquals(Set.of("test", "test1"), StringUtils.getSimpleTypes("[test]test1"));
+        assertEquals(Set.of("test", "test1"), StringUtils.getSimpleTypes("[test][test1]"));
     }
 
     @Test

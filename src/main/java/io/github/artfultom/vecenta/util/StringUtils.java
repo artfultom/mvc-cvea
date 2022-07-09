@@ -3,8 +3,8 @@ package io.github.artfultom.vecenta.util;
 import io.github.artfultom.vecenta.matcher.TypeConverter;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class StringUtils {
@@ -23,7 +23,7 @@ public class StringUtils {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
-    public static List<String> getSimpleTypes(String type) {
+    public static Set<String> getSimpleTypes(String type) {
         String[] rawSimpleTypes = type
                 .replace("[", "'")
                 .replace("]", "'")
@@ -31,11 +31,11 @@ public class StringUtils {
 
         return Arrays.stream(rawSimpleTypes)
                 .filter(item -> item != null && !item.isEmpty())
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     public static String fillModelName(List<String> path, String type) {
-        for (String simple : new HashSet<>(getSimpleTypes(type))) {
+        for (String simple : getSimpleTypes(type)) {
             if (TypeConverter.get(simple) == null) {
                 type = type.replaceAll(
                         "\\b" + simple + "\\b",

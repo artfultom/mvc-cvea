@@ -295,20 +295,18 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
     private TypeName getTypeName(String pack, String name) {
         TypeName result;
 
-        List<String> names = StringUtils.getSimpleTypes(name);
+        CollectionType collectionType = CollectionType.get(name);
+        if (collectionType == null) {
+            return null;
+        }
 
-        Class<?> type = convertToTypeName(names.get(0));
+        Class<?> type = convertToTypeName(collectionType.getFirst());
         if (type == null) {
-            String capitalType = StringUtils.capitalizeFirstLetter(names.get(0));
+            String capitalType = StringUtils.capitalizeFirstLetter(collectionType.getFirst());
 
             result = ClassName.get(pack, capitalType).box();
         } else {
             result = TypeName.get(type);
-        }
-
-        CollectionType collectionType = CollectionType.get(name);
-        if (collectionType == null) {
-            return null;
         }
 
         if (collectionType == CollectionType.LIST) {
