@@ -2,6 +2,7 @@ package io.github.artfultom.vecenta.util;
 
 import io.github.artfultom.vecenta.matcher.TypeConverter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -35,15 +36,38 @@ public class StringUtils {
     }
 
     public static String fillModelName(List<String> path, String type) {
-        for (String simple : getSimpleTypes(type)) {
-            if (TypeConverter.get(simple) == null) {
-                type = type.replaceAll(
-                        "\\b" + simple + "\\b",
-                        String.join(".", path) + "." + simple
-                );
+        List<String> list = new ArrayList<>();
+
+        StringBuilder sb = new StringBuilder();
+        for (String s : type.split("")) {
+            if (s.equals("[") || s.equals("]")) {
+                if (sb.length() > 0) {
+                    list.add(sb.toString());
+                }
+                sb = new StringBuilder();
+
+                list.add(s);
+            } else {
+                sb.append(s);
             }
         }
+        if (sb.length() > 0) {
+            list.add(sb.toString());
+        }
 
-        return type;
+        list = list.stream()
+                .map(item -> {
+                    if (item.equals("[") || item.equals("]")) {
+                        return item;
+                    }
+
+                    if (TypeConverter.get(item) == null) {
+                        return String.join(".", path) + "." + item;
+                    }
+
+                    return item;
+                }).collect(Collectors.toList());
+
+        return String.join("", list);
     }
 }
