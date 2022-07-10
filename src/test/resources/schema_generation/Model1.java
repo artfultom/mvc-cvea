@@ -6,7 +6,7 @@ import java.util.List;
 
 @Model(
         name = "ClientNumberOne.entity1.model1",
-        order = {"field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "field11", "field12", "field13", "field14", "field15", "field16", "field17"}
+        order = {"field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "field11", "field12", "field13", "field14", "field15", "field16", "field17", "field18"}
 )
 public class Model1 {
     @ModelField(
@@ -90,9 +90,14 @@ public class Model1 {
     private List<Double> field16;
 
     @ModelField(
+            type = "model2"
+    )
+    private Model2 field17;
+
+    @ModelField(
             type = "[model2]"
     )
-    private List<Model2> field17;
+    private List<Model2> field18;
 
     public Model1() {
     }
@@ -225,11 +230,19 @@ public class Model1 {
         this.field16 = field16;
     }
 
-    public List<Model2> getField17() {
+    public Model2 getField17() {
         return this.field17;
     }
 
-    public void setField17(List<Model2> field17) {
+    public void setField17(Model2 field17) {
         this.field17 = field17;
+    }
+
+    public List<Model2> getField18() {
+        return this.field18;
+    }
+
+    public void setField18(List<Model2> field18) {
+        this.field18 = field18;
     }
 }
