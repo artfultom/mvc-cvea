@@ -1,6 +1,6 @@
 package test.pack.server.v1;
 
-import io.github.artfultom.vecenta.matcher.RpcMethod;
+import io.github.artfultom.vecenta.matcher.annotations.RpcMethod;
 
 public interface ServerNumberTwo {
     @RpcMethod(

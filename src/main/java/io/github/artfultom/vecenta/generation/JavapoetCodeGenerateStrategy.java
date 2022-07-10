@@ -1,11 +1,16 @@
-package io.github.artfultom.vecenta.generate;
+package io.github.artfultom.vecenta.generation;
 
 import com.squareup.javapoet.*;
 import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
-import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
-import io.github.artfultom.vecenta.matcher.*;
-import io.github.artfultom.vecenta.matcher.impl.DefaultConvertParamStrategy;
+import io.github.artfultom.vecenta.generation.config.GenerateConfiguration;
+import io.github.artfultom.vecenta.matcher.CollectionType;
+import io.github.artfultom.vecenta.matcher.TypeConverter;
+import io.github.artfultom.vecenta.matcher.annotations.Model;
+import io.github.artfultom.vecenta.matcher.annotations.ModelField;
+import io.github.artfultom.vecenta.matcher.annotations.RpcMethod;
+import io.github.artfultom.vecenta.matcher.param.ConvertParamStrategy;
+import io.github.artfultom.vecenta.matcher.param.DefaultConvertParamStrategy;
 import io.github.artfultom.vecenta.transport.Client;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;

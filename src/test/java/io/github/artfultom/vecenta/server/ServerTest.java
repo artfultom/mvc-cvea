@@ -2,9 +2,9 @@ package io.github.artfultom.vecenta.server;
 
 import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
-import io.github.artfultom.vecenta.generate.FileGenerator;
-import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
-import io.github.artfultom.vecenta.generate.config.GenerateMode;
+import io.github.artfultom.vecenta.generation.FileGenerator;
+import io.github.artfultom.vecenta.generation.config.GenerateConfiguration;
+import io.github.artfultom.vecenta.generation.config.GenerateMode;
 import io.github.artfultom.vecenta.generated.v1.SumClient;
 import io.github.artfultom.vecenta.generated.v1.math.Model3;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;

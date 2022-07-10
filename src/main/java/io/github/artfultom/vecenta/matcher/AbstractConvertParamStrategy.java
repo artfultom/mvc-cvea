@@ -1,6 +1,8 @@
 package io.github.artfultom.vecenta.matcher;
 
 import io.github.artfultom.vecenta.exceptions.InnerException;
+import io.github.artfultom.vecenta.matcher.annotations.Model;
+import io.github.artfultom.vecenta.matcher.param.ConvertParamStrategy;
 import io.github.artfultom.vecenta.util.ReflectionUtils;
 
 import java.io.IOException;

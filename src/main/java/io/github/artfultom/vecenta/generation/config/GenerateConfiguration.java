@@ -1,4 +1,4 @@
-package io.github.artfultom.vecenta.generate.config;
+package io.github.artfultom.vecenta.generation.config;
 
 import java.nio.file.Path;
 

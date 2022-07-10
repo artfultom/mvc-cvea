@@ -1,7 +1,7 @@
 package test.pack.model.v1.entity1;
 
-import io.github.artfultom.vecenta.matcher.Model;
-import io.github.artfultom.vecenta.matcher.ModelField;
+import io.github.artfultom.vecenta.matcher.annotations.Model;
+import io.github.artfultom.vecenta.matcher.annotations.ModelField;
 import java.util.List;
 
 @Model(

@@ -1,7 +1,7 @@
 package io.github.artfultom.vecenta.util;
 
-import io.github.artfultom.vecenta.matcher.Model;
-import io.github.artfultom.vecenta.matcher.RpcMethod;
+import io.github.artfultom.vecenta.matcher.annotations.Model;
+import io.github.artfultom.vecenta.matcher.annotations.RpcMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

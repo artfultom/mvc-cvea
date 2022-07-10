@@ -1,4 +1,4 @@
-package io.github.artfultom.vecenta.generate;
+package io.github.artfultom.vecenta.generation;
 
 import java.util.List;
 

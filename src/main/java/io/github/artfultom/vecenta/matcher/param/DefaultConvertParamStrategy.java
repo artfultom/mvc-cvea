@@ -1,7 +1,11 @@
-package io.github.artfultom.vecenta.matcher.impl;
+package io.github.artfultom.vecenta.matcher.param;
 
 import io.github.artfultom.vecenta.exceptions.ConvertException;
-import io.github.artfultom.vecenta.matcher.*;
+import io.github.artfultom.vecenta.matcher.AbstractConvertParamStrategy;
+import io.github.artfultom.vecenta.matcher.CollectionType;
+import io.github.artfultom.vecenta.matcher.TypeConverter;
+import io.github.artfultom.vecenta.matcher.annotations.Model;
+import io.github.artfultom.vecenta.matcher.annotations.ModelField;
 import io.github.artfultom.vecenta.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

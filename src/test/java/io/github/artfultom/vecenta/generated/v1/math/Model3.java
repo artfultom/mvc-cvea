@@ -1,7 +1,7 @@
 package io.github.artfultom.vecenta.generated.v1.math;
 
-import io.github.artfultom.vecenta.matcher.Model;
-import io.github.artfultom.vecenta.matcher.ModelField;
+import io.github.artfultom.vecenta.matcher.annotations.Model;
+import io.github.artfultom.vecenta.matcher.annotations.ModelField;
 
 @Model(
         name = "SumClient.math.Model3",

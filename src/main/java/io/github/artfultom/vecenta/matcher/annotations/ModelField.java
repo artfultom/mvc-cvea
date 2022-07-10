@@ -1,4 +1,4 @@
-package io.github.artfultom.vecenta.matcher;
+package io.github.artfultom.vecenta.matcher.annotations;
 
 import java.lang.annotation.*;
 

@@ -1,8 +1,9 @@
 package io.github.artfultom.vecenta.matcher;
 
 import io.github.artfultom.vecenta.exceptions.ConvertException;
-import io.github.artfultom.vecenta.matcher.impl.DefaultConvertParamStrategy;
-import io.github.artfultom.vecenta.matcher.impl.DefaultReadWriteStrategy;
+import io.github.artfultom.vecenta.matcher.annotations.RpcMethod;
+import io.github.artfultom.vecenta.matcher.param.ConvertParamStrategy;
+import io.github.artfultom.vecenta.matcher.param.DefaultConvertParamStrategy;
 import io.github.artfultom.vecenta.transport.MethodHandler;
 import io.github.artfultom.vecenta.transport.error.MessageError;
 import io.github.artfultom.vecenta.transport.message.Request;

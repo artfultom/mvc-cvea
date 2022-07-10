@@ -1,7 +1,7 @@
 package io.github.artfultom.vecenta.generated.v1;
 
 import io.github.artfultom.vecenta.generated.v1.math.Model3;
-import io.github.artfultom.vecenta.matcher.RpcMethod;
+import io.github.artfultom.vecenta.matcher.annotations.RpcMethod;
 import java.util.List;
 import java.util.Map;
 

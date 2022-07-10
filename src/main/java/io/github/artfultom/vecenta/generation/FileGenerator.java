@@ -1,10 +1,12 @@
-package io.github.artfultom.vecenta.generate;
+package io.github.artfultom.vecenta.generation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.artfultom.vecenta.Configuration;
 import io.github.artfultom.vecenta.exceptions.ValidateException;
-import io.github.artfultom.vecenta.generate.config.GenerateConfiguration;
-import io.github.artfultom.vecenta.generate.config.GenerateMode;
+import io.github.artfultom.vecenta.generation.config.GenerateConfiguration;
+import io.github.artfultom.vecenta.generation.config.GenerateMode;
+import io.github.artfultom.vecenta.generation.validation.DefaultValidateStrategy;
+import io.github.artfultom.vecenta.generation.validation.ValidateStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

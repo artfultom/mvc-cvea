@@ -1,6 +1,6 @@
 package io.github.artfultom.vecenta.util;
 
-import io.github.artfultom.vecenta.matcher.Model;
+import io.github.artfultom.vecenta.matcher.annotations.Model;
 import org.junit.Test;
 
 import java.io.IOException;

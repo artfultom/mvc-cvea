@@ -1,7 +1,8 @@
-package io.github.artfultom.vecenta.generate;
+package io.github.artfultom.vecenta.generation.validation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.artfultom.vecenta.exceptions.ValidateException;
+import io.github.artfultom.vecenta.generation.JsonFormatDto;
 import org.junit.Assert;
 import org.junit.Test;
 
