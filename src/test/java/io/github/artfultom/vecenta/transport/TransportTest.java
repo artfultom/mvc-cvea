@@ -53,72 +53,19 @@ public class TransportTest {
     }
 
     @Test
-    public void timeoutClients() {
-        ServerMatcher matcher = new ServerMatcher();
-        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams().get(0))));
-
-        try (TcpServer server = new TcpServer()) {
-            server.setTimeout(100);
-            server.start(5550, matcher);
-
-            List<CompletableFuture<Void>> futures = new ArrayList<>();
-            for (int i = 0; i < 1; i++) {
-                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                    try (Client client = new TcpClient()) {
-                        client.startConnection("127.0.0.1", 5550);
-
-                        for (int j = 0; j < 5; j++) {
-                            byte[] param = ("param" + j).getBytes();
-                            Response resp = client.send(new Request("echo", List.of(param)));
-
-                            Assert.assertNotNull(resp.getResult());
-                            Assert.assertArrayEquals(param, resp.getResult());
-
-                            try {
-                                Thread.sleep(150);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-
-                futures.add(future);
-            }
-
-            for (CompletableFuture<Void> future : futures) {
-                future.join();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void error1Clients() {
-        ServerMatcher matcher = new ServerMatcher();
-        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams().get(0))));
-
-        try (TcpServer server = new TcpServer()) {
-            server.start(5550, matcher);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    public void errorConnectionRefused() throws IOException {
         for (int i = 0; i < 10; i++) {
             try (Client client = new TcpClient()) {
-                client.startConnection("127.0.0.1", 5550);
-
-                Assert.fail();
-            } catch (IOException ignored) {
+                Assert.assertThrows(
+                        IOException.class,
+                        () -> client.startConnection("127.0.0.1", 5550)
+                );
             }
         }
     }
 
     @Test
-    public void error2Clients() throws IOException {
+    public void errorServerClosed() throws IOException {
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams().get(0))));
 
@@ -137,7 +84,7 @@ public class TransportTest {
     }
 
     @Test
-    public void error1Handler() {
+    public void error1Handler() throws IOException {
         ServerMatcher matcher = new ServerMatcher();
 
         try (TcpServer server = new TcpServer(); Client client = new TcpClient()) {
@@ -149,13 +96,11 @@ public class TransportTest {
             Assert.assertNotNull(response);
             Assert.assertNotNull(response.getError());
             Assert.assertNull(response.getResult());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
     @Test
-    public void error2Handler() {
+    public void error2Handler() throws IOException {
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams().get(0))));
 
@@ -168,13 +113,11 @@ public class TransportTest {
             Assert.assertNotNull(response);
             Assert.assertNotNull(response.getError());
             Assert.assertNull(response.getResult());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
     @Test
-    public void manyResults() {
+    public void manyResults() throws IOException {
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("double", (request) -> {
             request.getParams().addAll(request.getParams());
@@ -190,8 +133,6 @@ public class TransportTest {
             Assert.assertNotNull(response);
             Assert.assertNull(response.getError());
             Assert.assertNotNull(response.getResult());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

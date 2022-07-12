@@ -72,6 +72,7 @@ public class TcpClient extends AbstractClient {
             } catch (ConnectException e) {
                 throw e;
             } catch (SocketException | EOFException e) {
+                log.info(String.format("Reconnecting to %s:%d", host, port));
                 connect();
             } catch (IOException e) {
                 log.error("IO error during sending message to " + host + ":" + port, e);
