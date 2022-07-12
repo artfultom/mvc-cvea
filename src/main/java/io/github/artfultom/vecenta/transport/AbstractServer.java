@@ -15,7 +15,7 @@ public abstract class AbstractServer implements Server {
     public static final String PROTOCOL_NAME = "vcea";
 
     protected void handshake(MessageStream stream) {
-        byte[] handshake = stream.getNextMessage();
+        byte[] handshake = stream.getMessage();
 
         if (handshake.length > 4) {
             byte[] protocolNameArr = new byte[PROTOCOL_NAME.length()];

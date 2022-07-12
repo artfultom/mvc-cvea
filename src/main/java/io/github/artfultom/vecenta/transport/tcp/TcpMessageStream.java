@@ -26,8 +26,7 @@ public class TcpMessageStream implements MessageStream {
     }
 
     @Override
-    public byte[] getNextMessage() {
-        int size;
+    public byte[] getMessage() {
         ByteBuffer sizeBuf = ByteBuffer.allocate(Integer.BYTES);
 
         try {
@@ -38,7 +37,7 @@ public class TcpMessageStream implements MessageStream {
                 }
             }
 
-            size = sizeBuf.getInt(0);
+            int size = sizeBuf.getInt(0);
             if (size == 0) {
                 return new byte[0];
             }

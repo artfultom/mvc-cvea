@@ -2,7 +2,7 @@ package io.github.artfultom.vecenta.transport;
 
 public interface MessageStream extends AutoCloseable {
 
-    byte[] getNextMessage();
+    byte[] getMessage();
 
     void sendMessage(byte[] resp);
 }
