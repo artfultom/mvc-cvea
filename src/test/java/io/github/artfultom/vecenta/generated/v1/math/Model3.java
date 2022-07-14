@@ -4,7 +4,7 @@ import io.github.artfultom.vecenta.matcher.annotations.Model;
 import io.github.artfultom.vecenta.matcher.annotations.ModelField;
 
 @Model(
-        name = "SumClient.math.Model3",
+        name = "TestClient.math.Model3",
         order = {"field1", "field2", "field3", "field4"}
 )
 public class Model3 {

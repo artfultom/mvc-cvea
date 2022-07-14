@@ -5,7 +5,7 @@ import io.github.artfultom.vecenta.matcher.annotations.RpcMethod;
 import java.util.List;
 import java.util.Map;
 
-public interface SumServer {
+public interface TestServer {
     @RpcMethod(
             entity = "math",
             name = "sum",
@@ -25,8 +25,8 @@ public interface SumServer {
     @RpcMethod(
             entity = "math",
             name = "echo",
-            argumentTypes = {"SumClient.math.Model3"},
-            returnType = "SumClient.math.Model3"
+            argumentTypes = {"TestClient.math.Model3"},
+            returnType = "TestClient.math.Model3"
     )
     Model3 echo(Model3 a);
 
@@ -41,24 +41,24 @@ public interface SumServer {
     @RpcMethod(
             entity = "math",
             name = "echo",
-            argumentTypes = {"[SumClient.math.Model3]", "[SumClient.math.Model3]"},
-            returnType = "[SumClient.math.Model3]"
+            argumentTypes = {"[TestClient.math.Model3]", "[TestClient.math.Model3]"},
+            returnType = "[TestClient.math.Model3]"
     )
     List<Model3> echo(List<Model3> a, List<Model3> b);
 
     @RpcMethod(
             entity = "math",
             name = "echo",
-            argumentTypes = {"[int32]SumClient.math.Model3"},
-            returnType = "[int32]SumClient.math.Model3"
+            argumentTypes = {"[int32]TestClient.math.Model3"},
+            returnType = "[int32]TestClient.math.Model3"
     )
     Map<Integer, Model3> echo(Map<Integer, Model3> a);
 
     @RpcMethod(
             entity = "math",
             name = "echo",
-            argumentTypes = {"[int32][SumClient.math.Model3]", "[int32][SumClient.math.Model3]"},
-            returnType = "[int32][SumClient.math.Model3]"
+            argumentTypes = {"[int32][TestClient.math.Model3]", "[int32][TestClient.math.Model3]"},
+            returnType = "[int32][TestClient.math.Model3]"
     )
     Map<Integer, List<Model3>> echo(Map<Integer, List<Model3>> a, Map<Integer, List<Model3>> b);
 }

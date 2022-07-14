@@ -5,7 +5,7 @@ import io.github.artfultom.vecenta.generated.v1.math.Model3;
 import java.util.List;
 import java.util.Map;
 
-public class SumServerImpl implements SumServer {
+public class TestServerImpl implements TestServer {
 
     @Override
     public Integer sum(Integer a, Integer b) {

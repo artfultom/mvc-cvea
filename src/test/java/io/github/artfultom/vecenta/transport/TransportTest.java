@@ -3,7 +3,7 @@ package io.github.artfultom.vecenta.transport;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
-import io.github.artfultom.vecenta.transport.tcp.TcpClient;
+import io.github.artfultom.vecenta.transport.tcp.TcpConnector;
 import io.github.artfultom.vecenta.transport.tcp.TcpServer;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,8 +26,8 @@ public class TransportTest {
             List<CompletableFuture<Void>> futures = new ArrayList<>();
             for (int i = 0; i < 1000; i++) {
                 CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                    try (TcpClient client = new TcpClient()) {
-                        client.startConnection("127.0.0.1", 5550);
+                    try (TcpConnector client = new TcpConnector()) {
+                        client.connect("127.0.0.1", 5550);
 
                         for (int j = 0; j < 100; j++) {
                             byte[] param1 = ("param1" + j).getBytes();
@@ -55,10 +55,10 @@ public class TransportTest {
     @Test
     public void errorConnectionRefused() throws IOException {
         for (int i = 0; i < 10; i++) {
-            try (Client client = new TcpClient()) {
+            try (Connector connector = new TcpConnector()) {
                 Assert.assertThrows(
                         IOException.class,
-                        () -> client.startConnection("127.0.0.1", 5550)
+                        () -> connector.connect("127.0.0.1", 5550)
                 );
             }
         }
@@ -72,13 +72,13 @@ public class TransportTest {
         TcpServer server = new TcpServer();
         server.start(5550, matcher);
 
-        try (Client client = new TcpClient()) {
-            client.startConnection("127.0.0.1", 5550);
+        try (Connector connector = new TcpConnector()) {
+            connector.connect("127.0.0.1", 5550);
             server.close();
 
             Assert.assertThrows(
                     IOException.class,
-                    () -> client.send(new Request("echo", new ArrayList<>()))
+                    () -> connector.send(new Request("echo", new ArrayList<>()))
             );
         }
     }
@@ -87,11 +87,11 @@ public class TransportTest {
     public void error1Handler() throws IOException {
         ServerMatcher matcher = new ServerMatcher();
 
-        try (TcpServer server = new TcpServer(); Client client = new TcpClient()) {
+        try (TcpServer server = new TcpServer(); Connector connector = new TcpConnector()) {
             server.start(5550, matcher);
-            client.startConnection("127.0.0.1", 5550);
+            connector.connect("127.0.0.1", 5550);
 
-            Response response = client.send(new Request("echo", new ArrayList<>()));
+            Response response = connector.send(new Request("echo", new ArrayList<>()));
 
             Assert.assertNotNull(response);
             Assert.assertNotNull(response.getError());
@@ -104,11 +104,11 @@ public class TransportTest {
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams().get(0))));
 
-        try (TcpServer server = new TcpServer(); Client client = new TcpClient()) {
+        try (TcpServer server = new TcpServer(); Connector connector = new TcpConnector()) {
             server.start(5550, matcher);
-            client.startConnection("127.0.0.1", 5550);
+            connector.connect("127.0.0.1", 5550);
 
-            Response response = client.send(new Request("wrong", new ArrayList<>()));
+            Response response = connector.send(new Request("wrong", new ArrayList<>()));
 
             Assert.assertNotNull(response);
             Assert.assertNotNull(response.getError());
@@ -124,11 +124,11 @@ public class TransportTest {
             return new Response(request.getParams().get(0));
         }));
 
-        try (TcpServer server = new TcpServer(); Client client = new TcpClient()) {
+        try (TcpServer server = new TcpServer(); Connector connector = new TcpConnector()) {
             server.start(5550, matcher);
-            client.startConnection("127.0.0.1", 5550);
+            connector.connect("127.0.0.1", 5550);
 
-            Response response = client.send(new Request("double", List.of(new byte[]{1})));
+            Response response = connector.send(new Request("double", List.of(new byte[]{1})));
 
             Assert.assertNotNull(response);
             Assert.assertNull(response.getError());

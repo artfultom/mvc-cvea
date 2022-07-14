@@ -4,7 +4,7 @@ import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.matcher.param.ConvertParamStrategy;
 import io.github.artfultom.vecenta.matcher.param.DefaultConvertParamStrategy;
-import io.github.artfultom.vecenta.transport.Client;
+import io.github.artfultom.vecenta.transport.Connector;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 import java.net.ConnectException;
@@ -13,12 +13,12 @@ import java.util.List;
 import test.pack.client.v1.entity1.Model1;
 
 public class ClientNumberOne {
-    private final Client client;
+    private final Connector connector;
 
     private final ConvertParamStrategy convertParamStrategy = new DefaultConvertParamStrategy();
 
-    public ClientNumberOne(Client client) {
-        this.client = client;
+    public ClientNumberOne(Connector connector) {
+        this.connector = connector;
     }
 
     public Boolean method1(Boolean field1, List<Boolean> field2, String field3, List<String> field4,
@@ -48,7 +48,7 @@ public class ClientNumberOne {
         arguments.add(convertParamStrategy.convertToByteArray(field18));
         Request req = new Request(name, arguments);
 
-        Response resp = client.send(req);
+        Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
             throw new ProtocolException(resp.getError());

@@ -11,7 +11,7 @@ import io.github.artfultom.vecenta.matcher.annotations.ModelField;
 import io.github.artfultom.vecenta.matcher.annotations.RpcMethod;
 import io.github.artfultom.vecenta.matcher.param.ConvertParamStrategy;
 import io.github.artfultom.vecenta.matcher.param.DefaultConvertParamStrategy;
-import io.github.artfultom.vecenta.transport.Client;
+import io.github.artfultom.vecenta.transport.Connector;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 import io.github.artfultom.vecenta.util.StringUtils;
@@ -186,7 +186,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
             TypeSpec.Builder builder = TypeSpec.classBuilder(name)
                     .addModifiers(Modifier.PUBLIC);
 
-            builder.addField(Client.class, "client", Modifier.PRIVATE, Modifier.FINAL);
+            builder.addField(Connector.class, "connector", Modifier.PRIVATE, Modifier.FINAL);
 
             FieldSpec convertParamStrategyField = FieldSpec
                     .builder(ConvertParamStrategy.class, "convertParamStrategy")
@@ -197,8 +197,8 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
 
             MethodSpec constructor = MethodSpec.constructorBuilder()
                     .addModifiers(Modifier.PUBLIC)
-                    .addParameter(Client.class, "client")
-                    .addStatement("this.client = client")
+                    .addParameter(Connector.class, "connector")
+                    .addStatement("this.connector = connector")
                     .build();
             builder.addMethod(constructor);
 
@@ -239,7 +239,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                     methodBuilder.addStatement("$T req = new $T(name, arguments)", Request.class, Request.class);
                     methodBuilder.addCode("\n");
 
-                    methodBuilder.addStatement("$T resp = client.send(req)", Response.class);
+                    methodBuilder.addStatement("$T resp = connector.send(req)", Response.class);
                     methodBuilder.addStatement("byte[] result = resp.getResult()");
                     CodeBlock ifNullBlock = CodeBlock.builder()
                             .beginControlFlow("if (result == null)")

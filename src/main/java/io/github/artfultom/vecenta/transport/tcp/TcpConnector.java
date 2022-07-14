@@ -3,7 +3,7 @@ package io.github.artfultom.vecenta.transport.tcp;
 import io.github.artfultom.vecenta.Configuration;
 import io.github.artfultom.vecenta.matcher.DefaultReadWriteStrategy;
 import io.github.artfultom.vecenta.matcher.ReadWriteStrategy;
-import io.github.artfultom.vecenta.transport.AbstractClient;
+import io.github.artfultom.vecenta.transport.AbstractConnector;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 import org.slf4j.Logger;
@@ -14,9 +14,9 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
 
-public class TcpClient extends AbstractClient {
+public class TcpConnector extends AbstractConnector {
 
-    private static final Logger log = LoggerFactory.getLogger(TcpClient.class);
+    private static final Logger log = LoggerFactory.getLogger(TcpConnector.class);
     private static final int SEND_ATTEMPT_COUNT = Configuration.getInt("send.attempt_count");
 
     private String host;
@@ -26,16 +26,16 @@ public class TcpClient extends AbstractClient {
     private DataOutputStream out;
     private DataInputStream in;
 
-    public TcpClient() {
+    public TcpConnector() {
         this.strategy = new DefaultReadWriteStrategy();
     }
 
-    public TcpClient(ReadWriteStrategy strategy) {
+    public TcpConnector(ReadWriteStrategy strategy) {
         this.strategy = strategy;
     }
 
     @Override
-    public void startConnection(String host, int port) throws ConnectException {
+    public void connect(String host, int port) throws ConnectException {
         this.host = host;
         this.port = port;
 

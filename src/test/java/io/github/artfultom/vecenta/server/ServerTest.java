@@ -5,13 +5,13 @@ import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.generation.FileGenerator;
 import io.github.artfultom.vecenta.generation.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.generation.config.GenerateMode;
-import io.github.artfultom.vecenta.generated.v1.SumClient;
+import io.github.artfultom.vecenta.generated.v1.TestClient;
 import io.github.artfultom.vecenta.generated.v1.math.Model3;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;
-import io.github.artfultom.vecenta.transport.Client;
+import io.github.artfultom.vecenta.transport.Connector;
 import io.github.artfultom.vecenta.transport.Server;
 import io.github.artfultom.vecenta.transport.error.MessageError;
-import io.github.artfultom.vecenta.transport.tcp.TcpClient;
+import io.github.artfultom.vecenta.transport.tcp.TcpConnector;
 import io.github.artfultom.vecenta.transport.tcp.TcpServer;
 import io.github.artfultom.vecenta.utils.TestUtils;
 import org.junit.Assert;
@@ -85,13 +85,13 @@ public class ServerTest {
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(pack);
 
-        try (Server server = new TcpServer(); Client client = new TcpClient()) {
+        try (Server server = new TcpServer(); Connector connector = new TcpConnector()) {
             int port = 5550;
 
             server.start(port, matcher);
 
-            client.startConnection("127.0.0.1", port);
-            SumClient clientConnector = new SumClient(client);
+            connector.connect("127.0.0.1", port);
+            TestClient clientConnector = new TestClient(connector);
 
             int result1 = clientConnector.sum(3, 2);
             Assert.assertEquals(5, result1);
@@ -148,13 +148,13 @@ public class ServerTest {
         assertNotNull(files);
         assertEquals(2, files.size());
 
-        try (Server server = new TcpServer(); Client client = new TcpClient()) {
+        try (Server server = new TcpServer(); Connector connector = new TcpConnector()) {
             int port = 5550;
 
             server.start(port, new ServerMatcher());
 
-            client.startConnection("127.0.0.1", port);
-            SumClient clientConnector = new SumClient(client);
+            connector.connect("127.0.0.1", port);
+            TestClient clientConnector = new TestClient(connector);
             clientConnector.sum(3, 2);
 
             Assert.fail();

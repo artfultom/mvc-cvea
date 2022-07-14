@@ -4,7 +4,7 @@ import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.matcher.param.ConvertParamStrategy;
 import io.github.artfultom.vecenta.matcher.param.DefaultConvertParamStrategy;
-import io.github.artfultom.vecenta.transport.Client;
+import io.github.artfultom.vecenta.transport.Connector;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 import java.net.ConnectException;
@@ -14,12 +14,12 @@ import java.util.Map;
 import test.pack.client.v1.entity2.Model3;
 
 public class ClientNumberTwo {
-    private final Client client;
+    private final Connector connector;
 
     private final ConvertParamStrategy convertParamStrategy = new DefaultConvertParamStrategy();
 
-    public ClientNumberTwo(Client client) {
-        this.client = client;
+    public ClientNumberTwo(Connector connector) {
+        this.connector = connector;
     }
 
     public Model3 method1(Model3 argument) throws ConnectException, ProtocolException,
@@ -29,7 +29,7 @@ public class ClientNumberTwo {
         arguments.add(convertParamStrategy.convertToByteArray(argument));
         Request req = new Request(name, arguments);
 
-        Response resp = client.send(req);
+        Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
             throw new ProtocolException(resp.getError());
@@ -45,7 +45,7 @@ public class ClientNumberTwo {
         arguments.add(convertParamStrategy.convertToByteArray(argument));
         Request req = new Request(name, arguments);
 
-        Response resp = client.send(req);
+        Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
             throw new ProtocolException(resp.getError());
@@ -61,7 +61,7 @@ public class ClientNumberTwo {
         arguments.add(convertParamStrategy.convertToByteArray(argument));
         Request req = new Request(name, arguments);
 
-        Response resp = client.send(req);
+        Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
             throw new ProtocolException(resp.getError());

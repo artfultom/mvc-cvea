@@ -10,9 +10,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public abstract class AbstractClient implements Client {
+public abstract class AbstractConnector implements Connector {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractClient.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractConnector.class);
     protected ReadWriteStrategy strategy;
 
     protected void handshake(DataInputStream in, DataOutputStream out) throws IOException {

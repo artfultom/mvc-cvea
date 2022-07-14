@@ -1,7 +1,7 @@
 {
   "clients": [
     {
-      "name": "SumClient",
+      "name": "TestClient",
       "entities": [
         {
           "name": "math",
