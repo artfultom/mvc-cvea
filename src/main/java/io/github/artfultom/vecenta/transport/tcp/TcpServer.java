@@ -18,7 +18,8 @@ public class TcpServer extends AbstractServer {
 
     private AsynchronousServerSocketChannel listener;
 
-    private long timeout = Configuration.getInt("server.default_timeout");
+    private long timeout = Configuration.getLong("server.default_timeout");
+    private static final long FIRST_CLIENT_ID = Configuration.getLong("server.first_client_id");
 
     public void setTimeout(long timeout) {
         this.timeout = timeout;
@@ -29,12 +30,13 @@ public class TcpServer extends AbstractServer {
         try {
             listener = AsynchronousServerSocketChannel.open();
             listener.bind(new InetSocketAddress(port));
-            listener.accept(null, new CompletionHandler<AsynchronousSocketChannel, Void>() {
+
+            listener.accept(FIRST_CLIENT_ID, new CompletionHandler<>() {
 
                 @Override
-                public void completed(AsynchronousSocketChannel ch, Void att) {
+                public void completed(AsynchronousSocketChannel ch, Long att) {
                     if (listener.isOpen()) {
-                        listener.accept(null, this);
+                        listener.accept(att + 1, this);
                     } else {
                         return;
                     }
@@ -60,8 +62,8 @@ public class TcpServer extends AbstractServer {
                 }
 
                 @Override
-                public void failed(Throwable e, Void att) {
-                    log.warn(e.getMessage(), e);
+                public void failed(Throwable e, Long att) {
+                    log.warn(String.format("Client #%d. %s", att, e.getMessage()), e);
                 }
             });
         } catch (IOException e) {

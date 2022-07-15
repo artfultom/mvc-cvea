@@ -47,4 +47,20 @@ public class Configuration {
 
         throw new PropertyNotFoundException(property);
     }
+
+    public static long getLong(String property) {
+        try (InputStream input = Configuration.class.getClassLoader().getResourceAsStream(FILENAME)) {
+            Properties prop = new Properties();
+            prop.load(input);
+            String value = prop.getProperty(property);
+
+            if (value != null) {
+                return Long.parseLong(value);
+            }
+        } catch (IOException e) {
+            log.error(String.format("Cannot find property %s", property));
+        }
+
+        throw new PropertyNotFoundException(property);
+    }
 }

@@ -24,6 +24,22 @@ public class ConfigurationTest {
     }
 
     @Test
+    public void getLong() {
+        long value = Configuration.getLong("server.first_client_id");
+        assertEquals(0, value);
+    }
+
+    @Test
+    public void getLongError() {
+        try {
+            Configuration.getLong("wrong_prop");
+            fail();
+        } catch (Exception e) {
+            assertEquals("property wrong_prop not found", e.getMessage());
+        }
+    }
+
+    @Test
     public void get() {
         String value = Configuration.get("send.attempt_count");
         assertEquals("10", value);
