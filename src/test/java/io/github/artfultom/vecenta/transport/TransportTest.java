@@ -20,39 +20,29 @@ import java.util.stream.IntStream;
 public class TransportTest {
 
     @Test
-    public void manyClients() {
+    public void manyClients() throws IOException {
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("echo", request -> new Response(request.getParams().get(0))));
 
         try (Server server = new TcpServer()) {
             server.start(5550, matcher);
 
-            List<CompletableFuture<Void>> futures = new ArrayList<>();
-            for (int i = 0; i < 1000; i++) {
-                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                    try (TcpConnector client = new TcpConnector()) {
-                        client.connect("127.0.0.1", 5550);
+            IntStream.range(0, 1000).parallel()
+                    .mapToObj(item -> CompletableFuture.runAsync(() -> {
+                        try (TcpConnector connector = new TcpConnector()) {
+                            connector.connect("127.0.0.1", 5550);
 
-                        for (int j = 0; j < 100; j++) {
-                            byte[] param1 = ("param1" + j).getBytes();
-                            Response resp = client.send(new Request("echo", List.of(param1)));
+                            for (int j = 0; j < 100; j++) {
+                                byte[] param = ("param" + j).getBytes();
+                                Response resp = connector.send(new Request("echo", List.of(param)));
 
-                            Assert.assertNotNull(resp.getResult());
-                            Assert.assertArrayEquals(param1, resp.getResult());
+                                Assert.assertNotNull(resp.getResult());
+                                Assert.assertArrayEquals(param, resp.getResult());
+                            }
+                        } catch (IOException e) {
+                            Assert.fail();
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-
-                futures.add(future);
-            }
-
-            for (CompletableFuture<Void> future : futures) {
-                future.join();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+                    })).forEach(CompletableFuture::join);
         }
     }
 
