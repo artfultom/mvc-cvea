@@ -9,16 +9,20 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.ConnectException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.IntStream;
 
 public class TransportTest {
 
     @Test
     public void manyClients() {
         ServerMatcher matcher = new ServerMatcher();
-        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams().get(0))));
+        matcher.register(new MethodHandler("echo", request -> new Response(request.getParams().get(0))));
 
         try (Server server = new TcpServer()) {
             server.start(5550, matcher);
@@ -67,7 +71,7 @@ public class TransportTest {
     @Test
     public void errorServerClosed() throws IOException {
         ServerMatcher matcher = new ServerMatcher();
-        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams().get(0))));
+        matcher.register(new MethodHandler("echo", request -> new Response(request.getParams().get(0))));
 
         TcpServer server = new TcpServer();
         server.start(5550, matcher);
@@ -102,7 +106,7 @@ public class TransportTest {
     @Test
     public void error2Handler() throws IOException {
         ServerMatcher matcher = new ServerMatcher();
-        matcher.register(new MethodHandler("echo", (request) -> new Response(request.getParams().get(0))));
+        matcher.register(new MethodHandler("echo", request -> new Response(request.getParams().get(0))));
 
         try (TcpServer server = new TcpServer(); Connector connector = new TcpConnector()) {
             server.start(5550, matcher);
@@ -119,20 +123,49 @@ public class TransportTest {
     @Test
     public void manyResults() throws IOException {
         ServerMatcher matcher = new ServerMatcher();
-        matcher.register(new MethodHandler("double", (request) -> {
-            request.getParams().addAll(request.getParams());
-            return new Response(request.getParams().get(0));
+        matcher.register(new MethodHandler("inc", request -> {
+            int val = ByteBuffer.wrap(request.getParams().get(0)).getInt();
+            val++;
+
+            return new Response(ByteBuffer.allocate(Integer.BYTES).putInt(val).array());
         }));
 
-        try (TcpServer server = new TcpServer(); Connector connector = new TcpConnector()) {
+        try (
+                TcpServer server = new TcpServer();
+                Connector connector1 = new TcpConnector();
+                Connector connector2 = new TcpConnector()
+        ) {
             server.start(5550, matcher);
-            connector.connect("127.0.0.1", 5550);
+            connector1.connect("127.0.0.1", 5550);
+            connector2.connect("127.0.0.1", 5550);
 
-            Response response = connector.send(new Request("double", List.of(new byte[]{1})));
+            IntStream.range(0, 1000).parallel()
+                    .mapToObj(item -> CompletableFuture.runAsync(() -> {
+                        try {
+                            int val = new Random().nextInt();
+                            Response response1 = connector1.send(new Request(
+                                    "inc",
+                                    List.of(ByteBuffer.allocate(Integer.BYTES).putInt(val).array())
+                            ));
 
-            Assert.assertNotNull(response);
-            Assert.assertNull(response.getError());
-            Assert.assertNotNull(response.getResult());
+                            Assert.assertNotNull(response1);
+                            Assert.assertNull(response1.getError());
+                            Assert.assertNotNull(response1.getResult());
+                            Assert.assertEquals(val + 1, ByteBuffer.wrap(response1.getResult()).getInt());
+
+                            Response response2 = connector2.send(new Request(
+                                    "inc",
+                                    List.of(ByteBuffer.allocate(Integer.BYTES).putInt(val).array())
+                            ));
+
+                            Assert.assertNotNull(response2);
+                            Assert.assertNull(response2.getError());
+                            Assert.assertNotNull(response2.getResult());
+                            Assert.assertEquals(val + 1, ByteBuffer.wrap(response2.getResult()).getInt());
+                        } catch (ConnectException e) {
+                            Assert.fail();
+                        }
+                    })).forEach(CompletableFuture::join);
         }
     }
 }

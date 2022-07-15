@@ -58,7 +58,7 @@ public class TcpConnector extends AbstractConnector {
     }
 
     @Override
-    public Response send(Request request) throws ConnectException {
+    public synchronized Response send(Request request) throws ConnectException {    // TODO pool?
         for (int i = 0; i < SEND_ATTEMPT_COUNT; i++) {
             try {
                 byte[] b = strategy.convertToBytes(request);
