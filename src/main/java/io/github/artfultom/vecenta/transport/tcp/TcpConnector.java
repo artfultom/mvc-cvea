@@ -3,28 +3,33 @@ package io.github.artfultom.vecenta.transport.tcp;
 import io.github.artfultom.vecenta.Configuration;
 import io.github.artfultom.vecenta.matcher.DefaultReadWriteStrategy;
 import io.github.artfultom.vecenta.matcher.ReadWriteStrategy;
+import io.github.artfultom.vecenta.matcher.TypeConverter;
 import io.github.artfultom.vecenta.transport.AbstractConnector;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.ConnectException;
-import java.net.Socket;
-import java.net.SocketException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousSocketChannel;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class TcpConnector extends AbstractConnector {
 
     private static final Logger log = LoggerFactory.getLogger(TcpConnector.class);
     private static final int SEND_ATTEMPT_COUNT = Configuration.getInt("send.attempt_count");
+    private int timeout = Configuration.getInt("client.default_timeout");   // TODO from handshake
 
     private String host;
     private int port;
 
-    private Socket clientSocket;
-    private DataOutputStream out;
-    private DataInputStream in;
+    private AsynchronousSocketChannel client;
 
     public TcpConnector() {
         this.strategy = new DefaultReadWriteStrategy();
@@ -44,38 +49,55 @@ public class TcpConnector extends AbstractConnector {
 
     private void connect() throws ConnectException {
         try {
-            clientSocket = new Socket(host, port);
+            client = AsynchronousSocketChannel.open();
+            InetSocketAddress address = new InetSocketAddress(host, port);
+            Future<Void> future = client.connect(address);
 
-            out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
-            in = new DataInputStream(clientSocket.getInputStream());
+            future.get();
 
-            handshake(in, out);
-        } catch (ConnectException e) {
-            throw e;
+//            handshake(in, out);
         } catch (IOException e) {
             log.error("IO error during connection to " + host + ":" + port, e);
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof ConnectException) {
+                throw (ConnectException) e.getCause();
+            }
+
+            log.error("IO error during connection to " + host + ":" + port, e);
+        } catch (InterruptedException e) {
+            log.error("IO error during connection to " + host + ":" + port, e);
+            Thread.currentThread().interrupt();
         }
     }
 
     @Override
-    public synchronized Response send(Request request) throws ConnectException {    // TODO pool?
+    public synchronized Response send(Request request) throws ConnectException {
+        byte[] b = strategy.convertToBytes(request);
+
+        ByteBuffer writeBuffer = ByteBuffer.allocate(Integer.BYTES + b.length);
+        writeBuffer.put(TypeConverter.INTEGER.convert(b.length));
+        writeBuffer.put(b);
+
         for (int i = 0; i < SEND_ATTEMPT_COUNT; i++) {
             try {
-                byte[] b = strategy.convertToBytes(request);
-                out.writeInt(b.length);
-                out.write(b);
-                out.flush();
+                client
+                        .write(writeBuffer.position(0))
+                        .get(timeout, TimeUnit.MILLISECONDS);
 
-                int size = in.readInt();
-                byte[] result = in.readNBytes(size);
-                return strategy.convertToResponse(result);
-            } catch (ConnectException e) {
-                throw e;
-            } catch (SocketException | EOFException e) {
+                ByteBuffer readSizeBuffer = ByteBuffer.allocate(Integer.BYTES);
+                client
+                        .read(readSizeBuffer.position(0))
+                        .get(timeout, TimeUnit.MILLISECONDS);
+
+                ByteBuffer readBuffer = ByteBuffer.allocate(readSizeBuffer.getInt(0));
+                client
+                        .read(readBuffer.position(0))
+                        .get(timeout, TimeUnit.MILLISECONDS);
+
+                return strategy.convertToResponse(readBuffer.array());
+            } catch (ExecutionException | InterruptedException | TimeoutException e) {
                 log.info(String.format("Reconnecting to %s:%d", host, port));
                 connect();
-            } catch (IOException e) {
-                log.error("IO error during sending message to " + host + ":" + port, e);
             }
         }
 
@@ -84,16 +106,8 @@ public class TcpConnector extends AbstractConnector {
 
     @Override
     public void close() throws IOException {
-        if (clientSocket != null && !clientSocket.isClosed()) {
-            if (in != null) {
-                in.close();
-            }
-
-            if (out != null) {
-                out.close();
-            }
-
-            clientSocket.close();
+        if (client != null) {
+            client.close();
         }
     }
 }

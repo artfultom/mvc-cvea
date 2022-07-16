@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
@@ -35,6 +36,8 @@ public class TcpServer extends AbstractServer {
 
                 @Override
                 public void completed(AsynchronousSocketChannel ch, Long att) {
+                    log.info(String.format("Client #%s was accepted", att));
+
                     if (listener.isOpen()) {
                         listener.accept(att + 1, this);
                     } else {
@@ -42,14 +45,14 @@ public class TcpServer extends AbstractServer {
                     }
 
                     try (TcpMessageStream stream = new TcpMessageStream(ch, timeout)) {
-                        if (listener.isOpen()) {
-                            handshake(stream);
-                        }
+//                        if (listener.isOpen()) {
+//                            handshake(stream);
+//                        }
 
                         while (listener.isOpen()) {
                             byte[] req = stream.getMessage();
                             if (req == null || req.length == 0 || !listener.isOpen()) {
-                                break;
+                                continue;
                             }
 
                             byte[] resp = matcher.process(req);
