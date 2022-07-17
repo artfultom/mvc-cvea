@@ -5,7 +5,6 @@ public class ValidateException extends Exception {
     private final String message;
 
     public ValidateException(String message) {
-        super();
         this.message = message;
     }
 
