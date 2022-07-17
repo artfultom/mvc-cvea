@@ -5,9 +5,6 @@ import io.github.artfultom.vecenta.transport.error.MessageError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public abstract class AbstractConnector implements Connector {
@@ -15,7 +12,7 @@ public abstract class AbstractConnector implements Connector {
     private static final Logger log = LoggerFactory.getLogger(AbstractConnector.class);
     protected ReadWriteStrategy strategy;
 
-    protected void handshake(DataInputStream in, DataOutputStream out) throws IOException {
+    protected synchronized void handshake(MessageStream stream) {
         int capacity = 0;
         capacity += AbstractServer.PROTOCOL_NAME.getBytes().length;
         capacity += Integer.BYTES;
@@ -24,16 +21,13 @@ public abstract class AbstractConnector implements Connector {
         protocolInfo.put(AbstractServer.PROTOCOL_NAME.getBytes());
         protocolInfo.putInt(AbstractServer.PROTOCOL_VERSION);
 
-        out.writeInt(protocolInfo.capacity());
-        out.write(protocolInfo.array());
-        out.flush();
+        stream.sendMessage(protocolInfo.array());
 
-        int size = in.readInt();
-        ByteBuffer bb = ByteBuffer.wrap(in.readNBytes(size));
+        ByteBuffer bb = ByteBuffer.wrap(stream.getMessage());
         int result = bb.asIntBuffer().get();
 
         if (result != 0) {
-            log.error(String.format("Handshake error: %s", MessageError.get(result)));
+            log.error(String.format("Handshake error: %s", MessageError.get(result)));  // TODO ProtocolException
         }
     }
 }

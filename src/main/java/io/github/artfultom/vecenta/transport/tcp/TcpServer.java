@@ -3,12 +3,12 @@ package io.github.artfultom.vecenta.transport.tcp;
 import io.github.artfultom.vecenta.Configuration;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;
 import io.github.artfultom.vecenta.transport.AbstractServer;
+import io.github.artfultom.vecenta.transport.MessageStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
@@ -44,10 +44,10 @@ public class TcpServer extends AbstractServer {
                         return;
                     }
 
-                    try (TcpMessageStream stream = new TcpMessageStream(ch, timeout)) {
-//                        if (listener.isOpen()) {
-//                            handshake(stream);
-//                        }
+                    try (MessageStream stream = new TcpMessageStream(ch, timeout)) {
+                        if (listener.isOpen()) {
+                            handshake(stream);
+                        }
 
                         while (listener.isOpen()) {
                             byte[] req = stream.getMessage();

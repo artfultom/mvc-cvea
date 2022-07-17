@@ -5,6 +5,7 @@ import io.github.artfultom.vecenta.matcher.DefaultReadWriteStrategy;
 import io.github.artfultom.vecenta.matcher.ReadWriteStrategy;
 import io.github.artfultom.vecenta.matcher.TypeConverter;
 import io.github.artfultom.vecenta.transport.AbstractConnector;
+import io.github.artfultom.vecenta.transport.MessageStream;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 import org.slf4j.Logger;
@@ -16,7 +17,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -30,6 +30,8 @@ public class TcpConnector extends AbstractConnector {
     private int port;
 
     private AsynchronousSocketChannel client;
+
+    private MessageStream stream;
 
     public TcpConnector() {
         this.strategy = new DefaultReadWriteStrategy();
@@ -47,18 +49,20 @@ public class TcpConnector extends AbstractConnector {
         connect();
     }
 
-    private void connect() throws ConnectException {
+    private synchronized void connect() throws ConnectException {
         try {
             client = AsynchronousSocketChannel.open();
             InetSocketAddress address = new InetSocketAddress(host, port);
-            Future<Void> future = client.connect(address);
 
-            future.get();
+            client
+                    .connect(address)
+                    .get(timeout, TimeUnit.MILLISECONDS);
 
-//            handshake(in, out);
+            stream = new TcpMessageStream(client, timeout);
+            handshake(stream);
         } catch (IOException e) {
             log.error("IO error during connection to " + host + ":" + port, e);
-        } catch (ExecutionException e) {
+        } catch (ExecutionException | TimeoutException e) {
             if (e.getCause() instanceof ConnectException) {
                 throw (ConnectException) e.getCause();
             }
@@ -85,14 +89,20 @@ public class TcpConnector extends AbstractConnector {
                         .get(timeout, TimeUnit.MILLISECONDS);
 
                 ByteBuffer readSizeBuffer = ByteBuffer.allocate(Integer.BYTES);
-                client
+                int sizeResult = client
                         .read(readSizeBuffer.position(0))
                         .get(timeout, TimeUnit.MILLISECONDS);
+                if (sizeResult == -1) {
+                    throw new RuntimeException("The server is closed"); // TODO
+                }
 
                 ByteBuffer readBuffer = ByteBuffer.allocate(readSizeBuffer.getInt(0));
-                client
+                int readResult = client
                         .read(readBuffer.position(0))
                         .get(timeout, TimeUnit.MILLISECONDS);
+                if (readResult == -1) {
+                    throw new RuntimeException("The server is closed"); // TODO
+                }
 
                 return strategy.convertToResponse(readBuffer.array());
             } catch (ExecutionException | InterruptedException | TimeoutException e) {
@@ -106,6 +116,9 @@ public class TcpConnector extends AbstractConnector {
 
     @Override
     public void close() throws IOException {
+        if (stream != null) {
+            stream.close();
+        }
         if (client != null) {
             client.close();
         }

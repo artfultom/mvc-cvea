@@ -29,7 +29,7 @@ public class TransportTest {
 
             IntStream.range(0, 1).parallel()
                     .mapToObj(item -> CompletableFuture.runAsync(() -> {
-                        try (TcpConnector connector = new TcpConnector()) {
+                        try (Connector connector = new TcpConnector()) {
                             connector.connect("127.0.0.1", 5550);
 
                             for (int j = 0; j < 100; j++) {
@@ -71,7 +71,7 @@ public class TransportTest {
             server.close();
 
             Assert.assertThrows(
-                    IOException.class,
+                    RuntimeException.class,
                     () -> connector.send(new Request("echo", new ArrayList<>()))
             );
         }
