@@ -120,26 +120,31 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                             List.of(client.getName(), entity.getName()),
                             method.getOut()
                     );
-                    AnnotationSpec annotationSpec = AnnotationSpec.builder(RpcMethod.class)
+                    AnnotationSpec.Builder annotationSpecBuilder = AnnotationSpec.builder(RpcMethod.class)
                             .addMember("entity", "\"" + entity.getName() + "\"")
-                            .addMember("name", "\"" + method.getName() + "\"")
-                            .addMember("argumentTypes", "$L",
-                                    method.getIn().stream()
-                                            .map(item -> {
-                                                String argumentType = StringUtils.fillModelName(
-                                                        List.of(client.getName(), entity.getName()),
-                                                        item.getType()
-                                                );
-                                                return CodeBlock.of("$S", argumentType);
-                                            })
-                                            .collect(CodeBlock.joining(", ", "{", "}"))
-                            )
-                            .addMember("returnType", "$S", returnType)
-                            .build();
+                            .addMember("name", "\"" + method.getName() + "\"");
+
+                    if (method.getIn().size() > 0) {
+                        annotationSpecBuilder.addMember("argumentTypes", "$L",
+                                method.getIn().stream()
+                                        .map(item -> {
+                                            String argumentType = StringUtils.fillModelName(
+                                                    List.of(client.getName(), entity.getName()),
+                                                    item.getType()
+                                            );
+                                            return CodeBlock.of("$S", argumentType);
+                                        })
+                                        .collect(CodeBlock.joining(", ", "{", "}"))
+                        );
+                    }
+
+                    if (returnType != null && !returnType.isEmpty()) {
+                        annotationSpecBuilder.addMember("returnType", "$S", returnType);
+                    }
 
                     MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
                             .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
-                            .addAnnotation(annotationSpec);
+                            .addAnnotation(annotationSpecBuilder.build());
 
                     for (JsonFormatDto.Entity.Param param : method.getIn()) {
                         TypeName typeName = getTypeName(packWithEntity, param.getType());
@@ -149,8 +154,10 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                     }
 
                     String returnTypeName = method.getOut();
-                    TypeName typeName = getTypeName(packWithEntity, returnTypeName);
-                    methodBuilder.returns(typeName);
+                    if (returnTypeName != null && !returnTypeName.isEmpty()) {
+                        TypeName typeName = getTypeName(packWithEntity, returnTypeName);
+                        methodBuilder.returns(typeName);
+                    }
 
                     builder.addMethod(methodBuilder.build());
                 }
@@ -227,7 +234,12 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                             List.of(client.getName(), entity.getName()),
                             method.getOut()
                     );
-                    String methodName = entity.getName() + "." + method.getName() + "(" + paramNames + ")->" + returnType;
+                    String methodName;
+                    if (returnType == null || returnType.isEmpty()) {
+                        methodName = entity.getName() + "." + method.getName() + "(" + paramNames + ")";
+                    } else {
+                        methodName = entity.getName() + "." + method.getName() + "(" + paramNames + ")->" + returnType;
+                    }
                     methodBuilder.addStatement("String name = $S", methodName);
                     methodBuilder.addStatement("$T<byte[]> arguments = new $T<>()", List.class, ArrayList.class);
                     for (JsonFormatDto.Entity.Param param : method.getIn()) {
@@ -239,32 +251,37 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                     methodBuilder.addStatement("$T req = new $T(name, arguments)", Request.class, Request.class);
                     methodBuilder.addCode("\n");
 
-                    methodBuilder.addStatement("$T resp = connector.send(req)", Response.class);
-                    methodBuilder.addStatement("byte[] result = resp.getResult()");
-                    CodeBlock ifNullBlock = CodeBlock.builder()
-                            .beginControlFlow("if (result == null)")
-                            .addStatement("throw new $T(resp.getError())", ProtocolException.class)
-                            .endControlFlow()
-                            .build();
-                    methodBuilder.addCode(ifNullBlock);
-                    methodBuilder.addCode("\n");
+                    if (returnType == null || returnType.isEmpty()) {
+                        methodBuilder.addStatement("connector.send(req)");
+                    } else {
+                        methodBuilder.addStatement("$T resp = connector.send(req)", Response.class);
+                        methodBuilder.addStatement("byte[] result = resp.getResult()");
+                        CodeBlock ifNullBlock = CodeBlock.builder()
+                                .beginControlFlow("if (result == null)")
+                                .addStatement("throw new $T(resp.getError())", ProtocolException.class)
+                                .endControlFlow()
+                                .build();
+                        methodBuilder.addCode(ifNullBlock);
 
-                    String returnTypeName = method.getOut();
-                    TypeName typeName = getTypeName(fullPackage, returnTypeName);
-                    methodBuilder.returns(typeName);
-                    String returnStatement = "return convertParamStrategy.convertToObject(result, $S, $T.class)";
+                        methodBuilder.addCode("\n");
 
-                    TypeName targetType = typeName;
-                    if (targetType instanceof ParameterizedTypeName) {
-                        targetType = ((ParameterizedTypeName) typeName).rawType;
+                        String returnTypeName = method.getOut();
+                        TypeName typeName = getTypeName(fullPackage, returnTypeName);
+                        methodBuilder.returns(typeName);
+                        String returnStatement = "return convertParamStrategy.convertToObject(result, $S, $T.class)";
+
+                        TypeName targetType = typeName;
+                        if (targetType instanceof ParameterizedTypeName) {
+                            targetType = ((ParameterizedTypeName) typeName).rawType;
+                        }
+
+                        String modelName = StringUtils.fillModelName(
+                                List.of(client.getName(), entity.getName()),
+                                method.getOut()
+                        );
+
+                        methodBuilder.addStatement(returnStatement, modelName, targetType);
                     }
-
-                    String modelName = StringUtils.fillModelName(
-                            List.of(client.getName(), entity.getName()),
-                            method.getOut()
-                    );
-
-                    methodBuilder.addStatement(returnStatement, modelName, targetType);
 
                     builder.addMethod(methodBuilder.build());
                 }

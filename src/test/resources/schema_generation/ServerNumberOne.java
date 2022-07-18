@@ -16,4 +16,18 @@ public interface ServerNumberOne {
             List<Integer> field10, Long field11, List<Long> field12, Float field13,
             List<Float> field14, Double field15, List<Double> field16, Model1 field17,
             List<Model1> field18);
+
+    @RpcMethod(
+            entity = "entity1",
+            name = "method2",
+            argumentTypes = {"int32"}
+    )
+    void method2(Integer field1);
+
+    @RpcMethod(
+            entity = "entity1",
+            name = "method3",
+            returnType = "boolean"
+    )
+    Boolean method3();
 }

@@ -22,6 +22,10 @@ public enum CollectionType {
     }
 
     public static CollectionType get(String type) {
+        if (type == null || type.isEmpty()) {
+            return null;
+        }
+
         if (type.startsWith("[")) {
             List<String> names = Arrays.stream(type.substring(1).split("]", 2))
                     .filter(name -> !name.isEmpty())

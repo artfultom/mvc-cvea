@@ -83,6 +83,20 @@
                 }
               ],
               "out": "boolean"
+            },
+            {
+              "name": "method2",
+              "in": [
+                {
+                  "name": "field1",
+                  "type": "int32"
+                }
+              ]
+            },
+            {
+              "name": "method3",
+              "in": [],
+              "out": "boolean"
             }
           ],
           "models": [

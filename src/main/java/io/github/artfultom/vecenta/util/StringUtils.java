@@ -25,6 +25,10 @@ public class StringUtils {
     }
 
     public static Set<String> getSimpleTypes(String type) {
+        if (type == null || type.isEmpty()) {
+            return Set.of();
+        }
+
         String[] rawSimpleTypes = type
                 .replace("[", "'")
                 .replace("]", "'")
@@ -36,6 +40,10 @@ public class StringUtils {
     }
 
     public static String fillModelName(List<String> path, String type) {
+        if (type == null || type.isEmpty()) {
+            return type;
+        }
+
         List<String> list = new ArrayList<>();
 
         StringBuilder sb = new StringBuilder();
