@@ -9,8 +9,8 @@ public class ConfigurationTest {
 
     @Test
     public void getInt() {
-        int value = Configuration.getInt("send.attempt_count");
-        assertEquals(10, value);
+        int value = Configuration.getInt("generate.walk_max_depth");
+        assertEquals(5, value);
     }
 
     @Test
@@ -41,8 +41,8 @@ public class ConfigurationTest {
 
     @Test
     public void get() {
-        String value = Configuration.get("send.attempt_count");
-        assertEquals("10", value);
+        String value = Configuration.get("generate.walk_max_depth");
+        assertEquals("5", value);
     }
 
     @Test

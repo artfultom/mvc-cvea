@@ -22,7 +22,6 @@ import java.util.concurrent.TimeoutException;
 public class TcpConnector extends AbstractConnector {
 
     private static final Logger log = LoggerFactory.getLogger(TcpConnector.class);
-    private static final int SEND_ATTEMPT_COUNT = Configuration.getInt("send.attempt_count");
     private int timeout = Configuration.getInt("client.default_timeout");   // TODO from handshake
 
     private String host;
@@ -80,26 +79,10 @@ public class TcpConnector extends AbstractConnector {
     public synchronized Response send(Request request) throws ConnectionException {
         byte[] b = strategy.convertToBytes(request);
 
-        for (int i = 0; i < SEND_ATTEMPT_COUNT; i++) {
-            try {
-                stream.sendMessage(b);
+        stream.sendMessage(b);
 
-                for (int j = 0; j < SEND_ATTEMPT_COUNT; j++) {
-                    try {
-                        byte[] readResult = stream.getMessage();
-                        return strategy.convertToResponse(readResult);
-                    } catch (ConnectionException ex) {
-                        log.warn(ex.getMessage(), ex);
-                    }
-                }
-            } catch (ConnectionException ex) {
-                log.warn(ex.getMessage(), ex);
-            }
-        }
-
-        ConnectionException ex = new ConnectionException("Cannot send the message.");
-        log.error(ex.getMessage(), ex);
-        throw ex;
+        byte[] readResult = stream.getMessage();
+        return strategy.convertToResponse(readResult);
     }
 
     @Override
