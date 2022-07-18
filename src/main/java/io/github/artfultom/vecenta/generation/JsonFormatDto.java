@@ -2,12 +2,16 @@ package io.github.artfultom.vecenta.generation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class JsonFormatDto {
 
     private List<Client> clients;
+
+    public JsonFormatDto() {
+        this.clients = Collections.emptyList();
+    }
 
     public List<Client> getClients() {
         return clients;
@@ -23,6 +27,10 @@ public class JsonFormatDto {
 
         @JsonProperty("entities")
         private List<Entity> entities;
+
+        public Client() {
+            this.entities = Collections.emptyList();
+        }
 
         public String getName() {
             return name;
@@ -53,8 +61,8 @@ public class JsonFormatDto {
         private List<Model> models;
 
         public Entity() {
-            this.methods = new ArrayList<>();
-            this.models = new ArrayList<>();
+            this.methods = Collections.emptyList();
+            this.models = Collections.emptyList();
         }
 
         public String getName() {
@@ -92,6 +100,10 @@ public class JsonFormatDto {
             @JsonProperty("out")
             private String out;
 
+            public Method() {
+                this.in = Collections.emptyList();
+            }
+
             public String getName() {
                 return name;
             }
@@ -125,6 +137,10 @@ public class JsonFormatDto {
 
             @JsonProperty("fields")
             private List<Param> fields;
+
+            public Model() {
+                this.fields = Collections.emptyList();
+            }
 
             public String getName() {
                 return name;

@@ -95,7 +95,6 @@
             },
             {
               "name": "method3",
-              "in": [],
               "out": "boolean"
             }
           ],

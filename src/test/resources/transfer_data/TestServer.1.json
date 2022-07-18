@@ -95,6 +95,20 @@
                 }
               ],
               "out": "[int32][Model3]"
+            },
+            {
+              "name": "supply",
+              "in": [],
+              "out": "int32"
+            },
+            {
+              "name": "consume",
+              "in": [
+                {
+                  "name": "a",
+                  "type": "int32"
+                }
+              ]
             }
           ],
           "models": [

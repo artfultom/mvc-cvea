@@ -10,7 +10,7 @@ public @interface RpcMethod {
 
     String name();
 
-    String[] argumentTypes();
+    String[] argumentTypes() default "";
 
-    String returnType();
+    String returnType() default "";
 }

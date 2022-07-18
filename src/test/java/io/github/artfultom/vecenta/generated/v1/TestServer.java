@@ -61,4 +61,18 @@ public interface TestServer {
             returnType = "[int32][TestClient.math.Model3]"
     )
     Map<Integer, List<Model3>> echo(Map<Integer, List<Model3>> a, Map<Integer, List<Model3>> b);
+
+    @RpcMethod(
+            entity = "math",
+            name = "supply",
+            returnType = "int32"
+    )
+    Integer supply();
+
+    @RpcMethod(
+            entity = "math",
+            name = "consume",
+            argumentTypes = {"int32"}
+    )
+    void consume(Integer a);
 }

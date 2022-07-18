@@ -124,7 +124,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                             .addMember("entity", "\"" + entity.getName() + "\"")
                             .addMember("name", "\"" + method.getName() + "\"");
 
-                    if (method.getIn().size() > 0) {
+                    if (!method.getIn().isEmpty()) {
                         annotationSpecBuilder.addMember("argumentTypes", "$L",
                                 method.getIn().stream()
                                         .map(item -> {
@@ -146,12 +146,14 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                             .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
                             .addAnnotation(annotationSpecBuilder.build());
 
+
                     for (JsonFormatDto.Entity.Param param : method.getIn()) {
                         TypeName typeName = getTypeName(packWithEntity, param.getType());
                         ParameterSpec parameterSpec = ParameterSpec.builder(typeName, param.getName()).build();
 
                         methodBuilder.addParameter(parameterSpec);
                     }
+
 
                     String returnTypeName = method.getOut();
                     if (returnTypeName != null && !returnTypeName.isEmpty()) {
@@ -216,8 +218,8 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                     MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
                             .addModifiers(Modifier.PUBLIC)
                             .addException(ConnectionException.class)
-                            .addException(ProtocolException.class)
                             .addException(ConvertException.class);
+
 
                     for (JsonFormatDto.Entity.Param param : method.getIn()) {
                         TypeName typeName = getTypeName(fullPackage, param.getType());
@@ -254,6 +256,8 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                     if (returnType == null || returnType.isEmpty()) {
                         methodBuilder.addStatement("connector.send(req)");
                     } else {
+                        methodBuilder.addException(ProtocolException.class);
+
                         methodBuilder.addStatement("$T resp = connector.send(req)", Response.class);
                         methodBuilder.addStatement("byte[] result = resp.getResult()");
                         CodeBlock ifNullBlock = CodeBlock.builder()

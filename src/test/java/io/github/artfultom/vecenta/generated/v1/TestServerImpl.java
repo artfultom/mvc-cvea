@@ -45,4 +45,13 @@ public class TestServerImpl implements TestServer {
 
         return a;
     }
+
+    @Override
+    public Integer supply() {
+        return 42;
+    }
+
+    @Override
+    public void consume(Integer a) {
+    }
 }

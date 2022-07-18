@@ -92,12 +92,12 @@ public class ServerTest {
             server.start(port, matcher);
 
             connector.connect("127.0.0.1", port);
-            TestClient clientConnector = new TestClient(connector);
+            TestClient client = new TestClient(connector);
 
-            int result1 = clientConnector.sum(3, 2);
+            int result1 = client.sum(3, 2);
             Assert.assertEquals(5, result1);
 
-            String result2 = clientConnector.concat("test", "1", "2");
+            String result2 = client.concat("test", "1", "2");
             Assert.assertEquals("test12", result2);
 
             Model3 model = new Model3();
@@ -106,27 +106,33 @@ public class ServerTest {
             model.setField3("test");
             model.setField4(true);
 
-            Model3 result3 = clientConnector.echo(model);
+            Model3 result3 = client.echo(model);
             Assert.assertEquals(model.getField1(), result3.getField1());
             Assert.assertEquals(model.getField2(), result3.getField2());
             Assert.assertEquals(model.getField3(), result3.getField3());
             Assert.assertEquals(model.getField4(), result3.getField4());
 
             List<Integer> list = List.of(1, 2, 3);
-            List<Integer> result4 = clientConnector.echo(list);
+            List<Integer> result4 = client.echo(list);
             Assert.assertEquals(list, result4);
 
-            List<Model3> result5 = clientConnector.echo(List.of(new Model3()), List.of(new Model3()));
+            List<Model3> result5 = client.echo(List.of(new Model3()), List.of(new Model3()));
             Assert.assertEquals(2, result5.size());
 
-            Map<Integer, Model3> result6 = clientConnector.echo(Map.of(1, new Model3()));
+            Map<Integer, Model3> result6 = client.echo(Map.of(1, new Model3()));
             Assert.assertEquals(1, result6.size());
 
-            Map<Integer, List<Model3>> result7 = clientConnector.echo(
+            Map<Integer, List<Model3>> result7 = client.echo(
                     Map.of(1, List.of(new Model3())),
                     Map.of(2, List.of(new Model3()))
             );
             Assert.assertEquals(2, result7.size());
+
+            Integer result8 = client.supply();
+            Assert.assertNotNull(result8);
+            Assert.assertEquals(42, result8.intValue());
+
+            client.consume(42);
         }
     }
 
@@ -155,8 +161,8 @@ public class ServerTest {
             server.start(port, new ServerMatcher());
 
             connector.connect("127.0.0.1", port);
-            TestClient clientConnector = new TestClient(connector);
-            clientConnector.sum(3, 2);
+            TestClient client = new TestClient(connector);
+            client.sum(3, 2);
 
             Assert.fail("Must have an exception.");
         } catch (ProtocolException e) {

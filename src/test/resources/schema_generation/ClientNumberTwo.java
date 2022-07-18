@@ -22,8 +22,8 @@ public class ClientNumberTwo {
         this.connector = connector;
     }
 
-    public Model3 method1(Model3 argument) throws ConnectionException, ProtocolException,
-            ConvertException {
+    public Model3 method1(Model3 argument) throws ConnectionException, ConvertException,
+            ProtocolException {
         String name = "entity2.method1(ClientNumberTwo.entity2.model3)->ClientNumberTwo.entity2.model3";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(argument));
@@ -38,8 +38,8 @@ public class ClientNumberTwo {
         return convertParamStrategy.convertToObject(result, "ClientNumberTwo.entity2.model3", Model3.class);
     }
 
-    public List<Model3> method2(List<Model3> argument) throws ConnectionException,
-            ProtocolException, ConvertException {
+    public List<Model3> method2(List<Model3> argument) throws ConnectionException, ConvertException,
+            ProtocolException {
         String name = "entity2.method2([ClientNumberTwo.entity2.model3])->[ClientNumberTwo.entity2.model3]";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(argument));
@@ -55,7 +55,7 @@ public class ClientNumberTwo {
     }
 
     public Map<Model3, Model3> method3(Map<Model3, Model3> argument) throws ConnectionException,
-            ProtocolException, ConvertException {
+            ConvertException, ProtocolException {
         String name = "entity2.method3([ClientNumberTwo.entity2.model3]ClientNumberTwo.entity2.model3)->[ClientNumberTwo.entity2.model3]ClientNumberTwo.entity2.model3";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(argument));
