@@ -1,5 +1,6 @@
 package io.github.artfultom.vecenta.transport;
 
+import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.transport.error.MessageError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ public abstract class AbstractServer implements Server {
     public static final int PROTOCOL_VERSION = 1;
     public static final String PROTOCOL_NAME = "vcea";
 
-    protected void handshake(MessageStream stream) {
+    protected void handshake(MessageStream stream) throws ConnectionException {
         byte[] handshake = stream.getMessage();
 
         if (handshake.length > 4) {

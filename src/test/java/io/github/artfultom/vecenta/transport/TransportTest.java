@@ -1,5 +1,6 @@
 package io.github.artfultom.vecenta.transport;
 
+import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
@@ -20,7 +21,7 @@ import java.util.stream.IntStream;
 public class TransportTest {
 
     @Test
-    public void manyClients() throws IOException {
+    public void manyClients() throws ConnectionException {
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("echo", request -> new Response(request.getParams().get(0))));
 
@@ -39,19 +40,19 @@ public class TransportTest {
                                 Assert.assertNotNull(resp.getResult());
                                 Assert.assertArrayEquals(param, resp.getResult());
                             }
-                        } catch (IOException e) {
-                            Assert.fail();
+                        } catch (ConnectionException e) {
+                            Assert.fail(e.getMessage());
                         }
                     })).forEach(CompletableFuture::join);
         }
     }
 
     @Test
-    public void errorConnectionRefused() throws IOException {
+    public void errorConnectionRefused() throws ConnectionException {
         for (int i = 0; i < 10; i++) {
             try (Connector connector = new TcpConnector()) {
                 Assert.assertThrows(
-                        IOException.class,
+                        ConnectionException.class,
                         () -> connector.connect("127.0.0.1", 5550)
                 );
             }
@@ -59,7 +60,7 @@ public class TransportTest {
     }
 
     @Test
-    public void errorServerClosed() throws IOException {
+    public void errorServerClosed() throws ConnectionException {
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("echo", request -> new Response(request.getParams().get(0))));
 
@@ -71,14 +72,14 @@ public class TransportTest {
             server.close();
 
             Assert.assertThrows(
-                    RuntimeException.class,
+                    ConnectionException.class,
                     () -> connector.send(new Request("echo", new ArrayList<>()))
             );
         }
     }
 
     @Test
-    public void error1Handler() throws IOException {
+    public void error1Handler() throws ConnectionException {
         ServerMatcher matcher = new ServerMatcher();
 
         try (TcpServer server = new TcpServer(); Connector connector = new TcpConnector()) {
@@ -94,7 +95,7 @@ public class TransportTest {
     }
 
     @Test
-    public void error2Handler() throws IOException {
+    public void error2Handler() throws ConnectionException {
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("echo", request -> new Response(request.getParams().get(0))));
 
@@ -111,7 +112,7 @@ public class TransportTest {
     }
 
     @Test
-    public void manyResults() throws IOException {
+    public void manyResults() throws ConnectionException {
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("inc", request -> {
             int val = ByteBuffer.wrap(request.getParams().get(0)).getInt();
@@ -152,8 +153,8 @@ public class TransportTest {
                             Assert.assertNull(response2.getError());
                             Assert.assertNotNull(response2.getResult());
                             Assert.assertEquals(val + 1, ByteBuffer.wrap(response2.getResult()).getInt());
-                        } catch (ConnectException e) {
-                            Assert.fail();
+                        } catch (ConnectionException e) {
+                            Assert.fail(e.getMessage());
                         }
                     })).forEach(CompletableFuture::join);
         }

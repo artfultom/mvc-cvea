@@ -1,5 +1,6 @@
 package io.github.artfultom.vecenta.server;
 
+import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.generation.FileGenerator;
@@ -65,7 +66,7 @@ public class ServerTest {
     }
 
     @Test
-    public void testServer() throws URISyntaxException, IOException, ProtocolException, ConvertException {
+    public void testServer() throws URISyntaxException, IOException, ProtocolException, ConvertException, ConnectionException {
         URL res = getClass().getResource("/transfer_data");
         assertNotNull(res);
 
@@ -130,7 +131,7 @@ public class ServerTest {
     }
 
     @Test
-    public void testServerFail() throws URISyntaxException, IOException, ConvertException {
+    public void testServerFail() throws URISyntaxException, IOException, ConvertException, ConnectionException {
         URL res = getClass().getResource("/transfer_data");
         assertNotNull(res);
 
@@ -157,7 +158,7 @@ public class ServerTest {
             TestClient clientConnector = new TestClient(connector);
             clientConnector.sum(3, 2);
 
-            Assert.fail();
+            Assert.fail("Must have an exception.");
         } catch (ProtocolException e) {
             Assert.assertEquals(MessageError.WRONG_METHOD_NAME, e.getError());
         }

@@ -1,5 +1,6 @@
 package io.github.artfultom.vecenta.transport.tcp;
 
+import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.transport.MessageStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +27,15 @@ public class TcpMessageStream implements MessageStream {
     }
 
     @Override
-    public byte[] getMessage() {
+    public byte[] getMessage() throws ConnectionException {
         ByteBuffer sizeBuf = ByteBuffer.allocate(Integer.BYTES);
 
         try {
             while (sizeBuf.position() < Integer.BYTES) {
                 int bytesRead = channel.read(sizeBuf).get(timeout, TimeUnit.MILLISECONDS);
                 if (bytesRead == -1) {
-                    return new byte[0];
+                    log.error("Connection is closed");
+                    throw new ConnectionException("Connection is closed");
                 }
             }
 
@@ -47,7 +49,8 @@ public class TcpMessageStream implements MessageStream {
             while (messageBuf.position() < messageBuf.capacity()) {
                 int bytesRead = channel.read(messageBuf).get(timeout, TimeUnit.MILLISECONDS);
                 if (bytesRead == -1) {
-                    return new byte[0];
+                    log.error("Connection is closed");
+                    throw new ConnectionException("Connection is closed");
                 }
             }
 
@@ -56,22 +59,15 @@ public class TcpMessageStream implements MessageStream {
             log.error("Getting data from channel was interrupted", e);
             Thread.currentThread().interrupt();
         } catch (ExecutionException | TimeoutException e) {
-            try {
-                if (channel.isOpen()) {
-                    channel.shutdownInput();
-                    channel.shutdownOutput();
-                    channel.close();
-                }
-            } catch (IOException ex) {
-                log.error("Cannot close the channel", e);
-            }
+            log.error("Cannot get a message.");
+            throw new ConnectionException("Cannot get a message.", e);
         }
 
         return new byte[0];
     }
 
     @Override
-    public void sendMessage(byte[] resp) {
+    public void sendMessage(byte[] resp) throws ConnectionException {
         try (
                 ByteArrayOutputStream out = new ByteArrayOutputStream(resp.length + Integer.BYTES);
                 DataOutputStream dataStream = new DataOutputStream(out)
@@ -79,14 +75,27 @@ public class TcpMessageStream implements MessageStream {
             dataStream.writeInt(resp.length);
             dataStream.write(resp);
 
-            channel.write(ByteBuffer.wrap(out.toByteArray()));
-        } catch (IOException e) {
+            int result = channel
+                    .write(ByteBuffer.wrap(out.toByteArray()))
+                    .get(timeout, TimeUnit.MILLISECONDS);
+
+            if (result == -1) {
+                throw new ConnectionException("Connection is closed");
+            }
+        } catch (IOException | ExecutionException | TimeoutException e) {
             log.error("Cannot send the message", e);
+        } catch (InterruptedException e) {
+            log.error("Cannot send the message", e);
+            Thread.currentThread().interrupt();
         }
     }
 
     @Override
     public void close() throws IOException {
-        channel.close();
+        if (channel.isOpen()) {
+            channel.shutdownInput();
+            channel.shutdownOutput();
+            channel.close();
+        }
     }
 }

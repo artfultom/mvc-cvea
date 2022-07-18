@@ -1,6 +1,7 @@
 package io.github.artfultom.vecenta.generation;
 
 import com.squareup.javapoet.*;
+import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.generation.config.GenerateConfiguration;
@@ -17,7 +18,6 @@ import io.github.artfultom.vecenta.transport.message.Response;
 import io.github.artfultom.vecenta.util.StringUtils;
 
 import javax.lang.model.element.Modifier;
-import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -208,7 +208,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                 for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
                     MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
                             .addModifiers(Modifier.PUBLIC)
-                            .addException(ConnectException.class)
+                            .addException(ConnectionException.class)
                             .addException(ProtocolException.class)
                             .addException(ConvertException.class);
 

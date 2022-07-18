@@ -1,9 +1,9 @@
 package io.github.artfultom.vecenta.transport.tcp;
 
 import io.github.artfultom.vecenta.Configuration;
+import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.matcher.DefaultReadWriteStrategy;
 import io.github.artfultom.vecenta.matcher.ReadWriteStrategy;
-import io.github.artfultom.vecenta.matcher.TypeConverter;
 import io.github.artfultom.vecenta.transport.AbstractConnector;
 import io.github.artfultom.vecenta.transport.MessageStream;
 import io.github.artfultom.vecenta.transport.message.Request;
@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -42,14 +41,14 @@ public class TcpConnector extends AbstractConnector {
     }
 
     @Override
-    public void connect(String host, int port) throws ConnectException {
+    public void connect(String host, int port) throws ConnectionException {
         this.host = host;
         this.port = port;
 
         connect();
     }
 
-    private synchronized void connect() throws ConnectException {
+    private synchronized void connect() throws ConnectionException {
         try {
             client = AsynchronousSocketChannel.open();
             InetSocketAddress address = new InetSocketAddress(host, port);
@@ -64,7 +63,10 @@ public class TcpConnector extends AbstractConnector {
             log.error("IO error during connection to " + host + ":" + port, e);
         } catch (ExecutionException | TimeoutException e) {
             if (e.getCause() instanceof ConnectException) {
-                throw (ConnectException) e.getCause();
+                throw new ConnectionException(
+                        "Connot connect to " + host + ":" + port,
+                        (ConnectException) e.getCause()
+                );
             }
 
             log.error("IO error during connection to " + host + ":" + port, e);
@@ -75,52 +77,42 @@ public class TcpConnector extends AbstractConnector {
     }
 
     @Override
-    public synchronized Response send(Request request) throws ConnectException {
+    public synchronized Response send(Request request) throws ConnectionException {
         byte[] b = strategy.convertToBytes(request);
-
-        ByteBuffer writeBuffer = ByteBuffer.allocate(Integer.BYTES + b.length);
-        writeBuffer.put(TypeConverter.INTEGER.convert(b.length));
-        writeBuffer.put(b);
 
         for (int i = 0; i < SEND_ATTEMPT_COUNT; i++) {
             try {
-                client
-                        .write(writeBuffer.position(0))
-                        .get(timeout, TimeUnit.MILLISECONDS);
+                stream.sendMessage(b);
 
-                ByteBuffer readSizeBuffer = ByteBuffer.allocate(Integer.BYTES);
-                int sizeResult = client
-                        .read(readSizeBuffer.position(0))
-                        .get(timeout, TimeUnit.MILLISECONDS);
-                if (sizeResult == -1) {
-                    throw new RuntimeException("The server is closed"); // TODO
+                for (int j = 0; j < SEND_ATTEMPT_COUNT; j++) {
+                    try {
+                        byte[] readResult = stream.getMessage();
+                        return strategy.convertToResponse(readResult);
+                    } catch (ConnectionException ex) {
+                        log.warn(ex.getMessage(), ex);
+                    }
                 }
-
-                ByteBuffer readBuffer = ByteBuffer.allocate(readSizeBuffer.getInt(0));
-                int readResult = client
-                        .read(readBuffer.position(0))
-                        .get(timeout, TimeUnit.MILLISECONDS);
-                if (readResult == -1) {
-                    throw new RuntimeException("The server is closed"); // TODO
-                }
-
-                return strategy.convertToResponse(readBuffer.array());
-            } catch (ExecutionException | InterruptedException | TimeoutException e) {
-                log.info(String.format("Reconnecting to %s:%d", host, port));
-                connect();
+            } catch (ConnectionException ex) {
+                log.warn(ex.getMessage(), ex);
             }
         }
 
-        return null;
+        ConnectionException ex = new ConnectionException("Cannot send the message.");
+        log.error(ex.getMessage(), ex);
+        throw ex;
     }
 
     @Override
-    public void close() throws IOException {
-        if (stream != null) {
-            stream.close();
-        }
-        if (client != null) {
-            client.close();
+    public void close() throws ConnectionException {
+        try {
+            if (stream != null) {
+                stream.close();
+            }
+            if (client != null) {
+                client.close();
+            }
+        } catch (IOException ex) {
+            throw new ConnectionException("Cannot close the connector.", ex);
         }
     }
 }

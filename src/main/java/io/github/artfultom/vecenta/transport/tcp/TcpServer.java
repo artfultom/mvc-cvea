@@ -1,6 +1,7 @@
 package io.github.artfultom.vecenta.transport.tcp;
 
 import io.github.artfultom.vecenta.Configuration;
+import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;
 import io.github.artfultom.vecenta.transport.AbstractServer;
 import io.github.artfultom.vecenta.transport.MessageStream;
@@ -59,7 +60,7 @@ public class TcpServer extends AbstractServer {
 
                             stream.sendMessage(resp);
                         }
-                    } catch (IOException e) {
+                    } catch (IOException | ConnectionException e) {
                         log.error("Stream error", e);
                     }
                 }
@@ -75,9 +76,13 @@ public class TcpServer extends AbstractServer {
     }
 
     @Override
-    public void close() throws IOException {
-        if (listener.isOpen()) {
-            listener.close();
+    public void close() throws ConnectionException {
+        try {
+            if (listener.isOpen()) {
+                listener.close();
+            }
+        } catch (IOException e) {
+            throw new ConnectionException("Cannot close the server.", e);
         }
     }
 }
