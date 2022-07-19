@@ -28,12 +28,12 @@ public class StringUtilsTest {
 
     @Test
     public void fillModelName() {
-        assertEquals("int32", StringUtils.fillModelName(List.of("client", "entity"),"int32"));
-        assertEquals("client.entity.Model", StringUtils.fillModelName(List.of("client", "entity"),"Model"));
-        assertEquals("[int32]", StringUtils.fillModelName(List.of("client", "entity"),"[int32]"));
-        assertEquals("[client.entity.Model]", StringUtils.fillModelName(List.of("client", "entity"),"[Model]"));
-        assertEquals("[int32]int32", StringUtils.fillModelName(List.of("client", "entity"),"[int32]int32"));
-        assertEquals("[client.entity.Model]client.entity.Model", StringUtils.fillModelName(List.of("client", "entity"),"[Model]Model"));
+        assertEquals("int32", StringUtils.fillModelName(List.of("client", "entity"), "int32"));
+        assertEquals("client.entity.Model", StringUtils.fillModelName(List.of("client", "entity"), "Model"));
+        assertEquals("[int32]", StringUtils.fillModelName(List.of("client", "entity"), "[int32]"));
+        assertEquals("[client.entity.Model]", StringUtils.fillModelName(List.of("client", "entity"), "[Model]"));
+        assertEquals("[int32]int32", StringUtils.fillModelName(List.of("client", "entity"), "[int32]int32"));
+        assertEquals("[client.entity.Model]client.entity.Model", StringUtils.fillModelName(List.of("client", "entity"), "[Model]Model"));
         assertEquals("[client.entity.Model][client.entity.Model]", StringUtils.fillModelName(List.of("client", "entity"), "[Model][Model]"));
         assertEquals("[test.test.test][test.test.test]", StringUtils.fillModelName(List.of("test", "test"), "[test][test]"));
     }

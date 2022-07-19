@@ -13,7 +13,7 @@ import static java.nio.file.FileVisitResult.TERMINATE;
 public class TestUtils {
 
     public static void deleteDir(Path dir) throws IOException {
-        Files.walkFileTree(dir, new SimpleFileVisitor<>(){
+        Files.walkFileTree(dir, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
                 Files.delete(file);
@@ -31,7 +31,7 @@ public class TestUtils {
 
             @Override
             public FileVisitResult postVisitDirectory(final Path dir, final IOException e) throws IOException {
-                if(e != null) {
+                if (e != null) {
                     return handleException(e);
                 }
                 Files.delete(dir);

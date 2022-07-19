@@ -9,8 +9,6 @@ import io.github.artfultom.vecenta.transport.tcp.TcpServer;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.net.ConnectException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
