@@ -45,7 +45,7 @@ public class TcpServer extends AbstractServer {
                         return;
                     }
 
-                    try (MessageStream stream = new TcpMessageStream(ch, timeout)) {
+                    try (MessageStream stream = new TcpAsyncMessageStream(ch, timeout)) {
                         if (ch.isOpen()) {
                             handshake(stream);
                         }

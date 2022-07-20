@@ -1,6 +1,5 @@
 package io.github.artfultom.vecenta.transport.tcp;
 
-import io.github.artfultom.vecenta.Configuration;
 import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.matcher.DefaultReadWriteStrategy;
 import io.github.artfultom.vecenta.matcher.ReadWriteStrategy;
@@ -12,22 +11,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.InetSocketAddress;
-import java.nio.channels.AsynchronousSocketChannel;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.net.Socket;
 
 public class TcpConnector extends AbstractConnector {
 
     private static final Logger log = LoggerFactory.getLogger(TcpConnector.class);
-    private int timeout = Configuration.getInt("client.default_timeout");   // TODO from handshake
 
     private String host;
     private int port;
 
-    private AsynchronousSocketChannel client;
+    private Socket socket;
 
     private MessageStream stream;
 
@@ -49,30 +43,17 @@ public class TcpConnector extends AbstractConnector {
 
     private synchronized void connect() throws ConnectionException {
         try {
-            client = AsynchronousSocketChannel.open();
-            InetSocketAddress address = new InetSocketAddress(host, port);
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(host, port));
 
-            client
-                    .connect(address)
-                    .get(timeout, TimeUnit.MILLISECONDS);
-
-            stream = new TcpMessageStream(client, timeout);
-            handshake(stream);
+            stream = new TcpMessageStream(socket);
         } catch (IOException e) {
-            log.error("IO error during connection to " + host + ":" + port, e);
-        } catch (ExecutionException | TimeoutException e) {
-            if (e.getCause() instanceof ConnectException) {
-                throw new ConnectionException(
-                        "Cannot connect to " + host + ":" + port,
-                        (ConnectException) e.getCause()
-                );
-            }
-
-            log.error("IO error during connection to " + host + ":" + port, e);
-        } catch (InterruptedException e) {
-            log.error("IO error during connection to " + host + ":" + port, e);
-            Thread.currentThread().interrupt();
+            ConnectionException ex = new ConnectionException("IO error during connection to " + host + ":" + port);
+            log.error(ex.getMessage(), e);
+            throw ex;
         }
+
+        handshake(stream);
     }
 
     @Override
@@ -91,8 +72,8 @@ public class TcpConnector extends AbstractConnector {
             if (stream != null) {
                 stream.close();
             }
-            if (client != null) {
-                client.close();
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
             }
         } catch (IOException ex) {
             throw new ConnectionException("Cannot close the connector.", ex);

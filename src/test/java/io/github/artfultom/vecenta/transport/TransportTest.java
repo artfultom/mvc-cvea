@@ -50,7 +50,7 @@ public class TransportTest {
         for (int i = 0; i < 10; i++) {
             try (Connector connector = new TcpConnector()) {
                 Assert.assertThrows(
-                        ConnectionException.class,
+                        Exception.class,
                         () -> connector.connect("127.0.0.1", 5550)
                 );
             }
