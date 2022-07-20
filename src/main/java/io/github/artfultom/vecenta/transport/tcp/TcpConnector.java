@@ -63,7 +63,7 @@ public class TcpConnector extends AbstractConnector {
         } catch (ExecutionException | TimeoutException e) {
             if (e.getCause() instanceof ConnectException) {
                 throw new ConnectionException(
-                        "Connot connect to " + host + ":" + port,
+                        "Cannot connect to " + host + ":" + port,
                         (ConnectException) e.getCause()
                 );
             }
