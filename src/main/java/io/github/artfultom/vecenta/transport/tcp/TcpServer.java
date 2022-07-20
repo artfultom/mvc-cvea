@@ -46,13 +46,13 @@ public class TcpServer extends AbstractServer {
                     }
 
                     try (MessageStream stream = new TcpMessageStream(ch, timeout)) {
-                        if (listener.isOpen()) {
+                        if (ch.isOpen()) {
                             handshake(stream);
                         }
 
-                        while (listener.isOpen()) {
+                        while (ch.isOpen()) {
                             byte[] req = stream.getMessage();
-                            if (req == null || req.length == 0 || !listener.isOpen()) {
+                            if (!listener.isOpen() || !ch.isOpen()) {
                                 continue;
                             }
 
