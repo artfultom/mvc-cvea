@@ -6,6 +6,7 @@ import io.github.artfultom.vecenta.transport.error.MessageError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public abstract class AbstractConnector implements Connector {
@@ -22,13 +23,20 @@ public abstract class AbstractConnector implements Connector {
         protocolInfo.put(AbstractServer.PROTOCOL_NAME.getBytes());
         protocolInfo.putInt(AbstractServer.PROTOCOL_VERSION);
 
-        stream.sendMessage(protocolInfo.array());
+        try {
+            stream.sendMessage(protocolInfo.array());
 
-        ByteBuffer bb = ByteBuffer.wrap(stream.getMessage());
-        int result = bb.asIntBuffer().get();
+            ByteBuffer bb = ByteBuffer.wrap(stream.getMessage());
+            int result = bb.asIntBuffer().get();
 
-        if (result != 0) {
-            log.error(String.format("Handshake error: %s", MessageError.get(result)));  // TODO ProtocolException
+            if (result != 0) {
+                ConnectionException ex = new ConnectionException(
+                        String.format("Handshake error: %s", MessageError.get(result))
+                );
+                log.error(ex.getMessage(), ex);
+            }
+        } catch (IOException e) {
+            throw new ConnectionException("Cannot handshake (connector).", e);
         }
     }
 }

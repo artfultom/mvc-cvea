@@ -7,8 +7,6 @@ import io.github.artfultom.vecenta.transport.AbstractConnector;
 import io.github.artfultom.vecenta.transport.MessageStream;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -16,9 +14,8 @@ import java.net.Socket;
 
 public class TcpConnector extends AbstractConnector {
 
-    private static final Logger log = LoggerFactory.getLogger(TcpConnector.class);
-
     private String host;
+
     private int port;
 
     private Socket socket;
@@ -48,9 +45,7 @@ public class TcpConnector extends AbstractConnector {
 
             stream = new TcpMessageStream(socket);
         } catch (IOException e) {
-            ConnectionException ex = new ConnectionException("IO error during connection to " + host + ":" + port);
-            log.error(ex.getMessage(), e);
-            throw ex;
+            throw new ConnectionException("IO error during connection to " + host + ":" + port);
         }
 
         handshake(stream);
@@ -60,10 +55,17 @@ public class TcpConnector extends AbstractConnector {
     public synchronized Response send(Request request) throws ConnectionException {
         byte[] b = strategy.convertToBytes(request);
 
-        stream.sendMessage(b);
+        try {
+            stream.sendMessage(b);
+            byte[] readResult = stream.getMessage();
+            if (readResult.length == 0) {
+                throw new ConnectionException("Cannot send a message.");
+            }
 
-        byte[] readResult = stream.getMessage();
-        return strategy.convertToResponse(readResult);
+            return strategy.convertToResponse(readResult);
+        } catch (IOException e) {
+            throw new ConnectionException("Cannot send a message.", e);
+        }
     }
 
     @Override

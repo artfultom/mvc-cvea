@@ -1,11 +1,10 @@
 package io.github.artfultom.vecenta.transport.tcp;
 
-import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.transport.MessageStream;
 
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -15,34 +14,26 @@ public class TcpMessageStream implements MessageStream {
 
     DataOutputStream out;
 
-    public TcpMessageStream(Socket socket) {
-        try {
-            in = new DataInputStream(socket.getInputStream());
-            out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public TcpMessageStream(Socket socket) throws IOException {
+        this.in = new DataInputStream(socket.getInputStream());
+        this.out = new DataOutputStream(socket.getOutputStream());
     }
 
     @Override
-    public byte[] getMessage() throws ConnectionException {
+    public byte[] getMessage() throws IOException {
         try {
             int size = in.readInt();
             return in.readNBytes(size);
-        } catch (IOException e) {
-            throw new ConnectionException("Cannot get the message.", e);
+        } catch (EOFException e) {
+            return new byte[0];
         }
     }
 
     @Override
-    public void sendMessage(byte[] resp) throws ConnectionException {
-        try {
-            out.writeInt(resp.length);
-            out.write(resp);
-            out.flush();
-        } catch (IOException e) {
-            throw new ConnectionException("Cannot send the message.", e);
-        }
+    public void sendMessage(byte[] resp) throws IOException {
+        out.writeInt(resp.length);
+        out.write(resp);
+        out.flush();
     }
 
     @Override

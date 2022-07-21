@@ -26,7 +26,7 @@ public class TransportTest {
         try (Server server = new TcpServer()) {
             server.start(5550, matcher);
 
-            IntStream.range(0, 1).parallel()
+            IntStream.range(0, 100).parallel()
                     .mapToObj(item -> CompletableFuture.runAsync(() -> {
                         try (Connector connector = new TcpConnector()) {
                             connector.connect("127.0.0.1", 5550);
