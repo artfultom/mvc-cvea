@@ -2,6 +2,7 @@ package io.github.artfultom.vecenta.transport.tcp;
 
 import io.github.artfultom.vecenta.Configuration;
 import io.github.artfultom.vecenta.exceptions.ConnectionException;
+import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;
 import io.github.artfultom.vecenta.transport.AbstractServer;
 import io.github.artfultom.vecenta.transport.MessageStream;
@@ -75,6 +76,8 @@ public class TcpServer extends AbstractServer {
                             log.error("Error in the MessageStream.", e);
                         } catch (ConnectionException e) {
                             log.error("Error in the handshake.", e);
+                        } catch (ProtocolException e) {
+                            log.error(e.getMessage(), e);
                         } finally {
                             if (!socket.isClosed()) {
                                 try {

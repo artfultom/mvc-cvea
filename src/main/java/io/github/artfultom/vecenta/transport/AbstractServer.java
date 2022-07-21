@@ -1,9 +1,8 @@
 package io.github.artfultom.vecenta.transport;
 
 import io.github.artfultom.vecenta.exceptions.ConnectionException;
+import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.transport.error.MessageError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -11,12 +10,10 @@ import java.nio.charset.StandardCharsets;
 
 public abstract class AbstractServer implements Server {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractServer.class);
-
     public static final int PROTOCOL_VERSION = 1;
     public static final String PROTOCOL_NAME = "vcea";
 
-    protected void handshake(MessageStream stream) throws ConnectionException {
+    protected void handshake(MessageStream stream) throws ConnectionException, ProtocolException {
         try {
             byte[] handshake = stream.getMessage();
 
@@ -31,14 +28,11 @@ public abstract class AbstractServer implements Server {
                     ByteBuffer bb = ByteBuffer.allocate(Integer.BYTES);
                     if (protocolVersion == PROTOCOL_VERSION) {
                         bb.putInt(0);
-
                         stream.sendMessage(bb.array());
                     } else {
                         bb.putInt(MessageError.WRONG_PROTOCOL_VERSION.ordinal());
-
                         stream.sendMessage(bb.array());
-
-                        log.error(String.format("Wrong protocol version: %d", protocolVersion));    // TODO exception
+                        throw new ProtocolException(MessageError.WRONG_PROTOCOL);
                     }
 
                     return;
