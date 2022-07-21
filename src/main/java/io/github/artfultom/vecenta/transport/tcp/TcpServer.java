@@ -24,7 +24,7 @@ public class TcpServer extends AbstractServer {
 
     private ServerSocket listener;
 
-    private static final long FIRST_CLIENT_ID = Configuration.getLong("server.first_client_id");    // TODO
+    private static final long FIRST_CLIENT_ID = Configuration.getLong("server.first_client_id");
 
     @Override
     public void start(int port, ServerMatcher matcher) {
