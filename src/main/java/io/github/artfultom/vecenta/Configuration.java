@@ -11,6 +11,7 @@ import java.util.Properties;
 public class Configuration {
 
     private static final Logger log = LoggerFactory.getLogger(Configuration.class);
+
     private static final String FILENAME = "lib.properties";
 
     private Configuration() {
@@ -33,34 +34,10 @@ public class Configuration {
     }
 
     public static int getInt(String property) {
-        try (InputStream input = Configuration.class.getClassLoader().getResourceAsStream(FILENAME)) {
-            Properties prop = new Properties();
-            prop.load(input);
-            String value = prop.getProperty(property);
-
-            if (value != null) {
-                return Integer.parseInt(value);
-            }
-        } catch (IOException e) {
-            log.error(String.format("Cannot find property %s", property));
-        }
-
-        throw new PropertyNotFoundException(property);
+        return Integer.parseInt(get(property));
     }
 
     public static long getLong(String property) {
-        try (InputStream input = Configuration.class.getClassLoader().getResourceAsStream(FILENAME)) {
-            Properties prop = new Properties();
-            prop.load(input);
-            String value = prop.getProperty(property);
-
-            if (value != null) {
-                return Long.parseLong(value);
-            }
-        } catch (IOException e) {
-            log.error(String.format("Cannot find property %s", property));
-        }
-
-        throw new PropertyNotFoundException(property);
+        return Long.parseLong(get(property));
     }
 }
