@@ -71,9 +71,6 @@ public class TcpConnector extends AbstractConnector {
     @Override
     public void close() throws ConnectionException {
         try {
-            if (stream != null) {
-                stream.close();
-            }
             if (socket != null && !socket.isClosed()) {
                 socket.close();
             }

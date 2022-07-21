@@ -35,14 +35,4 @@ public class TcpMessageStream implements MessageStream {
         out.write(resp);
         out.flush();
     }
-
-    @Override
-    public void close() throws IOException {
-        if (in != null) {
-            in.close();
-        }
-        if (out != null) {
-            out.close();
-        }
-    }
 }

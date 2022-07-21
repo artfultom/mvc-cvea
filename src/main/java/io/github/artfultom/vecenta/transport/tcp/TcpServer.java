@@ -55,14 +55,16 @@ public class TcpServer extends AbstractServer {
                     }
 
                     executionPool.execute(() -> {
-                        try (MessageStream stream = new TcpMessageStream(socket)) {
+                        try {
+                            MessageStream stream = new TcpMessageStream(socket);
+
                             if (!socket.isClosed() && !listener.isClosed()) {
                                 handshake(stream);
                             }
 
                             while (!socket.isClosed() && !listener.isClosed()) {
                                 byte[] req = stream.getMessage();
-                                if (req.length == 0) {
+                                if (req.length == 0 || listener.isClosed()) {
                                     continue;
                                 }
 
@@ -76,6 +78,8 @@ public class TcpServer extends AbstractServer {
                         } finally {
                             if (!socket.isClosed()) {
                                 try {
+                                    socket.shutdownInput();
+                                    socket.shutdownOutput();
                                     socket.close();
                                 } catch (IOException e) {
                                     log.error("Cannot close the socket.", e);

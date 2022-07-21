@@ -2,6 +2,7 @@ package io.github.artfultom.vecenta.transport;
 
 import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;
+import io.github.artfultom.vecenta.matcher.TypeConverter;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 import io.github.artfultom.vecenta.transport.tcp.TcpConnector;
@@ -67,11 +68,16 @@ public class TransportTest {
 
         try (Connector connector = new TcpConnector()) {
             connector.connect("127.0.0.1", 5550);
+
+            byte[] val = TypeConverter.INTEGER.convert(42);
+            Response resp = connector.send(new Request("echo", List.of(val)));
+            Assert.assertArrayEquals(val, resp.getResult());
+
             server.close();
 
             Assert.assertThrows(
                     ConnectionException.class,
-                    () -> connector.send(new Request("echo", new ArrayList<>()))
+                    () -> connector.send(new Request("echo", List.of(val)))
             );
         }
     }
