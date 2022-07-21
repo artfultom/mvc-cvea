@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class TcpServer extends AbstractServer {
 
@@ -22,12 +23,7 @@ public class TcpServer extends AbstractServer {
 
     private ServerSocket listener;
 
-    private long timeout = Configuration.getLong("server.default_timeout"); // TODO
     private static final long FIRST_CLIENT_ID = Configuration.getLong("server.first_client_id");    // TODO
-
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
-    }
 
     @Override
     public void start(int port, ServerMatcher matcher) {
@@ -38,6 +34,7 @@ public class TcpServer extends AbstractServer {
             Executor executionPool = Executors.newCachedThreadPool();
 
             Executor acceptPool = Executors.newSingleThreadExecutor();
+            AtomicLong clientId = new AtomicLong(FIRST_CLIENT_ID);
             acceptPool.execute(new Runnable() {
 
                 @Override
@@ -45,6 +42,7 @@ public class TcpServer extends AbstractServer {
                     Socket socket;
                     try {
                         socket = listener.accept();
+                        log.info(String.format("Client #%s is accepted.", clientId.getAndIncrement()));
                     } catch (SocketException e) {
                         return;
                     } catch (IOException e) {
