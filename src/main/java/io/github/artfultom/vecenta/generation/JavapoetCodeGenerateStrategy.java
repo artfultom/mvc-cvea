@@ -281,8 +281,11 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
 
                     MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
                             .addModifiers(Modifier.PUBLIC)
-                            .addException(ConnectionException.class)
-                            .addException(ConvertException.class);
+                            .addException(ConnectionException.class);
+
+                    if (!method.getIn().isEmpty() || (method.getOut() != null && !method.getOut().isEmpty())) {
+                        methodBuilder.addException(ConvertException.class);
+                    }
 
                     for (JsonFormatDto.Entity.Param param : method.getIn()) {
                         TypeName typeName = getTypeName(fullPackage, param.getType());

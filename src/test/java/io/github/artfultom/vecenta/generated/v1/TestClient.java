@@ -162,7 +162,7 @@ public class TestClient {
         connector.send(req);
     }
 
-    public void error1() throws ConnectionException, ConvertException {
+    public void error1() throws ConnectionException {
         String name = "math.error1()";
         List<byte[]> arguments = new ArrayList<>();
         Request req = new Request(name, arguments);
@@ -170,7 +170,7 @@ public class TestClient {
         connector.send(req);
     }
 
-    public void error2() throws ConnectionException, ConvertException {
+    public void error2() throws ConnectionException {
         String name = "math.error2()";
         List<byte[]> arguments = new ArrayList<>();
         Request req = new Request(name, arguments);
@@ -178,7 +178,7 @@ public class TestClient {
         connector.send(req);
     }
 
-    public void error3() throws ConnectionException, ConvertException {
+    public void error3() throws ConnectionException {
         String name = "math.error3()";
         List<byte[]> arguments = new ArrayList<>();
         Request req = new Request(name, arguments);
