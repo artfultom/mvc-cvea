@@ -47,7 +47,12 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
             for (JsonFormatDto.Entity entity : client.getEntities()) {
                 for (JsonFormatDto.Entity.Model model : entity.getModels()) {
                     String className = StringUtils.capitalizeFirstLetter(model.getName());
-                    String pack = configuration.getModelPackage() + ".v" + version + "." + entity.getName().toLowerCase();
+                    String pack = String.format(
+                            "%s.v%s.%s",
+                            configuration.getModelPackage(),
+                            version,
+                            entity.getName().toLowerCase()
+                    );
 
                     TypeSpec.Builder builder = TypeSpec.classBuilder(className)
                             .addModifiers(Modifier.PUBLIC);
@@ -117,7 +122,12 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                 for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
                     for (String error : method.getErrors()) {
                         String name = StringUtils.getExceptionName(error);
-                        String pack = configuration.getModelPackage() + ".v" + version + "." + entity.getName().toLowerCase();  // TODO format
+                        String pack = String.format(
+                                "%s.v%s.%s",
+                                configuration.getModelPackage(),
+                                version,
+                                entity.getName().toLowerCase()
+                        );
 
                         TypeSpec.Builder builder = TypeSpec.classBuilder(name)
                                 .addModifiers(Modifier.PUBLIC)
