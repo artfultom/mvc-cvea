@@ -109,6 +109,24 @@
                   "type": "int32"
                 }
               ]
+            },
+            {
+              "name": "error1"
+            },
+            {
+              "name": "error2",
+              "errors": [
+                "file not found",
+                "new error"
+              ]
+            },
+            {
+              "name": "error3",
+              "errors": [
+                "file not found",
+                "i/o",
+                "etc"
+              ]
             }
           ],
           "models": [

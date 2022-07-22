@@ -75,4 +75,22 @@ public interface TestServer {
             argumentTypes = {"int32"}
     )
     void consume(Integer a);
+
+    @RpcMethod(
+            entity = "math",
+            name = "error1"
+    )
+    void error1();
+
+    @RpcMethod(
+            entity = "math",
+            name = "error2"
+    )
+    void error2();
+
+    @RpcMethod(
+            entity = "math",
+            name = "error3"
+    )
+    void error3();
 }

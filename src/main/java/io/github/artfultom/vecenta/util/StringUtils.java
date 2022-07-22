@@ -78,4 +78,19 @@ public class StringUtils {
 
         return String.join("", list);
     }
+
+    public static String getExceptionName(String name) {
+        if (name == null || name.isEmpty()) {
+            return name;
+        }
+
+        return Arrays.stream(name.replaceAll("\\W", " ").split(" "))
+                .map(item -> {
+                    if (item.length() > 1) {
+                        return item.substring(0, 1).toUpperCase() + item.substring(1);
+                    }
+
+                    return item.toUpperCase();
+                }).collect(Collectors.joining()) + "Exception";
+    }
 }

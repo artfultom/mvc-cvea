@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,7 +48,7 @@ public class ServerTest {
                 "test.pack.client"
         );
 
-        List<Path> files = new FileGenerator(config).generateFiles();
+        Set<Path> files = new FileGenerator(config).generateFiles();
         assertEquals(7, files.size());
 
         for (Path file : files) {
@@ -79,9 +80,9 @@ public class ServerTest {
                 pack
         );
 
-        List<Path> files = new FileGenerator(config).generateFiles();
+        Set<Path> files = new FileGenerator(config).generateFiles();
         assertNotNull(files);
-        assertEquals(3, files.size());
+        assertEquals(7, files.size());
 
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(pack);
@@ -151,9 +152,9 @@ public class ServerTest {
                 GenerateMode.CLIENT
         );
 
-        List<Path> files = new FileGenerator(config).generateFiles();
+        Set<Path> files = new FileGenerator(config).generateFiles();
         assertNotNull(files);
-        assertEquals(2, files.size());
+        assertEquals(6, files.size());
 
         try (Server server = new TcpServer(); Connector connector = new TcpConnector()) {
             int port = 5550;

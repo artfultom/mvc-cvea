@@ -9,6 +9,11 @@ public interface CodeGenerateStrategy {
             JsonFormatDto dto
     );
 
+    List<GeneratedCode> generateExceptions(
+            String fileName,
+            JsonFormatDto dto
+    );
+
     GeneratedCode generateServerCode(
             String fileName,
             JsonFormatDto dto

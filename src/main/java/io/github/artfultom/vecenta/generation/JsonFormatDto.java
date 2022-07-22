@@ -100,8 +100,12 @@ public class JsonFormatDto {
             @JsonProperty("out")
             private String out;
 
+            @JsonProperty("errors")
+            private List<String> errors;
+
             public Method() {
                 this.in = Collections.emptyList();
+                this.errors = Collections.emptyList();
             }
 
             public String getName() {
@@ -128,6 +132,13 @@ public class JsonFormatDto {
                 this.out = out;
             }
 
+            public List<String> getErrors() {
+                return errors;
+            }
+
+            public void setErrors(List<String> errors) {
+                this.errors = errors;
+            }
         }
 
         public static class Model {

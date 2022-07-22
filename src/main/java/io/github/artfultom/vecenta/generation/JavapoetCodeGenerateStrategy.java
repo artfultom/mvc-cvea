@@ -105,6 +105,44 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
     }
 
     @Override
+    public List<GeneratedCode> generateExceptions(String fileName, JsonFormatDto dto) {
+        List<GeneratedCode> result = new ArrayList<>();
+
+        String version = fileName.split("\\.")[1];
+
+        for (JsonFormatDto.Client client : dto.getClients()) {
+            for (JsonFormatDto.Entity entity : client.getEntities()) {
+
+
+                for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
+                    for (String error : method.getErrors()) {
+                        String name = StringUtils.getExceptionName(error);
+                        String pack = configuration.getModelPackage() + ".v" + version + "." + entity.getName().toLowerCase();  // TODO format
+
+                        TypeSpec.Builder builder = TypeSpec.classBuilder(name)
+                                .addModifiers(Modifier.PUBLIC)
+                                .superclass(Exception.class);
+
+                        JavaFile file = JavaFile
+                                .builder(pack, builder.build())
+                                .indent("    ")
+                                .skipJavaLangImports(true)
+                                .build();
+
+                        result.add(new GeneratedCode(
+                                file.packageName,
+                                file.typeSpec.name,
+                                file.toString()
+                        ));
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public GeneratedCode generateServerCode(
             String fileName,
             JsonFormatDto dto

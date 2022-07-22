@@ -16,7 +16,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,8 +51,8 @@ public class FileGenerator {
         return this;
     }
 
-    public List<Path> generateFiles() throws IOException {
-        List<Path> result = new ArrayList<>();
+    public Set<Path> generateFiles() throws IOException {
+        Set<Path> result = new HashSet<>();
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.json");
         ObjectMapper mapper = new ObjectMapper();
 
@@ -77,6 +79,12 @@ public class FileGenerator {
                     );
                     result.addAll(saveModels(config, models));
 
+                    List<GeneratedCode> exceptions = generateStrategy.generateExceptions(
+                            fileName,
+                            dto
+                    );
+                    result.addAll(saveExceptions(config, exceptions));
+
                     if (config.getMode() != GenerateMode.CLIENT) {
                         GeneratedCode server = generateStrategy.generateServerCode(
                                 fileName,
@@ -101,8 +109,8 @@ public class FileGenerator {
         return result;
     }
 
-    private List<Path> saveModels(GenerateConfiguration config, List<GeneratedCode> models) throws IOException {
-        List<Path> result = new ArrayList<>();
+    private Set<Path> saveModels(GenerateConfiguration config, List<GeneratedCode> models) throws IOException {
+        Set<Path> result = new HashSet<>();
 
         for (GeneratedCode model : models) {
             String other = model.getFullPath();
@@ -110,6 +118,21 @@ public class FileGenerator {
             Files.createDirectories(modelFile.getParent());
 
             Path file = Files.writeString(modelFile, model.getBody());
+            result.add(file);
+        }
+
+        return result;
+    }
+
+    private Set<Path> saveExceptions(GenerateConfiguration config, List<GeneratedCode> exceptions) throws IOException {
+        Set<Path> result = new HashSet<>();
+
+        for (GeneratedCode exception : exceptions) {
+            String other = exception.getFullPath();
+            Path exceptionFile = config.getDestinationDir().resolve(other);
+            Files.createDirectories(exceptionFile.getParent());
+
+            Path file = Files.writeString(exceptionFile, exception.getBody());
             result.add(file);
         }
 
@@ -124,8 +147,8 @@ public class FileGenerator {
         return Files.writeString(serverFile, server.getBody());
     }
 
-    private List<Path> saveClients(GenerateConfiguration config, List<GeneratedCode> clients) throws IOException {
-        List<Path> result = new ArrayList<>();
+    private Set<Path> saveClients(GenerateConfiguration config, List<GeneratedCode> clients) throws IOException {
+        Set<Path> result = new HashSet<>();
 
         for (GeneratedCode client : clients) {
             String other = client.getFullPath();

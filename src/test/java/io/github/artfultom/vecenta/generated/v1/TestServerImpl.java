@@ -54,4 +54,19 @@ public class TestServerImpl implements TestServer {
     @Override
     public void consume(Integer a) {
     }
+
+    @Override
+    public void error1() {
+
+    }
+
+    @Override
+    public void error2() {
+
+    }
+
+    @Override
+    public void error3() {
+
+    }
 }

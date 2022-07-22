@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class StringUtilsTest {
 
@@ -38,4 +39,15 @@ public class StringUtilsTest {
         assertEquals("[test.test.test][test.test.test]", StringUtils.fillModelName(List.of("test", "test"), "[test][test]"));
     }
 
+    @Test
+    public void getExceptionName() {
+        assertNull(StringUtils.getExceptionName(null));
+        assertEquals("", StringUtils.getExceptionName(""));
+        assertEquals("AException", StringUtils.getExceptionName("a"));
+        assertEquals("AException", StringUtils.getExceptionName("A"));
+        assertEquals("TestErrorException", StringUtils.getExceptionName("test error"));
+        assertEquals("TestErrorException", StringUtils.getExceptionName("test error!"));
+        assertEquals("TestErrorException", StringUtils.getExceptionName("test/error!"));
+        assertEquals("TestErrorException", StringUtils.getExceptionName("test\\error!"));
+    }
 }
