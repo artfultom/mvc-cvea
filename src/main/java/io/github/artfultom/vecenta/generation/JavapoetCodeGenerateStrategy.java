@@ -197,13 +197,6 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                                         .collect(CodeBlock.joining(", ", "{", "}"))
                         );
                     }
-                    if (!method.getErrors().isEmpty()) {
-                        annotationSpecBuilder.addMember("errors", "$L",
-                                method.getErrors().stream()
-                                        .map(item -> CodeBlock.of("$S", item))
-                                        .collect(CodeBlock.joining(", ", "{", "}"))
-                        );
-                    }
 
                     MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
                             .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC);
@@ -224,6 +217,19 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
 
                         TypeName typeName = getTypeName(packWithEntity, methodOut);
                         methodBuilder.returns(typeName);
+                    }
+
+                    if (!method.getErrors().isEmpty()) {
+                        annotationSpecBuilder.addMember("errors", "$L",
+                                method.getErrors().stream()
+                                        .map(item -> CodeBlock.of("$S", item))
+                                        .collect(CodeBlock.joining(", ", "{", "}"))
+                        );
+
+                        for (String error : method.getErrors()) {
+                            TypeName typeName = getTypeName(packWithEntity, StringUtils.getExceptionName(error));
+                            methodBuilder.addException(typeName);
+                        }
                     }
 
                     methodBuilder.addAnnotation(annotationSpecBuilder.build());

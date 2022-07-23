@@ -1,6 +1,10 @@
 package io.github.artfultom.vecenta.generated.v1;
 
+import io.github.artfultom.vecenta.generated.v1.math.EtcException;
+import io.github.artfultom.vecenta.generated.v1.math.FileNotFoundException;
+import io.github.artfultom.vecenta.generated.v1.math.IOException;
 import io.github.artfultom.vecenta.generated.v1.math.Model3;
+import io.github.artfultom.vecenta.generated.v1.math.NewErrorException;
 import io.github.artfultom.vecenta.matcher.annotations.RpcMethod;
 import java.util.List;
 import java.util.Map;
@@ -87,12 +91,12 @@ public interface TestServer {
             name = "error2",
             errors = {"file not found", "new error"}
     )
-    void error2();
+    void error2() throws FileNotFoundException, NewErrorException;
 
     @RpcMethod(
             entity = "math",
             name = "error3",
             errors = {"file not found", "i/o", "etc"}
     )
-    void error3();
+    void error3() throws FileNotFoundException, IOException, EtcException;
 }
