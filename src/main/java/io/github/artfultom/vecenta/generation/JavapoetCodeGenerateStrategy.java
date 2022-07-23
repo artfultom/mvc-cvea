@@ -9,6 +9,7 @@ import io.github.artfultom.vecenta.matcher.CollectionType;
 import io.github.artfultom.vecenta.matcher.TypeConverter;
 import io.github.artfultom.vecenta.matcher.annotations.Model;
 import io.github.artfultom.vecenta.matcher.annotations.ModelField;
+import io.github.artfultom.vecenta.matcher.annotations.RpcError;
 import io.github.artfultom.vecenta.matcher.annotations.RpcMethod;
 import io.github.artfultom.vecenta.matcher.param.ConvertParamStrategy;
 import io.github.artfultom.vecenta.matcher.param.DefaultConvertParamStrategy;
@@ -117,8 +118,6 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
 
         for (JsonFormatDto.Client client : dto.getClients()) {
             for (JsonFormatDto.Entity entity : client.getEntities()) {
-
-
                 for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
                     for (String error : method.getErrors()) {
                         String name = StringUtils.getExceptionName(error);
@@ -132,6 +131,10 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                         TypeSpec.Builder builder = TypeSpec.classBuilder(name)
                                 .addModifiers(Modifier.PUBLIC)
                                 .superclass(Exception.class);
+
+                        AnnotationSpec.Builder annotationSpecBuilder = AnnotationSpec.builder(RpcError.class)
+                                .addMember("name", "\"" + error + "\"");
+                        builder.addAnnotation(annotationSpecBuilder.build());
 
                         JavaFile file = JavaFile
                                 .builder(pack, builder.build())
