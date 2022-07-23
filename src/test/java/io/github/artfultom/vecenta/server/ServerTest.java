@@ -49,7 +49,7 @@ public class ServerTest {
         );
 
         Set<Path> files = new FileGenerator(config).generateFiles();
-        assertEquals(7, files.size());
+        assertEquals(9, files.size());
 
         for (Path file : files) {
             String expectedFileName = file.getFileName().toString();

@@ -379,6 +379,13 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                         methodBuilder.addStatement(returnStatement, modelName, targetType);
                     }
 
+                    if (!method.getErrors().isEmpty()) {
+                        for (String error : method.getErrors()) {
+                            TypeName typeName = getTypeName(fullPackage, StringUtils.getExceptionName(error));
+                            methodBuilder.addException(typeName);
+                        }
+                    }
+
                     builder.addMethod(methodBuilder.build());
                 }
             }

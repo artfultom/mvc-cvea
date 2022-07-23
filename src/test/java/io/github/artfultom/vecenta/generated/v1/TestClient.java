@@ -3,7 +3,11 @@ package io.github.artfultom.vecenta.generated.v1;
 import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
+import io.github.artfultom.vecenta.generated.v1.math.EtcException;
+import io.github.artfultom.vecenta.generated.v1.math.FileNotFoundException;
+import io.github.artfultom.vecenta.generated.v1.math.IOException;
 import io.github.artfultom.vecenta.generated.v1.math.Model3;
+import io.github.artfultom.vecenta.generated.v1.math.NewErrorException;
 import io.github.artfultom.vecenta.matcher.param.ConvertParamStrategy;
 import io.github.artfultom.vecenta.matcher.param.DefaultConvertParamStrategy;
 import io.github.artfultom.vecenta.transport.Connector;
@@ -170,7 +174,7 @@ public class TestClient {
         connector.send(req);
     }
 
-    public void error2() throws ConnectionException {
+    public void error2() throws ConnectionException, FileNotFoundException, NewErrorException {
         String name = "math.error2()";
         List<byte[]> arguments = new ArrayList<>();
         Request req = new Request(name, arguments);
@@ -178,7 +182,8 @@ public class TestClient {
         connector.send(req);
     }
 
-    public void error3() throws ConnectionException {
+    public void error3() throws ConnectionException, FileNotFoundException, IOException,
+            EtcException {
         String name = "math.error3()";
         List<byte[]> arguments = new ArrayList<>();
         Request req = new Request(name, arguments);

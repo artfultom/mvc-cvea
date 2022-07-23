@@ -3,6 +3,8 @@ package test.pack.server.v1;
 import io.github.artfultom.vecenta.matcher.annotations.RpcMethod;
 import java.util.List;
 import test.pack.server.v1.entity1.Model1;
+import test.pack.server.v1.entity1.NewTestException;
+import test.pack.server.v1.entity1.TestException;
 
 public interface ServerNumberOne {
     @RpcMethod(
@@ -30,4 +32,11 @@ public interface ServerNumberOne {
             returnType = "boolean"
     )
     Boolean method3();
+
+    @RpcMethod(
+            entity = "entity1",
+            name = "method4",
+            errors = {"test", "new test"}
+    )
+    void method4() throws TestException, NewTestException;
 }

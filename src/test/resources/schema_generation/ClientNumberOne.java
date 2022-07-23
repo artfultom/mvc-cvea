@@ -11,6 +11,8 @@ import io.github.artfultom.vecenta.transport.message.Response;
 import java.util.ArrayList;
 import java.util.List;
 import test.pack.client.v1.entity1.Model1;
+import test.pack.client.v1.entity1.NewTestException;
+import test.pack.client.v1.entity1.TestException;
 
 public class ClientNumberOne {
     private final Connector connector;
@@ -78,5 +80,13 @@ public class ClientNumberOne {
         }
 
         return convertParamStrategy.convertToObject(result, "boolean", Boolean.class);
+    }
+
+    public void method4() throws ConnectionException, TestException, NewTestException {
+        String name = "entity1.method4()";
+        List<byte[]> arguments = new ArrayList<>();
+        Request req = new Request(name, arguments);
+
+        connector.send(req);
     }
 }

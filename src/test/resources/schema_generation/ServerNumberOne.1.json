@@ -96,6 +96,10 @@
             {
               "name": "method3",
               "out": "boolean"
+            },
+            {
+              "name": "method4",
+              "errors": ["test", "new test"]
             }
           ],
           "models": [
