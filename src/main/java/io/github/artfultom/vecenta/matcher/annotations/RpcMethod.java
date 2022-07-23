@@ -6,6 +6,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface RpcMethod {
+
     String entity();
 
     String name();
@@ -13,4 +14,6 @@ public @interface RpcMethod {
     String[] argumentTypes() default "";
 
     String returnType() default "";
+
+    String[] errors() default "";
 }

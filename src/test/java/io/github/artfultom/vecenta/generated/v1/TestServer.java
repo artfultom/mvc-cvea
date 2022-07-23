@@ -84,13 +84,15 @@ public interface TestServer {
 
     @RpcMethod(
             entity = "math",
-            name = "error2"
+            name = "error2",
+            errors = {"file not found", "new error"}
     )
     void error2();
 
     @RpcMethod(
             entity = "math",
-            name = "error3"
+            name = "error3",
+            errors = {"file not found", "i/o", "etc"}
     )
     void error3();
 }

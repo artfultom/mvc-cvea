@@ -197,6 +197,13 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                                         .collect(CodeBlock.joining(", ", "{", "}"))
                         );
                     }
+                    if (!method.getErrors().isEmpty()) {
+                        annotationSpecBuilder.addMember("errors", "$L",
+                                method.getErrors().stream()
+                                        .map(item -> CodeBlock.of("$S", item))
+                                        .collect(CodeBlock.joining(", ", "{", "}"))
+                        );
+                    }
 
                     MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
                             .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC);
