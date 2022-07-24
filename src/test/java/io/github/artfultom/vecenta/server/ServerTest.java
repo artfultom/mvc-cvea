@@ -137,11 +137,11 @@ public class ServerTest {
 
             client.consume(42);
 
-//            Assert.assertThrows(RuntimeException.class, client::error1);
-//
-//            Assert.assertThrows(FileNotFoundException.class, client::error2);
-//
-//            Assert.assertThrows(EtcException.class, client::error3);
+            Assert.assertThrows(RuntimeException.class, client::error1);
+
+            Assert.assertThrows(FileNotFoundException.class, client::error2);
+
+            Assert.assertThrows(EtcException.class, client::error3);
         }
     }
 

@@ -14,6 +14,7 @@ import io.github.artfultom.vecenta.matcher.annotations.RpcMethod;
 import io.github.artfultom.vecenta.matcher.param.ConvertParamStrategy;
 import io.github.artfultom.vecenta.matcher.param.DefaultConvertParamStrategy;
 import io.github.artfultom.vecenta.transport.Connector;
+import io.github.artfultom.vecenta.transport.error.ErrorType;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 import io.github.artfultom.vecenta.util.StringUtils;
@@ -341,16 +342,30 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
 
                     methodBuilder.addException(ProtocolException.class);
                     methodBuilder.addStatement("$T resp = connector.send(req)", Response.class);
-                    methodBuilder.addStatement("byte[] result = resp.getResult()");
-                    CodeBlock ifNullBlock = CodeBlock.builder()
-                            .beginControlFlow("if (result == null)")
-                            .addStatement("throw new $T(resp.getErrorType())", ProtocolException.class)
+                    CodeBlock.Builder exceptionBlock = CodeBlock.builder()
+                            .beginControlFlow("if (resp.getErrorType() != null)")
+                            .beginControlFlow("if (resp.getErrorType() == $T.CHECKED_ERROR)", ErrorType.class)
+                            .beginControlFlow("switch(resp.getErrorMsg())");
+
+                    for (String error : method.getErrors()) {
+                        TypeName typeName = getTypeName(fullPackage, StringUtils.getExceptionName(error));
+                        exceptionBlock.addStatement("case $S: throw new $T()", error, typeName);
+                    }
+
+                    exceptionBlock.addStatement("default: throw new $T()", RuntimeException.class)  // TODO error
                             .endControlFlow()
-                            .build();
-                    methodBuilder.addCode(ifNullBlock);
+                            .endControlFlow()
+                            .beginControlFlow("if (resp.getErrorType() == $T.UNKNOWN_METHOD_ERROR)", ErrorType.class)
+                            .addStatement("throw new $T()", RuntimeException.class)
+                            .endControlFlow()
+                            .addStatement("throw new $T(resp.getErrorType())", ProtocolException.class)
+                            .endControlFlow();
+                    methodBuilder.addCode(exceptionBlock.build());
 
                     if (methodOut != null && !methodOut.isEmpty()) {
                         methodBuilder.addCode("\n");
+
+                        methodBuilder.addStatement("byte[] result = resp.getResult()");
 
                         TypeName typeName = getTypeName(fullPackage, methodOut);
                         methodBuilder.returns(typeName);

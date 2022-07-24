@@ -11,6 +11,7 @@ import io.github.artfultom.vecenta.generated.v1.math.NewErrorException;
 import io.github.artfultom.vecenta.matcher.param.ConvertParamStrategy;
 import io.github.artfultom.vecenta.matcher.param.DefaultConvertParamStrategy;
 import io.github.artfultom.vecenta.transport.Connector;
+import io.github.artfultom.vecenta.transport.error.ErrorType;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 import java.util.ArrayList;
@@ -35,11 +36,19 @@ public class TestClient {
         Request req = new Request(name, arguments);
 
         Response resp = connector.send(req);
-        byte[] result = resp.getResult();
-        if (result == null) {
+        if (resp.getErrorType() != null) {
+            if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
+                switch(resp.getErrorMsg()) {
+                    default: throw new RuntimeException();
+                }
+            }
+            if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
+                throw new RuntimeException();
+            }
             throw new ProtocolException(resp.getErrorType());
         }
 
+        byte[] result = resp.getResult();
         return convertParamStrategy.convertToObject(result, "int32", Integer.class);
     }
 
@@ -53,11 +62,19 @@ public class TestClient {
         Request req = new Request(name, arguments);
 
         Response resp = connector.send(req);
-        byte[] result = resp.getResult();
-        if (result == null) {
+        if (resp.getErrorType() != null) {
+            if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
+                switch(resp.getErrorMsg()) {
+                    default: throw new RuntimeException();
+                }
+            }
+            if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
+                throw new RuntimeException();
+            }
             throw new ProtocolException(resp.getErrorType());
         }
 
+        byte[] result = resp.getResult();
         return convertParamStrategy.convertToObject(result, "string", String.class);
     }
 
@@ -68,11 +85,19 @@ public class TestClient {
         Request req = new Request(name, arguments);
 
         Response resp = connector.send(req);
-        byte[] result = resp.getResult();
-        if (result == null) {
+        if (resp.getErrorType() != null) {
+            if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
+                switch(resp.getErrorMsg()) {
+                    default: throw new RuntimeException();
+                }
+            }
+            if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
+                throw new RuntimeException();
+            }
             throw new ProtocolException(resp.getErrorType());
         }
 
+        byte[] result = resp.getResult();
         return convertParamStrategy.convertToObject(result, "TestClient.math.Model3", Model3.class);
     }
 
@@ -84,11 +109,19 @@ public class TestClient {
         Request req = new Request(name, arguments);
 
         Response resp = connector.send(req);
-        byte[] result = resp.getResult();
-        if (result == null) {
+        if (resp.getErrorType() != null) {
+            if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
+                switch(resp.getErrorMsg()) {
+                    default: throw new RuntimeException();
+                }
+            }
+            if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
+                throw new RuntimeException();
+            }
             throw new ProtocolException(resp.getErrorType());
         }
 
+        byte[] result = resp.getResult();
         return convertParamStrategy.convertToObject(result, "[int32]", List.class);
     }
 
@@ -101,11 +134,19 @@ public class TestClient {
         Request req = new Request(name, arguments);
 
         Response resp = connector.send(req);
-        byte[] result = resp.getResult();
-        if (result == null) {
+        if (resp.getErrorType() != null) {
+            if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
+                switch(resp.getErrorMsg()) {
+                    default: throw new RuntimeException();
+                }
+            }
+            if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
+                throw new RuntimeException();
+            }
             throw new ProtocolException(resp.getErrorType());
         }
 
+        byte[] result = resp.getResult();
         return convertParamStrategy.convertToObject(result, "[TestClient.math.Model3]", List.class);
     }
 
@@ -117,11 +158,19 @@ public class TestClient {
         Request req = new Request(name, arguments);
 
         Response resp = connector.send(req);
-        byte[] result = resp.getResult();
-        if (result == null) {
+        if (resp.getErrorType() != null) {
+            if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
+                switch(resp.getErrorMsg()) {
+                    default: throw new RuntimeException();
+                }
+            }
+            if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
+                throw new RuntimeException();
+            }
             throw new ProtocolException(resp.getErrorType());
         }
 
+        byte[] result = resp.getResult();
         return convertParamStrategy.convertToObject(result, "[int32]TestClient.math.Model3", Map.class);
     }
 
@@ -135,11 +184,19 @@ public class TestClient {
         Request req = new Request(name, arguments);
 
         Response resp = connector.send(req);
-        byte[] result = resp.getResult();
-        if (result == null) {
+        if (resp.getErrorType() != null) {
+            if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
+                switch(resp.getErrorMsg()) {
+                    default: throw new RuntimeException();
+                }
+            }
+            if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
+                throw new RuntimeException();
+            }
             throw new ProtocolException(resp.getErrorType());
         }
 
+        byte[] result = resp.getResult();
         return convertParamStrategy.convertToObject(result, "[int32][TestClient.math.Model3]", Map.class);
     }
 
@@ -149,11 +206,19 @@ public class TestClient {
         Request req = new Request(name, arguments);
 
         Response resp = connector.send(req);
-        byte[] result = resp.getResult();
-        if (result == null) {
+        if (resp.getErrorType() != null) {
+            if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
+                switch(resp.getErrorMsg()) {
+                    default: throw new RuntimeException();
+                }
+            }
+            if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
+                throw new RuntimeException();
+            }
             throw new ProtocolException(resp.getErrorType());
         }
 
+        byte[] result = resp.getResult();
         return convertParamStrategy.convertToObject(result, "int32", Integer.class);
     }
 
@@ -164,8 +229,15 @@ public class TestClient {
         Request req = new Request(name, arguments);
 
         Response resp = connector.send(req);
-        byte[] result = resp.getResult();
-        if (result == null) {
+        if (resp.getErrorType() != null) {
+            if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
+                switch(resp.getErrorMsg()) {
+                    default: throw new RuntimeException();
+                }
+            }
+            if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
+                throw new RuntimeException();
+            }
             throw new ProtocolException(resp.getErrorType());
         }
     }
@@ -176,8 +248,15 @@ public class TestClient {
         Request req = new Request(name, arguments);
 
         Response resp = connector.send(req);
-        byte[] result = resp.getResult();
-        if (result == null) {
+        if (resp.getErrorType() != null) {
+            if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
+                switch(resp.getErrorMsg()) {
+                    default: throw new RuntimeException();
+                }
+            }
+            if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
+                throw new RuntimeException();
+            }
             throw new ProtocolException(resp.getErrorType());
         }
     }
@@ -189,8 +268,17 @@ public class TestClient {
         Request req = new Request(name, arguments);
 
         Response resp = connector.send(req);
-        byte[] result = resp.getResult();
-        if (result == null) {
+        if (resp.getErrorType() != null) {
+            if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
+                switch(resp.getErrorMsg()) {
+                    case "file not found": throw new FileNotFoundException();
+                    case "new error": throw new NewErrorException();
+                    default: throw new RuntimeException();
+                }
+            }
+            if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
+                throw new RuntimeException();
+            }
             throw new ProtocolException(resp.getErrorType());
         }
     }
@@ -202,8 +290,18 @@ public class TestClient {
         Request req = new Request(name, arguments);
 
         Response resp = connector.send(req);
-        byte[] result = resp.getResult();
-        if (result == null) {
+        if (resp.getErrorType() != null) {
+            if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
+                switch(resp.getErrorMsg()) {
+                    case "file not found": throw new FileNotFoundException();
+                    case "i/o": throw new IOException();
+                    case "etc": throw new EtcException();
+                    default: throw new RuntimeException();
+                }
+            }
+            if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
+                throw new RuntimeException();
+            }
             throw new ProtocolException(resp.getErrorType());
         }
     }
