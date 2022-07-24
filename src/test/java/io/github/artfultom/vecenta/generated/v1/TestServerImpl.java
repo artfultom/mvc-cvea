@@ -57,7 +57,7 @@ public class TestServerImpl implements TestServer {
 
     @Override
     public void error1() {
-
+        throw new RuntimeException();
     }
 
     @Override

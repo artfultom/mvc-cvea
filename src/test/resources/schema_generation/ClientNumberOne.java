@@ -59,13 +59,18 @@ public class ClientNumberOne {
         return convertParamStrategy.convertToObject(result, "boolean", Boolean.class);
     }
 
-    public void method2(Integer field1) throws ConnectionException, ConvertException {
+    public void method2(Integer field1) throws ConnectionException, ConvertException,
+            ProtocolException {
         String name = "entity1.method2(int32)";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(field1));
         Request req = new Request(name, arguments);
 
-        connector.send(req);
+        Response resp = connector.send(req);
+        byte[] result = resp.getResult();
+        if (result == null) {
+            throw new ProtocolException(resp.getError());
+        }
     }
 
     public Boolean method3() throws ConnectionException, ConvertException, ProtocolException {
@@ -82,11 +87,16 @@ public class ClientNumberOne {
         return convertParamStrategy.convertToObject(result, "boolean", Boolean.class);
     }
 
-    public void method4() throws ConnectionException, TestException, NewTestException {
+    public void method4() throws ConnectionException, ProtocolException, TestException,
+            NewTestException {
         String name = "entity1.method4()";
         List<byte[]> arguments = new ArrayList<>();
         Request req = new Request(name, arguments);
 
-        connector.send(req);
+        Response resp = connector.send(req);
+        byte[] result = resp.getResult();
+        if (result == null) {
+            throw new ProtocolException(resp.getError());
+        }
     }
 }

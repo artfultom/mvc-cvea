@@ -346,20 +346,17 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                     methodBuilder.addStatement("$T req = new $T(name, arguments)", Request.class, Request.class);
                     methodBuilder.addCode("\n");
 
-                    if (methodOut == null || methodOut.isEmpty()) {
-                        methodBuilder.addStatement("connector.send(req)");
-                    } else {
-                        methodBuilder.addException(ProtocolException.class);
+                    methodBuilder.addException(ProtocolException.class);
+                    methodBuilder.addStatement("$T resp = connector.send(req)", Response.class);
+                    methodBuilder.addStatement("byte[] result = resp.getResult()");
+                    CodeBlock ifNullBlock = CodeBlock.builder()
+                            .beginControlFlow("if (result == null)")
+                            .addStatement("throw new $T(resp.getError())", ProtocolException.class)
+                            .endControlFlow()
+                            .build();
+                    methodBuilder.addCode(ifNullBlock);
 
-                        methodBuilder.addStatement("$T resp = connector.send(req)", Response.class);
-                        methodBuilder.addStatement("byte[] result = resp.getResult()");
-                        CodeBlock ifNullBlock = CodeBlock.builder()
-                                .beginControlFlow("if (result == null)")
-                                .addStatement("throw new $T(resp.getError())", ProtocolException.class)
-                                .endControlFlow()
-                                .build();
-                        methodBuilder.addCode(ifNullBlock);
-
+                    if (methodOut != null && !methodOut.isEmpty()) {
                         methodBuilder.addCode("\n");
 
                         TypeName typeName = getTypeName(fullPackage, methodOut);

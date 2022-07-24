@@ -135,12 +135,22 @@ public class ServerMatcher {
     }
 
     private String getName(RpcMethod rpcMethod) {
+        String returnType = rpcMethod.returnType();
+        if (returnType != null && !returnType.isEmpty()) {
+            return String.format(
+                    "%s.%s(%s)->%s",
+                    rpcMethod.entity(),
+                    rpcMethod.name(),
+                    String.join(",", rpcMethod.argumentTypes()),
+                    rpcMethod.returnType()
+            );
+        }
+
         return String.format(
-                "%s.%s(%s)->%s",
+                "%s.%s(%s)",
                 rpcMethod.entity(),
                 rpcMethod.name(),
-                String.join(",", rpcMethod.argumentTypes()),
-                rpcMethod.returnType()
+                String.join(",", rpcMethod.argumentTypes())
         );
     }
 }

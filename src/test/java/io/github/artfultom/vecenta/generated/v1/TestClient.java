@@ -157,37 +157,54 @@ public class TestClient {
         return convertParamStrategy.convertToObject(result, "int32", Integer.class);
     }
 
-    public void consume(Integer a) throws ConnectionException, ConvertException {
+    public void consume(Integer a) throws ConnectionException, ConvertException, ProtocolException {
         String name = "math.consume(int32)";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(a));
         Request req = new Request(name, arguments);
 
-        connector.send(req);
+        Response resp = connector.send(req);
+        byte[] result = resp.getResult();
+        if (result == null) {
+            throw new ProtocolException(resp.getError());
+        }
     }
 
-    public void error1() throws ConnectionException {
+    public void error1() throws ConnectionException, ProtocolException {
         String name = "math.error1()";
         List<byte[]> arguments = new ArrayList<>();
         Request req = new Request(name, arguments);
 
-        connector.send(req);
+        Response resp = connector.send(req);
+        byte[] result = resp.getResult();
+        if (result == null) {
+            throw new ProtocolException(resp.getError());
+        }
     }
 
-    public void error2() throws ConnectionException, FileNotFoundException, NewErrorException {
+    public void error2() throws ConnectionException, ProtocolException, FileNotFoundException,
+            NewErrorException {
         String name = "math.error2()";
         List<byte[]> arguments = new ArrayList<>();
         Request req = new Request(name, arguments);
 
-        connector.send(req);
+        Response resp = connector.send(req);
+        byte[] result = resp.getResult();
+        if (result == null) {
+            throw new ProtocolException(resp.getError());
+        }
     }
 
-    public void error3() throws ConnectionException, FileNotFoundException, IOException,
-            EtcException {
+    public void error3() throws ConnectionException, ProtocolException, FileNotFoundException,
+            IOException, EtcException {
         String name = "math.error3()";
         List<byte[]> arguments = new ArrayList<>();
         Request req = new Request(name, arguments);
 
-        connector.send(req);
+        Response resp = connector.send(req);
+        byte[] result = resp.getResult();
+        if (result == null) {
+            throw new ProtocolException(resp.getError());
+        }
     }
 }
