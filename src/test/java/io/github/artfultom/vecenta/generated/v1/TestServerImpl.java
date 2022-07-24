@@ -1,6 +1,6 @@
 package io.github.artfultom.vecenta.generated.v1;
 
-import io.github.artfultom.vecenta.generated.v1.math.Model3;
+import io.github.artfultom.vecenta.generated.v1.math.*;
 
 import java.util.List;
 import java.util.Map;
@@ -61,12 +61,12 @@ public class TestServerImpl implements TestServer {
     }
 
     @Override
-    public void error2() {
-
+    public void error2() throws FileNotFoundException, NewErrorException {
+        throw new FileNotFoundException();
     }
 
     @Override
-    public void error3() {
-
+    public void error3() throws FileNotFoundException, IOException, EtcException {
+        throw new EtcException();
     }
 }

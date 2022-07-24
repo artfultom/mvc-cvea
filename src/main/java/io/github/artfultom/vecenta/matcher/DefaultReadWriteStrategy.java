@@ -1,6 +1,6 @@
 package io.github.artfultom.vecenta.matcher;
 
-import io.github.artfultom.vecenta.transport.error.MessageError;
+import io.github.artfultom.vecenta.transport.error.ErrorType;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 DataOutputStream dataStream = new DataOutputStream(out)
         ) {
-            if (in.getError() == null) {
+            if (in.getErrorType() == null) {
                 dataStream.writeByte(0);
 
                 byte[] param = in.getResult();
@@ -57,7 +57,12 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
                 dataStream.write(param);
             } else {
                 dataStream.writeByte(1);
-                dataStream.writeInt(in.getError().ordinal());
+                dataStream.writeInt(in.getErrorType().ordinal());
+
+                if (in.getErrorMsg() != null) {
+                    dataStream.writeInt(in.getErrorMsg().length());
+                    dataStream.write(TypeConverter.STRING.convert(in.getErrorMsg()));
+                }
             }
 
             return out.toByteArray();
@@ -99,15 +104,25 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
         byte errorFlag = buf.get();
 
         if (errorFlag == 0) {
-            byte[] rawSize = Arrays.copyOfRange(in, 1, 1 + Integer.BYTES);
+            byte[] rawSize = Arrays.copyOfRange(in, 1, 1 + Integer.BYTES);  // TODO to buf
             int size = ByteBuffer.wrap(rawSize).getInt();
             byte[] param = Arrays.copyOfRange(in, 1 + Integer.BYTES, 1 + Integer.BYTES + size);
 
             return new Response(param);
         } else {
             int errorCode = buf.getInt();
+            ErrorType errorType = ErrorType.values()[errorCode];
 
-            return new Response(MessageError.values()[errorCode]);
+            if (errorType == ErrorType.CHECKED_ERROR) {
+                int size = buf.getInt();
+                byte[] dst = new byte[size];
+                buf.get(dst);
+
+                String msg = (String) TypeConverter.STRING.convert(dst);
+                return new Response(errorType, msg);
+            }
+
+            return new Response(errorType);
         }
     }
 }

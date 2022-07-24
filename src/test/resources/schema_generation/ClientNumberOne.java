@@ -53,7 +53,7 @@ public class ClientNumberOne {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
 
         return convertParamStrategy.convertToObject(result, "boolean", Boolean.class);
@@ -69,7 +69,7 @@ public class ClientNumberOne {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
     }
 
@@ -81,7 +81,7 @@ public class ClientNumberOne {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
 
         return convertParamStrategy.convertToObject(result, "boolean", Boolean.class);
@@ -96,7 +96,7 @@ public class ClientNumberOne {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
     }
 }

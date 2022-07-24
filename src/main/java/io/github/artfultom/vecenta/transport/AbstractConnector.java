@@ -2,7 +2,7 @@ package io.github.artfultom.vecenta.transport;
 
 import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.matcher.ReadWriteStrategy;
-import io.github.artfultom.vecenta.transport.error.MessageError;
+import io.github.artfultom.vecenta.transport.error.ErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +31,7 @@ public abstract class AbstractConnector implements Connector {
 
             if (result != 0) {
                 ConnectionException ex = new ConnectionException(
-                        String.format("Handshake error: %s", MessageError.get(result))
+                        String.format("Handshake error: %s", ErrorType.get(result))
                 );
                 log.error(ex.getMessage(), ex);
             }

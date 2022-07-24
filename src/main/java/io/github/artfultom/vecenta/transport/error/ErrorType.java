@@ -1,14 +1,16 @@
 package io.github.artfultom.vecenta.transport.error;
 
-public enum MessageError {
+public enum ErrorType {
 
     WRONG_PROTOCOL("Wrong protocol"),
     WRONG_PROTOCOL_VERSION("Wrong protocol version"),
-    WRONG_METHOD_NAME("Wrong method name");
+    WRONG_METHOD_NAME("Wrong method name"),
+    UNKNOWN_METHOD_ERROR("Unknown error in a method"),
+    CHECKED_ERROR("Checker error");
 
     private final String message;
 
-    MessageError(String message) {
+    ErrorType(String message) {
         this.message = message;
     }
 
@@ -16,8 +18,8 @@ public enum MessageError {
         return message;
     }
 
-    public static MessageError get(int order) {
-        for (MessageError item : MessageError.values()) {
+    public static ErrorType get(int order) {
+        for (ErrorType item : ErrorType.values()) {
             if (item.ordinal() == order) {
                 return item;
             }

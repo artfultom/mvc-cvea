@@ -1,26 +1,41 @@
 package io.github.artfultom.vecenta.transport.message;
 
-import io.github.artfultom.vecenta.transport.error.MessageError;
+import io.github.artfultom.vecenta.transport.error.ErrorType;
 
 public class Response {
     private final byte[] result;
-    private final MessageError error;
+
+    private final ErrorType errorType;
+
+    private final String errorMsg;
 
     public Response(byte[] result) {
         this.result = result;
-        this.error = null;
+        this.errorType = null;
+        this.errorMsg = null;
     }
 
-    public Response(MessageError error) {
+    public Response(ErrorType errorType) {
         this.result = null;
-        this.error = error;
+        this.errorType = errorType;
+        this.errorMsg = null;
+    }
+
+    public Response(ErrorType errorType, String errorMsg) {
+        this.result = null;
+        this.errorType = errorType;
+        this.errorMsg = errorMsg;
     }
 
     public byte[] getResult() {
         return result;
     }
 
-    public MessageError getError() {
-        return error;
+    public ErrorType getErrorType() {
+        return errorType;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
     }
 }

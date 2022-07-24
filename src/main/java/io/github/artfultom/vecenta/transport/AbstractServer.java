@@ -2,7 +2,7 @@ package io.github.artfultom.vecenta.transport;
 
 import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
-import io.github.artfultom.vecenta.transport.error.MessageError;
+import io.github.artfultom.vecenta.transport.error.ErrorType;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -30,9 +30,9 @@ public abstract class AbstractServer implements Server {
                         bb.putInt(0);
                         stream.sendMessage(bb.array());
                     } else {
-                        bb.putInt(MessageError.WRONG_PROTOCOL_VERSION.ordinal());
+                        bb.putInt(ErrorType.WRONG_PROTOCOL_VERSION.ordinal());
                         stream.sendMessage(bb.array());
-                        throw new ProtocolException(MessageError.WRONG_PROTOCOL);
+                        throw new ProtocolException(ErrorType.WRONG_PROTOCOL);
                     }
 
                     return;
@@ -40,7 +40,7 @@ public abstract class AbstractServer implements Server {
             }
 
             ByteBuffer bb = ByteBuffer.allocate(Integer.BYTES);
-            bb.putInt(MessageError.WRONG_PROTOCOL.ordinal());
+            bb.putInt(ErrorType.WRONG_PROTOCOL.ordinal());
 
             stream.sendMessage(bb.array());
         } catch (IOException e) {

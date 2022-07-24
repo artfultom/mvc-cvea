@@ -1,11 +1,12 @@
 package io.github.artfultom.vecenta.matcher;
 
 import io.github.artfultom.vecenta.exceptions.ConvertException;
+import io.github.artfultom.vecenta.matcher.annotations.RpcError;
 import io.github.artfultom.vecenta.matcher.annotations.RpcMethod;
 import io.github.artfultom.vecenta.matcher.param.ConvertParamStrategy;
 import io.github.artfultom.vecenta.matcher.param.DefaultConvertParamStrategy;
 import io.github.artfultom.vecenta.transport.MethodHandler;
-import io.github.artfultom.vecenta.transport.error.MessageError;
+import io.github.artfultom.vecenta.transport.error.ErrorType;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 import io.github.artfultom.vecenta.util.ReflectionUtils;
@@ -84,12 +85,20 @@ public class ServerMatcher {
                             return new Response(responseParam);
                         } catch (
                                 IllegalAccessException | InstantiationException | NoSuchMethodException |
-                                InvocationTargetException | ConvertException e
+                                ConvertException e
                         ) {
                             log.error("Cannot register a server class " + serverClass.getName(), e);
+                        } catch (InvocationTargetException e) {
+                            Throwable target = e.getTargetException();
+                            RpcError error = target.getClass().getAnnotation(RpcError.class);
+                            if (error == null) {
+                                return new Response(ErrorType.UNKNOWN_METHOD_ERROR);
+                            }
+
+                            return new Response(ErrorType.CHECKED_ERROR, error.name());
                         }
 
-                        return new Response(MessageError.WRONG_METHOD_NAME);
+                        return new Response(ErrorType.WRONG_METHOD_NAME);
                     });
 
                     register(handler);
@@ -107,7 +116,7 @@ public class ServerMatcher {
 
         MethodHandler handler = handlerMap.get(request.getMethodName());
         if (handler == null) {
-            return readWriteStrategy.convertToBytes(new Response(MessageError.WRONG_METHOD_NAME));
+            return readWriteStrategy.convertToBytes(new Response(ErrorType.WRONG_METHOD_NAME));
         }
 
         Response response = handler.execute(request);

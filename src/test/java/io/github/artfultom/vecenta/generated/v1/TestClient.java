@@ -37,7 +37,7 @@ public class TestClient {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
 
         return convertParamStrategy.convertToObject(result, "int32", Integer.class);
@@ -55,7 +55,7 @@ public class TestClient {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
 
         return convertParamStrategy.convertToObject(result, "string", String.class);
@@ -70,7 +70,7 @@ public class TestClient {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
 
         return convertParamStrategy.convertToObject(result, "TestClient.math.Model3", Model3.class);
@@ -86,7 +86,7 @@ public class TestClient {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
 
         return convertParamStrategy.convertToObject(result, "[int32]", List.class);
@@ -103,7 +103,7 @@ public class TestClient {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
 
         return convertParamStrategy.convertToObject(result, "[TestClient.math.Model3]", List.class);
@@ -119,7 +119,7 @@ public class TestClient {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
 
         return convertParamStrategy.convertToObject(result, "[int32]TestClient.math.Model3", Map.class);
@@ -137,7 +137,7 @@ public class TestClient {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
 
         return convertParamStrategy.convertToObject(result, "[int32][TestClient.math.Model3]", Map.class);
@@ -151,7 +151,7 @@ public class TestClient {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
 
         return convertParamStrategy.convertToObject(result, "int32", Integer.class);
@@ -166,7 +166,7 @@ public class TestClient {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
     }
 
@@ -178,7 +178,7 @@ public class TestClient {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
     }
 
@@ -191,7 +191,7 @@ public class TestClient {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
     }
 
@@ -204,7 +204,7 @@ public class TestClient {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
     }
 }

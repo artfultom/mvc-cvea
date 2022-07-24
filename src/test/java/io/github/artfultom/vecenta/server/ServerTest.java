@@ -4,6 +4,8 @@ import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
 import io.github.artfultom.vecenta.generated.v1.TestClient;
+import io.github.artfultom.vecenta.generated.v1.math.EtcException;
+import io.github.artfultom.vecenta.generated.v1.math.FileNotFoundException;
 import io.github.artfultom.vecenta.generated.v1.math.Model3;
 import io.github.artfultom.vecenta.generation.FileGenerator;
 import io.github.artfultom.vecenta.generation.config.GenerateConfiguration;
@@ -11,7 +13,7 @@ import io.github.artfultom.vecenta.generation.config.GenerateMode;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;
 import io.github.artfultom.vecenta.transport.Connector;
 import io.github.artfultom.vecenta.transport.Server;
-import io.github.artfultom.vecenta.transport.error.MessageError;
+import io.github.artfultom.vecenta.transport.error.ErrorType;
 import io.github.artfultom.vecenta.transport.tcp.TcpConnector;
 import io.github.artfultom.vecenta.transport.tcp.TcpServer;
 import io.github.artfultom.vecenta.utils.TestUtils;
@@ -134,6 +136,12 @@ public class ServerTest {
             Assert.assertEquals(42, result8.intValue());
 
             client.consume(42);
+
+//            Assert.assertThrows(RuntimeException.class, client::error1);
+//
+//            Assert.assertThrows(FileNotFoundException.class, client::error2);
+//
+//            Assert.assertThrows(EtcException.class, client::error3);
         }
     }
 
@@ -167,7 +175,7 @@ public class ServerTest {
 
             Assert.fail("Must have an exception.");
         } catch (ProtocolException e) {
-            Assert.assertEquals(MessageError.WRONG_METHOD_NAME, e.getError());
+            Assert.assertEquals(ErrorType.WRONG_METHOD_NAME, e.getError());
         }
     }
 }

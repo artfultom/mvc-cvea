@@ -93,7 +93,7 @@ public class TransportTest {
             Response response = connector.send(new Request("echo", new ArrayList<>()));
 
             Assert.assertNotNull(response);
-            Assert.assertNotNull(response.getError());
+            Assert.assertNotNull(response.getErrorType());
             Assert.assertNull(response.getResult());
         }
     }
@@ -110,7 +110,7 @@ public class TransportTest {
             Response response = connector.send(new Request("wrong", new ArrayList<>()));
 
             Assert.assertNotNull(response);
-            Assert.assertNotNull(response.getError());
+            Assert.assertNotNull(response.getErrorType());
             Assert.assertNull(response.getResult());
         }
     }
@@ -144,7 +144,7 @@ public class TransportTest {
                             ));
 
                             Assert.assertNotNull(response1);
-                            Assert.assertNull(response1.getError());
+                            Assert.assertNull(response1.getErrorType());
                             Assert.assertNotNull(response1.getResult());
                             Assert.assertEquals(val + 1, ByteBuffer.wrap(response1.getResult()).getInt());
 
@@ -154,7 +154,7 @@ public class TransportTest {
                             ));
 
                             Assert.assertNotNull(response2);
-                            Assert.assertNull(response2.getError());
+                            Assert.assertNull(response2.getErrorType());
                             Assert.assertNotNull(response2.getResult());
                             Assert.assertEquals(val + 1, ByteBuffer.wrap(response2.getResult()).getInt());
                         } catch (ConnectionException e) {

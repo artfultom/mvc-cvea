@@ -351,7 +351,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                     methodBuilder.addStatement("byte[] result = resp.getResult()");
                     CodeBlock ifNullBlock = CodeBlock.builder()
                             .beginControlFlow("if (result == null)")
-                            .addStatement("throw new $T(resp.getError())", ProtocolException.class)
+                            .addStatement("throw new $T(resp.getErrorType())", ProtocolException.class)
                             .endControlFlow()
                             .build();
                     methodBuilder.addCode(ifNullBlock);

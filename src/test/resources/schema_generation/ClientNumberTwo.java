@@ -32,7 +32,7 @@ public class ClientNumberTwo {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
 
         return convertParamStrategy.convertToObject(result, "ClientNumberTwo.entity2.model3", Model3.class);
@@ -48,7 +48,7 @@ public class ClientNumberTwo {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
 
         return convertParamStrategy.convertToObject(result, "[ClientNumberTwo.entity2.model3]", List.class);
@@ -64,7 +64,7 @@ public class ClientNumberTwo {
         Response resp = connector.send(req);
         byte[] result = resp.getResult();
         if (result == null) {
-            throw new ProtocolException(resp.getError());
+            throw new ProtocolException(resp.getErrorType());
         }
 
         return convertParamStrategy.convertToObject(result, "[ClientNumberTwo.entity2.model3]ClientNumberTwo.entity2.model3", Map.class);
