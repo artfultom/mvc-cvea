@@ -50,4 +50,16 @@ public class StringUtilsTest {
         assertEquals("TestErrorException", StringUtils.getExceptionName("test/error!"));
         assertEquals("TestErrorException", StringUtils.getExceptionName("test\\error!"));
     }
+
+    @Test
+    public void getMethodName() {
+        assertEquals(
+                "entity.method(a,b)->return",
+                StringUtils.getMethodName("entity", "method", List.of("a", "b"), "return")
+        );
+        assertEquals(
+                "entity.method()",
+                StringUtils.getMethodName("entity", "method", null, null)
+        );
+    }
 }

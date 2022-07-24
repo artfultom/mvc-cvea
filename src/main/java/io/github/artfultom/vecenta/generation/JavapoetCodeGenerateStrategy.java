@@ -312,29 +312,22 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                         }
                     }
 
-                    String paramNames = method.getIn().stream()
+                    List<String> paramNames = method.getIn().stream()
                             .map(JsonFormatDto.Entity.Param::getType)
                             .map(item -> StringUtils.fillModelName(List.of(client.getName(), entity.getName()), item))
-                            .collect(Collectors.joining(","));
+                            .collect(Collectors.toList());
 
-                    if (methodOut == null || methodOut.isEmpty()) {
-                        String methodName = String.format("%s.%s(%s)", entity.getName(), method.getName(), paramNames);
-                        methodBuilder.addStatement("String name = $S", methodName);
-                    } else {
-                        String returnType = StringUtils.fillModelName(
-                                List.of(client.getName(), entity.getName()),
-                                methodOut
-                        );
-
-                        String methodName = String.format(
-                                "%s.%s(%s)->%s",
-                                entity.getName(),
-                                method.getName(),
-                                paramNames,
-                                returnType
-                        );
-                        methodBuilder.addStatement("String name = $S", methodName);
-                    }
+                    String returnType = StringUtils.fillModelName(
+                            List.of(client.getName(), entity.getName()),
+                            methodOut
+                    );
+                    String methodName = StringUtils.getMethodName(
+                            entity.getName(),
+                            method.getName(),
+                            paramNames,
+                            returnType
+                    );
+                    methodBuilder.addStatement("String name = $S", methodName);
 
                     methodBuilder.addStatement("$T<byte[]> arguments = new $T<>()", List.class, ArrayList.class);
                     for (JsonFormatDto.Entity.Param param : method.getIn()) {

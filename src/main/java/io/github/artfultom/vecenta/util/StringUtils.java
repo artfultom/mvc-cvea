@@ -93,4 +93,17 @@ public class StringUtils {
                     return item.toUpperCase();
                 }).collect(Collectors.joining()) + "Exception";
     }
+
+    public static String getMethodName(String entity, String method, List<String> arguments, String returnType) {
+        if (returnType == null || returnType.isEmpty()) {
+            return String.format(
+                    "%s.%s(%s)",
+                    entity,
+                    method,
+                    arguments == null ? "" : String.join(",", arguments)
+            );
+        }
+
+        return String.format("%s.%s(%s)->%s", entity, method, String.join(",", arguments), returnType);
+    }
 }

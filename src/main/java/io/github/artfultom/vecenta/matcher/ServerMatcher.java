@@ -10,6 +10,7 @@ import io.github.artfultom.vecenta.transport.error.ErrorType;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 import io.github.artfultom.vecenta.util.ReflectionUtils;
+import io.github.artfultom.vecenta.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,12 @@ public class ServerMatcher {
                 RpcMethod rpcMethod = interfaceMethod.getAnnotation(RpcMethod.class);
 
                 if (rpcMethod != null) {
-                    String name = getName(rpcMethod);
+                    String name = StringUtils.getMethodName(
+                            rpcMethod.entity(),
+                            rpcMethod.name(),
+                            Arrays.asList(rpcMethod.argumentTypes()),
+                            rpcMethod.returnType()
+                    );
                     MethodHandler handler = new MethodHandler(name, request -> {
                         try {
                             List<Object> requestParams = new ArrayList<>();
@@ -141,25 +147,5 @@ public class ServerMatcher {
         }
 
         return methods.get(0);
-    }
-
-    private String getName(RpcMethod rpcMethod) {
-        String returnType = rpcMethod.returnType();
-        if (returnType != null && !returnType.isEmpty()) {
-            return String.format(
-                    "%s.%s(%s)->%s",
-                    rpcMethod.entity(),
-                    rpcMethod.name(),
-                    String.join(",", rpcMethod.argumentTypes()),
-                    rpcMethod.returnType()
-            );
-        }
-
-        return String.format(
-                "%s.%s(%s)",
-                rpcMethod.entity(),
-                rpcMethod.name(),
-                String.join(",", rpcMethod.argumentTypes())
-        );
     }
 }
