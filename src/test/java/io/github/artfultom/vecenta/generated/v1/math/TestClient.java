@@ -1,13 +1,8 @@
-package io.github.artfultom.vecenta.generated.v1;
+package io.github.artfultom.vecenta.generated.v1.math;
 
 import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
-import io.github.artfultom.vecenta.generated.v1.math.EtcException;
-import io.github.artfultom.vecenta.generated.v1.math.FileNotFoundException;
-import io.github.artfultom.vecenta.generated.v1.math.IOException;
-import io.github.artfultom.vecenta.generated.v1.math.Model3;
-import io.github.artfultom.vecenta.generated.v1.math.NewErrorException;
 import io.github.artfultom.vecenta.matcher.param.ConvertParamStrategy;
 import io.github.artfultom.vecenta.matcher.param.DefaultConvertParamStrategy;
 import io.github.artfultom.vecenta.transport.Connector;

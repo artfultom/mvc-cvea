@@ -124,7 +124,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                         String name = StringUtils.getExceptionName(error);
                         String pack = String.format(
                                 "%s.v%s.%s",
-                                configuration.getModelPackage(),
+                                configuration.getExceptionPackage(),
                                 version,
                                 entity.getName().toLowerCase()
                         );
@@ -286,9 +286,21 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
             builder.addMethod(constructor);
 
             for (JsonFormatDto.Entity entity : client.getEntities()) {
-                String fullPackage = String.format(
+                String pack = String.format(
                         "%s.v%s.%s",
                         configuration.getClientPackage(),
+                        version,
+                        entity.getName().toLowerCase()
+                );
+                String modelPack = String.format(
+                        "%s.v%s.%s",
+                        configuration.getModelPackage(),
+                        version,
+                        entity.getName().toLowerCase()
+                );
+                String exceptionPack = String.format(
+                        "%s.v%s.%s",
+                        configuration.getExceptionPackage(),
                         version,
                         entity.getName().toLowerCase()
                 );
@@ -305,7 +317,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                     }
 
                     for (JsonFormatDto.Entity.Param param : method.getIn()) {
-                        TypeName typeName = getTypeName(fullPackage, param.getType());
+                        TypeName typeName = getTypeName(modelPack, param.getType());
 
                         if (typeName != null) {
                             ParameterSpec parameterSpec = ParameterSpec.builder(typeName, param.getName()).build();
@@ -348,7 +360,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
                             .beginControlFlow("switch(resp.getErrorMsg())");
 
                     for (String error : method.getErrors()) {
-                        TypeName typeName = getTypeName(fullPackage, StringUtils.getExceptionName(error));
+                        TypeName typeName = getTypeName(exceptionPack, StringUtils.getExceptionName(error));
                         exceptionBlock.addStatement("case $S: throw new $T()", error, typeName);
                     }
 
@@ -367,7 +379,7 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
 
                         methodBuilder.addStatement("byte[] result = resp.getResult()");
 
-                        TypeName typeName = getTypeName(fullPackage, methodOut);
+                        TypeName typeName = getTypeName(modelPack, methodOut);
                         methodBuilder.returns(typeName);
                         String returnStatement = "return convertParamStrategy.convertToObject(result, $S, $T.class)";
 
@@ -386,28 +398,26 @@ public class JavapoetCodeGenerateStrategy implements CodeGenerateStrategy {
 
                     if (!method.getErrors().isEmpty()) {
                         for (String error : method.getErrors()) {
-                            TypeName typeName = getTypeName(fullPackage, StringUtils.getExceptionName(error));
+                            TypeName typeName = getTypeName(exceptionPack, StringUtils.getExceptionName(error));
                             methodBuilder.addException(typeName);
                         }
                     }
 
                     builder.addMethod(methodBuilder.build());
                 }
+
+                JavaFile file = JavaFile
+                        .builder(pack, builder.build())
+                        .indent("    ")
+                        .skipJavaLangImports(true)
+                        .build();
+
+                result.add(new GeneratedCode(
+                        file.packageName,
+                        file.typeSpec.name,
+                        file.toString()
+                ));
             }
-
-            String pack = configuration.getClientPackage() + ".v" + version;
-
-            JavaFile file = JavaFile
-                    .builder(pack, builder.build())
-                    .indent("    ")
-                    .skipJavaLangImports(true)
-                    .build();
-
-            result.add(new GeneratedCode(
-                    file.packageName,
-                    file.typeSpec.name,
-                    file.toString()
-            ));
         }
 
         return result;

@@ -1,4 +1,4 @@
-package test.pack.client.v1;
+package test.pack.client.v1.entity2;
 
 import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.exceptions.ConvertException;
@@ -12,7 +12,7 @@ import io.github.artfultom.vecenta.transport.message.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import test.pack.client.v1.entity2.Model3;
+import test.pack.model.v1.entity2.Model3;
 
 public class ClientNumberTwo {
     private final Connector connector;

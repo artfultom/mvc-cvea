@@ -10,6 +10,8 @@ public class GenerateConfiguration {
 
     private String modelPackage;
 
+    private String exceptionPackage;
+
     private String serverPackage;
 
     private String clientPackage;
@@ -20,12 +22,14 @@ public class GenerateConfiguration {
             Path schemaDir,
             Path destinationDir,
             String modelPackage,
+            String exceptionPackage,
             String serverPackage,
             String clientPackage
     ) {
         this.schemaDir = schemaDir;
         this.destinationDir = destinationDir;
         this.modelPackage = modelPackage;
+        this.exceptionPackage = exceptionPackage;
         this.serverPackage = serverPackage;
         this.clientPackage = clientPackage;
         this.mode = GenerateMode.ALL;
@@ -35,6 +39,7 @@ public class GenerateConfiguration {
             Path schemaDir,
             Path destinationDir,
             String modelPackage,
+            String exceptionPackage,
             String serverPackage,
             String clientPackage,
             GenerateMode mode
@@ -42,6 +47,7 @@ public class GenerateConfiguration {
         this.schemaDir = schemaDir;
         this.destinationDir = destinationDir;
         this.modelPackage = modelPackage;
+        this.exceptionPackage = exceptionPackage;
         this.serverPackage = serverPackage;
         this.clientPackage = clientPackage;
         this.mode = mode;
@@ -69,6 +75,14 @@ public class GenerateConfiguration {
 
     public void setModelPackage(String modelPackage) {
         this.modelPackage = modelPackage;
+    }
+
+    public String getExceptionPackage() {
+        return exceptionPackage;
+    }
+
+    public void setExceptionPackage(String exceptionPackage) {
+        this.exceptionPackage = exceptionPackage;
     }
 
     public String getServerPackage() {

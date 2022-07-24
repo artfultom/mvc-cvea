@@ -3,10 +3,10 @@ package io.github.artfultom.vecenta.server;
 import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.exceptions.ConvertException;
 import io.github.artfultom.vecenta.exceptions.ProtocolException;
-import io.github.artfultom.vecenta.generated.v1.TestClient;
 import io.github.artfultom.vecenta.generated.v1.math.EtcException;
 import io.github.artfultom.vecenta.generated.v1.math.FileNotFoundException;
 import io.github.artfultom.vecenta.generated.v1.math.Model3;
+import io.github.artfultom.vecenta.generated.v1.math.TestClient;
 import io.github.artfultom.vecenta.generation.FileGenerator;
 import io.github.artfultom.vecenta.generation.config.GenerateConfiguration;
 import io.github.artfultom.vecenta.generation.config.GenerateMode;
@@ -46,6 +46,7 @@ public class ServerTest {
                 schemaDir,
                 tempDir,
                 "test.pack.model",
+                "test.pack.exception",
                 "test.pack.server",
                 "test.pack.client"
         );
@@ -77,6 +78,7 @@ public class ServerTest {
         GenerateConfiguration config = new GenerateConfiguration(
                 Path.of(res.toURI()),
                 Path.of("src", "test", "java"),
+                pack,
                 pack,
                 pack,
                 pack
@@ -154,6 +156,7 @@ public class ServerTest {
         GenerateConfiguration config = new GenerateConfiguration(
                 Path.of(res.toURI()),
                 Path.of("src", "test", "java"),
+                pack,
                 pack,
                 pack,
                 pack,
