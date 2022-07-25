@@ -2,9 +2,9 @@ package test.pack.server.v1;
 
 import io.github.artfultom.vecenta.matcher.annotations.RpcMethod;
 import java.util.List;
-import test.pack.server.v1.entity1.Model1;
-import test.pack.server.v1.entity1.NewTestException;
-import test.pack.server.v1.entity1.TestException;
+import test.pack.exception.v1.entity1.NewTestException;
+import test.pack.exception.v1.entity1.TestException;
+import test.pack.model.v1.entity1.Model1;
 
 public interface ServerNumberOne {
     @RpcMethod(

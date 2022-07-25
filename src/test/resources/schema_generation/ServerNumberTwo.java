@@ -3,7 +3,7 @@ package test.pack.server.v1;
 import io.github.artfultom.vecenta.matcher.annotations.RpcMethod;
 import java.util.List;
 import java.util.Map;
-import test.pack.server.v1.entity2.Model3;
+import test.pack.model.v1.entity2.Model3;
 
 public interface ServerNumberTwo {
     @RpcMethod(

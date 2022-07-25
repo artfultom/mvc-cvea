@@ -27,19 +27,19 @@ public class FileGenerator {
 
     private static final int MAX_DEPTH = Configuration.getInt("generate.walk_max_depth");
 
-    private CodeGenerateStrategy generateStrategy;
+    private ClassGenerator classGenerator;
     private ValidateStrategy validateStrategy;
 
     private final GenerateConfiguration config;
 
     public FileGenerator(GenerateConfiguration config) {
         this.config = config;
-        this.generateStrategy = new JavapoetCodeGenerateStrategy(config);
+        this.classGenerator = new JavapoetClassGenerator(config);
         this.validateStrategy = new DefaultValidateStrategy();
     }
 
-    public FileGenerator setStrategy(CodeGenerateStrategy generateStrategy) {
-        this.generateStrategy = generateStrategy;
+    public FileGenerator setStrategy(ClassGenerator classGenerator) {
+        this.classGenerator = classGenerator;
 
         return this;
     }
@@ -72,35 +72,19 @@ public class FileGenerator {
                         continue;
                     }
 
-                    List<GeneratedCode> models = generateStrategy.generateModels(
-                            fileName,
-                            dto
-                    );
-                    result.addAll(saveModels(config, models));
 
-                    List<GeneratedCode> exceptions = generateStrategy.generateExceptions(
-                            fileName,
-                            dto
-                    );
-                    result.addAll(saveExceptions(config, exceptions));
+                    ClassGenerator.Builder builder = classGenerator.prepare(fileName, dto);
 
                     if (config.getMode() != GenerateMode.CLIENT) {
-                        GeneratedCode server = generateStrategy.generateServerCode(
-                                fileName,
-                                dto
-                        );
-
-                        result.add(saveServer(config, server));
+                        builder.server();
                     }
 
                     if (config.getMode() != GenerateMode.SERVER) {
-                        List<GeneratedCode> clients = generateStrategy.generateClientCode(
-                                fileName,
-                                dto
-                        );
-
-                        result.addAll(saveClients(config, clients));
+                        builder.client();
                     }
+
+                    Set<Path> saved = save(config, builder.result());
+                    result.addAll(saved);
                 }
             }
         }
@@ -108,53 +92,15 @@ public class FileGenerator {
         return result;
     }
 
-    private Set<Path> saveModels(GenerateConfiguration config, List<GeneratedCode> models) throws IOException {
+    private Set<Path> save(GenerateConfiguration config, List<GeneratedCode> generatedFiles) throws IOException {
         Set<Path> result = new HashSet<>();
 
-        for (GeneratedCode model : models) {
-            String other = model.getFullPath();
+        for (GeneratedCode generatedFile : generatedFiles) {
+            String other = generatedFile.getFullPath();
             Path modelFile = config.getDestinationDir().resolve(other);
             Files.createDirectories(modelFile.getParent());
 
-            Path file = Files.writeString(modelFile, model.getBody());
-            result.add(file);
-        }
-
-        return result;
-    }
-
-    private Set<Path> saveExceptions(GenerateConfiguration config, List<GeneratedCode> exceptions) throws IOException {
-        Set<Path> result = new HashSet<>();
-
-        for (GeneratedCode exception : exceptions) {
-            String other = exception.getFullPath();
-            Path exceptionFile = config.getDestinationDir().resolve(other);
-            Files.createDirectories(exceptionFile.getParent());
-
-            Path file = Files.writeString(exceptionFile, exception.getBody());
-            result.add(file);
-        }
-
-        return result;
-    }
-
-    private Path saveServer(GenerateConfiguration config, GeneratedCode server) throws IOException {
-        String other = server.getFullPath();
-        Path serverFile = config.getDestinationDir().resolve(other);
-        Files.createDirectories(serverFile.getParent());
-
-        return Files.writeString(serverFile, server.getBody());
-    }
-
-    private Set<Path> saveClients(GenerateConfiguration config, List<GeneratedCode> clients) throws IOException {
-        Set<Path> result = new HashSet<>();
-
-        for (GeneratedCode client : clients) {
-            String other = client.getFullPath();
-            Path clientFile = config.getDestinationDir().resolve(other);
-            Files.createDirectories(clientFile.getParent());
-
-            Path file = Files.writeString(clientFile, client.getBody());
+            Path file = Files.writeString(modelFile, generatedFile.getBody());
             result.add(file);
         }
 
