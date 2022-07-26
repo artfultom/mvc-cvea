@@ -19,6 +19,10 @@ dependencies {
 }
 
 publishing {
+    if (project.hasProperty("snapshot")) {
+        project.version += "-SNAPSHOT"
+    }
+
     publications {
         maven(MavenPublication) {
             from components.java
