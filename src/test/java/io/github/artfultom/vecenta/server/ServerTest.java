@@ -92,11 +92,11 @@ public class ServerTest {
         matcher.register(pack);
 
         try (Server server = new TcpServer(); Connector connector = new TcpConnector()) {
-            int port = 5550;
+            int port = 5600;
 
             server.start(port, matcher);
 
-            connector.connect("127.0.0.1", port);
+            connector.connect("localhost", port);
             TestClient client = new TestClient(connector);
 
             int result1 = client.sum(3, 2);
@@ -168,11 +168,11 @@ public class ServerTest {
         assertEquals(6, files.size());
 
         try (Server server = new TcpServer(); Connector connector = new TcpConnector()) {
-            int port = 5550;
+            int port = 5601;
 
             server.start(port, new ServerMatcher());
 
-            connector.connect("127.0.0.1", port);
+            connector.connect("localhost", port);
             TestClient client = new TestClient(connector);
             client.sum(3, 2);
 

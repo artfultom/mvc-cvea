@@ -21,16 +21,18 @@ public class TransportTest {
 
     @Test
     public void manyClients() throws ConnectionException {
+        int port = 5550;
+
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("echo", request -> new Response(request.getParams().get(0))));
 
         try (Server server = new TcpServer()) {
-            server.start(5550, matcher);
+            server.start(port, matcher);
 
             IntStream.range(0, 100).parallel()
                     .mapToObj(item -> CompletableFuture.runAsync(() -> {
                         try (Connector connector = new TcpConnector()) {
-                            connector.connect("127.0.0.1", 5550);
+                            connector.connect("localhost", port);
 
                             for (int j = 0; j < 100; j++) {
                                 byte[] param = ("param" + j).getBytes();
@@ -48,11 +50,13 @@ public class TransportTest {
 
     @Test
     public void errorConnectionRefused() throws ConnectionException {
+        int port = 5551;
+
         for (int i = 0; i < 10; i++) {
             try (Connector connector = new TcpConnector()) {
                 Assert.assertThrows(
                         Exception.class,
-                        () -> connector.connect("127.0.0.1", 5550)
+                        () -> connector.connect("localhost", port)
                 );
             }
         }
@@ -60,14 +64,14 @@ public class TransportTest {
 
     @Test
     public void errorServerClosed() throws ConnectionException {
+        int port = 5553;
+
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("echo", request -> new Response(request.getParams().get(0))));
 
-        TcpServer server = new TcpServer();
-        server.start(5550, matcher);
-
-        try (Connector connector = new TcpConnector()) {
-            connector.connect("127.0.0.1", 5550);
+        try (TcpServer server = new TcpServer(); Connector connector = new TcpConnector()) {
+            server.start(port, matcher);
+            connector.connect("localhost", port);
 
             byte[] val = TypeConverter.INTEGER.convert(42);
             Response resp = connector.send(new Request("echo", List.of(val)));
@@ -84,11 +88,13 @@ public class TransportTest {
 
     @Test
     public void error1Handler() throws ConnectionException {
+        int port = 5554;
+
         ServerMatcher matcher = new ServerMatcher();
 
         try (TcpServer server = new TcpServer(); Connector connector = new TcpConnector()) {
-            server.start(5550, matcher);
-            connector.connect("127.0.0.1", 5550);
+            server.start(port, matcher);
+            connector.connect("localhost", port);
 
             Response response = connector.send(new Request("echo", new ArrayList<>()));
 
@@ -100,12 +106,14 @@ public class TransportTest {
 
     @Test
     public void error2Handler() throws ConnectionException {
+        int port = 5555;
+
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("echo", request -> new Response(request.getParams().get(0))));
 
         try (TcpServer server = new TcpServer(); Connector connector = new TcpConnector()) {
-            server.start(5550, matcher);
-            connector.connect("127.0.0.1", 5550);
+            server.start(port, matcher);
+            connector.connect("localhost", port);
 
             Response response = connector.send(new Request("wrong", new ArrayList<>()));
 
@@ -117,6 +125,8 @@ public class TransportTest {
 
     @Test
     public void manyResults() throws ConnectionException {
+        int port = 5556;
+
         ServerMatcher matcher = new ServerMatcher();
         matcher.register(new MethodHandler("inc", request -> {
             int val = ByteBuffer.wrap(request.getParams().get(0)).getInt();
@@ -130,9 +140,9 @@ public class TransportTest {
                 Connector connector1 = new TcpConnector();
                 Connector connector2 = new TcpConnector()
         ) {
-            server.start(5550, matcher);
-            connector1.connect("127.0.0.1", 5550);
-            connector2.connect("127.0.0.1", 5550);
+            server.start(port, matcher);
+            connector1.connect("localhost", port);
+            connector2.connect("localhost", port);
 
             IntStream.range(0, 1000).parallel()
                     .mapToObj(item -> CompletableFuture.runAsync(() -> {
