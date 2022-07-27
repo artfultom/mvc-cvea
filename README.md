@@ -13,7 +13,7 @@ An example:
 ```
 ./TestServer.1.json
 ```
-The filename consists of <name of server>.<version>.json. The generated server interface will have a name "TestServer.java". Then it must be implemented.
+The filename consists of NAME_OF_SERVER.VERSION.json. The generated server interface will have a name "TestServer.java". Then it must be implemented.
 
 ```
 {
