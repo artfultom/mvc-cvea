@@ -1,5 +1,6 @@
 apply plugin: "java-library"
 apply plugin: "maven-publish"
+apply plugin: "signing"
 
 group = "io.github.artfultom"
 version = "0.0.5" + (project.hasProperty("snapshot") ? "-SNAPSHOT" : "")
@@ -70,4 +71,15 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    sign publishing.publications.maven
+    def signingKey = System.getenv("OSS_KEY")
+    def signingPassword = System.getenv("OSS_PASS")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+}
+
+tasks.withType(GenerateModuleMetadata) {
+    enabled = false
 }

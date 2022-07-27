@@ -19,3 +19,5 @@ jobs:
         env:
           PASS: ${{ secrets.PASS }}
           USER: ${{ secrets.USER }}
+          OSS_KEY: ${{ secrets.OSS_KEY }}
+          OSS_PASS: ${{ secrets.OSS_PASS }}
