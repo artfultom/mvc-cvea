@@ -17,4 +17,5 @@ jobs:
       - name: Publish package
         run: ./gradlew -Psnapshot clean build publish
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PASS: ${{ secrets.PASS }}
+          USER: ${{ secrets.USER }}
