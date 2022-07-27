@@ -62,25 +62,15 @@ public class DefaultValidateStrategyTest {
     }
 
     @Test
-    public void isCorrectDtoWrongModel() throws URISyntaxException, IOException {
-        URL res = getClass().getResource("/validation/Server_wrong_model.1.json");
-        Assert.assertNotNull(res);
-
-        Path file = Path.of(res.toURI());
-        String body = Files.readString(file);
-        Assert.assertNotNull(body);
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
-        Assert.assertNotNull(dto);
-
-        ValidateException ex = Assert.assertThrows(ValidateException.class, () -> strategy.check(dto));
-        Assert.assertEquals("Incorrect type WRONG_MODEL_NAME.", ex.getMessage());
+    public void isCorrectWrongDto() throws URISyntaxException, IOException {
+        checkWrongDto("/validation/Server_wrong_model.1.json", "Incorrect type WRONG_MODEL_NAME.");
+        checkWrongDto("/validation/Server_wrong_recursion.1.json", "There is a circle!");
+        checkWrongDto("/validation/Server_wrong_duplicates.1.json", "Duplicates of models.");
+        checkWrongDto("/validation/Server_wrong_return.1.json", "Incorrect type WRONG_MODEL_NAME.");
     }
 
-    @Test
-    public void isCorrectDtoWrongRecursion() throws URISyntaxException, IOException {
-        URL res = getClass().getResource("/validation/Server_wrong_recursion.1.json");
+    private void checkWrongDto(String filename, String errorMsg) throws URISyntaxException, IOException {
+        URL res = getClass().getResource(filename);
         Assert.assertNotNull(res);
 
         Path file = Path.of(res.toURI());
@@ -92,40 +82,6 @@ public class DefaultValidateStrategyTest {
         Assert.assertNotNull(dto);
 
         ValidateException ex = Assert.assertThrows(ValidateException.class, () -> strategy.check(dto));
-        Assert.assertEquals("There is a circle!", ex.getMessage());
-    }
-
-    @Test
-    public void isCorrectDtoWrongDuplicates() throws URISyntaxException, IOException {
-        URL res = getClass().getResource("/validation/Server_wrong_duplicates.1.json");
-        Assert.assertNotNull(res);
-
-        Path file = Path.of(res.toURI());
-        String body = Files.readString(file);
-        Assert.assertNotNull(body);
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
-        Assert.assertNotNull(dto);
-
-        ValidateException ex = Assert.assertThrows(ValidateException.class, () -> strategy.check(dto));
-        Assert.assertEquals("Duplicates of models.", ex.getMessage());
-    }
-
-    @Test
-    public void isCorrectDtoWrongReturn() throws URISyntaxException, IOException {
-        URL res = getClass().getResource("/validation/Server_wrong_return.1.json");
-        Assert.assertNotNull(res);
-
-        Path file = Path.of(res.toURI());
-        String body = Files.readString(file);
-        Assert.assertNotNull(body);
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
-        Assert.assertNotNull(dto);
-
-        ValidateException ex = Assert.assertThrows(ValidateException.class, () -> strategy.check(dto));
-        Assert.assertEquals("Incorrect type WRONG_MODEL_NAME.", ex.getMessage());
+        Assert.assertEquals(errorMsg, ex.getMessage());
     }
 }

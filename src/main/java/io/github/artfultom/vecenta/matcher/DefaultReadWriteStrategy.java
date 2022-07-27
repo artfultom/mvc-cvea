@@ -104,11 +104,11 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
         byte errorFlag = buf.get();
 
         if (errorFlag == 0) {
-            byte[] rawSize = Arrays.copyOfRange(in, 1, 1 + Integer.BYTES);  // TODO to buf
-            int size = ByteBuffer.wrap(rawSize).getInt();
-            byte[] param = Arrays.copyOfRange(in, 1 + Integer.BYTES, 1 + Integer.BYTES + size);
+            int size = buf.getInt();
+            byte[] dst = new byte[size];
+            buf.get(dst);
 
-            return new Response(param);
+            return new Response(dst);
         } else {
             int errorCode = buf.getInt();
             ErrorType errorType = ErrorType.values()[errorCode];

@@ -17,7 +17,7 @@ public abstract class AbstractConvertParamStrategy implements ConvertParamStrate
         try {
             this.models = ReflectionUtils.findModelClasses().stream()
                     .collect(Collectors.toMap(
-                            item -> item.getAnnotation(Model.class).name(),
+                            item -> item.getAnnotation(Model.class).name(), // TODO duplicates
                             item -> item
                     ));
         } catch (IOException e) {

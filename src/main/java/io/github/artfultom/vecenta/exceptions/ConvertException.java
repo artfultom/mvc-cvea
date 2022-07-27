@@ -8,6 +8,11 @@ public class ConvertException extends Exception {
         this.message = message;
     }
 
+    public ConvertException(String message, Exception ex) {
+        super(ex);
+        this.message = message;
+    }
+
     @Override
     public String getMessage() {
         return message;

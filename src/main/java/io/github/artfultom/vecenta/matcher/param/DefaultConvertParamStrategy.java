@@ -7,8 +7,6 @@ import io.github.artfultom.vecenta.matcher.TypeConverter;
 import io.github.artfultom.vecenta.matcher.annotations.Model;
 import io.github.artfultom.vecenta.matcher.annotations.ModelField;
 import io.github.artfultom.vecenta.util.ReflectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -21,8 +19,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
-
-    private static final Logger log = LoggerFactory.getLogger(DefaultConvertParamStrategy.class);
 
     @Override
     public byte[] convertToByteArray(Object in) throws ConvertException {
@@ -99,12 +95,10 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
 
             return out.toByteArray();
         } catch (IOException e) {
-            log.error("Cannot open binary stream for type " + in.getClass().getName(), e);
+            throw new ConvertException("Cannot open binary stream for type " + in.getClass().getName(), e);
         } catch (InvocationTargetException | IllegalAccessException e) {
-            log.error("Cannot invoke method. Type " + in.getClass().getName(), e);
+            throw new ConvertException("Cannot invoke method. Type " + in.getClass().getName(), e);
         }
-
-        return new byte[0];
     }
 
     @Override
@@ -175,10 +169,8 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                         IllegalAccessException |
                         NoSuchMethodException e
                 ) {
-                    log.error("Cannot invoke method. Type " + target.getName(), e);
+                    throw new ConvertException("Cannot invoke method. Type " + target.getName(), e);
                 }
-
-                break;
             case LIST:
                 if (firstElementClass == null) {
                     throw new ConvertException("Element class must not be null. Target=" + target.getName() + "; type=" + type);
@@ -254,8 +246,6 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
             default:
                 throw new ConvertException("Unknown type of CollectionType - " + collectionType);
         }
-
-        return null;
     }
 
     private Class<?> getElementClass(String type) {
