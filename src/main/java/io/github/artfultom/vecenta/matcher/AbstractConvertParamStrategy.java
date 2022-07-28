@@ -17,10 +17,10 @@ public abstract class AbstractConvertParamStrategy implements ConvertParamStrate
         try {
             this.models = ReflectionUtils.findModelClasses().stream()
                     .collect(Collectors.toMap(
-                            item -> item.getAnnotation(Model.class).name(), // TODO duplicates
+                            item -> item.getAnnotation(Model.class).name(),
                             item -> item
                     ));
-        } catch (IOException e) {
+        } catch (IllegalStateException | IOException e) {
             throw new InnerException("Cannot find models!", e);
         }
     }
