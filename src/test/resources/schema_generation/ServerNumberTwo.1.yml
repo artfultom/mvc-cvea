@@ -1,0 +1,29 @@
+clients:
+    - name: ClientNumberTwo
+      entities:
+          - name: entity2
+            methods:
+                - name: method1
+                  in:
+                      - name: argument
+                        type: model3
+                  out: model3
+                - name: method2
+                  in:
+                      - name: argument
+                        type: '[model3]'
+                  out: '[model3]'
+                - name: method3
+                  in:
+                      - name: argument
+                        type: '[model3]model3'
+                  out: '[model3]model3'
+            models:
+                - name: model3
+                  fields:
+                      - name: field1
+                        type: '[boolean]'
+                      - name: field1
+                        type: '[boolean]boolean'
+                      - name: field1
+                        type: '[boolean][boolean]'

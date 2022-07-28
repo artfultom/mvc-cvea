@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.List;
 
-public class JsonFormatDto {
+public class Data {
 
     private List<Client> clients;
 
-    public JsonFormatDto() {
+    public Data() {
         this.clients = Collections.emptyList();
     }
 

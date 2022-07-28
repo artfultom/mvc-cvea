@@ -36,7 +36,7 @@ public class JavapoetClassGenerator implements ClassGenerator {
 
     private String fileName;
 
-    private JsonFormatDto data;
+    private Data data;
 
     private final Map<String, JavaFile> models;
 
@@ -53,18 +53,15 @@ public class JavapoetClassGenerator implements ClassGenerator {
     }
 
     @Override
-    public JavapoetBuilder prepare(
-            String fileName,
-            JsonFormatDto dto
-    ) {
+    public JavapoetBuilder prepare(String fileName, Data data) {
         this.fileName = fileName;
-        this.data = dto;
+        this.data = data;
 
         String version = this.fileName.split("\\.")[1];
 
-        for (JsonFormatDto.Client client : this.data.getClients()) {
-            for (JsonFormatDto.Entity entity : client.getEntities()) {
-                for (JsonFormatDto.Entity.Model model : entity.getModels()) {
+        for (Data.Client client : this.data.getClients()) {
+            for (Data.Entity entity : client.getEntities()) {
+                for (Data.Entity.Model model : entity.getModels()) {
                     String className = StringUtils.capitalizeFirstLetter(model.getName());
                     String pack = String.format(
                             "%s.v%s.%s",
@@ -92,7 +89,7 @@ public class JavapoetClassGenerator implements ClassGenerator {
                             .build();
                     builder.addAnnotation(madelAnnotation);
 
-                    for (JsonFormatDto.Entity.Param field : model.getFields()) {
+                    for (Data.Entity.Param field : model.getFields()) {
                         TypeName typeName = getTypeName(pack, field.getType());
 
                         if (typeName == null) {
@@ -122,7 +119,7 @@ public class JavapoetClassGenerator implements ClassGenerator {
                     );
                 }
 
-                for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
+                for (Data.Entity.Method method : entity.getMethods()) {
                     for (String error : method.getErrors()) {
                         String name = StringUtils.getExceptionName(error);
                         String pack = String.format(
@@ -169,9 +166,9 @@ public class JavapoetClassGenerator implements ClassGenerator {
 
             String pack = String.format("%s.v%s", configuration.getServerPackage(), version);
 
-            for (JsonFormatDto.Client client : data.getClients()) {
-                for (JsonFormatDto.Entity entity : client.getEntities()) {
-                    for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
+            for (Data.Client client : data.getClients()) {
+                for (Data.Entity entity : client.getEntities()) {
+                    for (Data.Entity.Method method : entity.getMethods()) {
                         String methodOut = method.getOut();
                         String returnType = StringUtils.fillModelName(
                                 List.of(client.getName(), entity.getName()),
@@ -198,7 +195,7 @@ public class JavapoetClassGenerator implements ClassGenerator {
                         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
                                 .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC);
 
-                        for (JsonFormatDto.Entity.Param param : method.getIn()) {
+                        for (Data.Entity.Param param : method.getIn()) {
                             TypeName typeName = getModelTypeName(client.getName(), entity.getName(), param.getType());
 
                             if (typeName == null) {
@@ -255,7 +252,7 @@ public class JavapoetClassGenerator implements ClassGenerator {
 
         @Override
         public Builder client() {
-            for (JsonFormatDto.Client client : data.getClients()) {
+            for (Data.Client client : data.getClients()) {
                 String clientName = client.getName();
                 String version = fileName.split("\\.")[1];
 
@@ -280,7 +277,7 @@ public class JavapoetClassGenerator implements ClassGenerator {
                         .build();
                 builder.addMethod(constructor);
 
-                for (JsonFormatDto.Entity entity : client.getEntities()) {
+                for (Data.Entity entity : client.getEntities()) {
                     String pack = String.format(
                             "%s.v%s.%s",
                             configuration.getClientPackage(),
@@ -288,7 +285,7 @@ public class JavapoetClassGenerator implements ClassGenerator {
                             entity.getName().toLowerCase()
                     );
 
-                    for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
+                    for (Data.Entity.Method method : entity.getMethods()) {
                         String methodOut = method.getOut();
 
                         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getName())
@@ -299,7 +296,7 @@ public class JavapoetClassGenerator implements ClassGenerator {
                             methodBuilder.addException(ConvertException.class);
                         }
 
-                        for (JsonFormatDto.Entity.Param param : method.getIn()) {
+                        for (Data.Entity.Param param : method.getIn()) {
                             TypeName typeName = getModelTypeName(client.getName(), entity.getName(), param.getType());
 
                             if (typeName != null) {
@@ -309,7 +306,7 @@ public class JavapoetClassGenerator implements ClassGenerator {
                         }
 
                         List<String> paramNames = method.getIn().stream()
-                                .map(JsonFormatDto.Entity.Param::getType)
+                                .map(Data.Entity.Param::getType)
                                 .map(item -> StringUtils.fillModelName(List.of(client.getName(), entity.getName()), item))
                                 .collect(Collectors.toList());
 
@@ -326,7 +323,7 @@ public class JavapoetClassGenerator implements ClassGenerator {
                         methodBuilder.addStatement("String name = $S", methodName);
 
                         methodBuilder.addStatement("$T<byte[]> arguments = new $T<>()", List.class, ArrayList.class);
-                        for (JsonFormatDto.Entity.Param param : method.getIn()) {
+                        for (Data.Entity.Param param : method.getIn()) {
                             methodBuilder.addStatement(
                                     "arguments.add(convertParamStrategy.convertToByteArray($L))",
                                     param.getName()

@@ -1,6 +1,7 @@
 package io.github.artfultom.vecenta.generation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.github.artfultom.vecenta.Configuration;
 import io.github.artfultom.vecenta.exceptions.ValidateException;
 import io.github.artfultom.vecenta.generation.config.GenerateConfiguration;
@@ -52,39 +53,51 @@ public class FileGenerator {
 
     public Set<Path> generateFiles() throws IOException {
         Set<Path> result = new HashSet<>();
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.json");
-        ObjectMapper mapper = new ObjectMapper();
+
+        PathMatcher jsonMatcher = FileSystems.getDefault().getPathMatcher("glob:**.json");
+        PathMatcher yamlMatcher = FileSystems.getDefault().getPathMatcher("glob:**.yml");
+
+        ObjectMapper jsonMapper = new ObjectMapper();
+        ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
 
         Path path = config.getSchemaDir();
 
         try (Stream<Path> walk = Files.walk(path, MAX_DEPTH)) {
             for (Path p : walk.collect(Collectors.toList())) {
-                if (Files.isRegularFile(p) && matcher.matches(p)) {
+                if (Files.isRegularFile(p)) {
                     String body = Files.readString(p);
-                    JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
 
-                    String fileName = p.getFileName().toString();
-                    try {
-                        validateStrategy.check(fileName);
-                        validateStrategy.check(dto);
-                    } catch (ValidateException e) {
-                        log.error(e.getMessage(), e);
-                        continue;
+                    Data data = null;
+                    if (jsonMatcher.matches(p)) {
+                        data = jsonMapper.readValue(body, Data.class);
+                    }
+                    if (yamlMatcher.matches(p)) {
+                        data = yamlMapper.readValue(body, Data.class);
                     }
 
+                    if (data != null) {
+                        String fileName = p.getFileName().toString();
+                        try {
+                            validateStrategy.check(fileName);
+                            validateStrategy.check(data);
+                        } catch (ValidateException e) {
+                            log.error(e.getMessage(), e);
+                            continue;
+                        }
 
-                    ClassGenerator.Builder builder = classGenerator.prepare(fileName, dto);
+                        ClassGenerator.Builder builder = classGenerator.prepare(fileName, data);
 
-                    if (config.getMode() != GenerateMode.CLIENT) {
-                        builder.server();
+                        if (config.getMode() != GenerateMode.CLIENT) {
+                            builder.server();
+                        }
+
+                        if (config.getMode() != GenerateMode.SERVER) {
+                            builder.client();
+                        }
+
+                        Set<Path> saved = save(config, builder.result());
+                        result.addAll(saved);
                     }
-
-                    if (config.getMode() != GenerateMode.SERVER) {
-                        builder.client();
-                    }
-
-                    Set<Path> saved = save(config, builder.result());
-                    result.addAll(saved);
                 }
             }
         }

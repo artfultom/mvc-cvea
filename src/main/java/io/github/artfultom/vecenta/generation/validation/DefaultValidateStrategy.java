@@ -1,7 +1,7 @@
 package io.github.artfultom.vecenta.generation.validation;
 
 import io.github.artfultom.vecenta.exceptions.ValidateException;
-import io.github.artfultom.vecenta.generation.JsonFormatDto;
+import io.github.artfultom.vecenta.generation.Data;
 import io.github.artfultom.vecenta.matcher.TypeConverter;
 import io.github.artfultom.vecenta.util.StringUtils;
 
@@ -35,15 +35,15 @@ public class DefaultValidateStrategy implements ValidateStrategy {
         } catch (NumberFormatException e) {
             throw new ValidateException(String.format("Incorrect file name: %s. Version is incorrect.", fileName));
         }
-        if (!words[2].equalsIgnoreCase("json")) {
-            throw new ValidateException(String.format("Incorrect file name: %s. It must be json.", fileName));
+        if (!words[2].equalsIgnoreCase("json") && !words[2].equalsIgnoreCase("yml")) {
+            throw new ValidateException(String.format("Incorrect file name: %s. It must be json or yml.", fileName));
         }
     }
 
     @Override
-    public void check(JsonFormatDto dto) throws ValidateException {
-        for (JsonFormatDto.Client client : dto.getClients()) {
-            for (JsonFormatDto.Entity entity : client.getEntities()) {
+    public void check(Data data) throws ValidateException {
+        for (Data.Client client : data.getClients()) {
+            for (Data.Entity entity : client.getEntities()) {
                 checkUniqueModel(entity);
                 checkMethods(entity);
                 checkFields(entity);
@@ -52,9 +52,9 @@ public class DefaultValidateStrategy implements ValidateStrategy {
         }
     }
 
-    private void checkUniqueModel(JsonFormatDto.Entity entity) throws ValidateException {
+    private void checkUniqueModel(Data.Entity entity) throws ValidateException {
         Set<String> modelNames = entity.getModels().stream()
-                .map(JsonFormatDto.Entity.Model::getName)
+                .map(Data.Entity.Model::getName)
                 .filter(item -> TypeConverter.get(item) == null)
                 .collect(Collectors.toSet());
 
@@ -63,46 +63,46 @@ public class DefaultValidateStrategy implements ValidateStrategy {
         }
     }
 
-    private void checkMethods(JsonFormatDto.Entity entity) throws ValidateException {
+    private void checkMethods(Data.Entity entity) throws ValidateException {
         Set<String> modelNames = entity.getModels().stream()
-                .map(JsonFormatDto.Entity.Model::getName)
+                .map(Data.Entity.Model::getName)
                 .filter(item -> TypeConverter.get(item) == null)
                 .collect(Collectors.toSet());
 
-        for (JsonFormatDto.Entity.Method method : entity.getMethods()) {
+        for (Data.Entity.Method method : entity.getMethods()) {
             String returnType = method.getOut();
             checkType(returnType, modelNames);
 
-            for (JsonFormatDto.Entity.Param param : method.getIn()) {
+            for (Data.Entity.Param param : method.getIn()) {
                 checkType(param.getType(), modelNames);
             }
         }
     }
 
-    private void checkFields(JsonFormatDto.Entity entity) throws ValidateException {
+    private void checkFields(Data.Entity entity) throws ValidateException {
         Set<String> modelNames = entity.getModels().stream()
-                .map(JsonFormatDto.Entity.Model::getName)
+                .map(Data.Entity.Model::getName)
                 .filter(item -> TypeConverter.get(item) == null)
                 .collect(Collectors.toSet());
 
-        for (JsonFormatDto.Entity.Model model : entity.getModels()) {
-            for (JsonFormatDto.Entity.Param param : model.getFields()) {
+        for (Data.Entity.Model model : entity.getModels()) {
+            for (Data.Entity.Param param : model.getFields()) {
                 checkType(param.getType(), modelNames);
             }
         }
     }
 
-    private void checkRecursion(JsonFormatDto.Entity entity) throws ValidateException {
-        Map<String, JsonFormatDto.Entity.Model> modelMap = entity.getModels().stream()
+    private void checkRecursion(Data.Entity entity) throws ValidateException {
+        Map<String, Data.Entity.Model> modelMap = entity.getModels().stream()
                 .collect(Collectors.toMap(
-                        JsonFormatDto.Entity.Model::getName,
+                        Data.Entity.Model::getName,
                         item -> item
                 ));
 
-        List<JsonFormatDto.Entity.Model> models = entity.getModels();
+        List<Data.Entity.Model> models = entity.getModels();
         for (int i = 0; i < MAX_DEPTH_OF_RECURSION; i++) {
             models = models.stream()
-                    .map(JsonFormatDto.Entity.Model::getFields)
+                    .map(Data.Entity.Model::getFields)
                     .flatMap(Collection::stream)
                     .map(item -> StringUtils.getSimpleTypes(item.getType()))
                     .flatMap(Collection::stream)

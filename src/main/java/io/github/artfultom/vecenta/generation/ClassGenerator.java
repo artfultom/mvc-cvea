@@ -4,10 +4,7 @@ import java.util.List;
 
 public interface ClassGenerator {
 
-    Builder prepare(
-            String fileName,
-            JsonFormatDto dto
-    );
+    Builder prepare(String fileName, Data data);
 
     interface Builder {
 

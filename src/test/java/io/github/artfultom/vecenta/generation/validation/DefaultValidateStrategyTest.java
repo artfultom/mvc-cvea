@@ -2,7 +2,7 @@ package io.github.artfultom.vecenta.generation.validation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.artfultom.vecenta.exceptions.ValidateException;
-import io.github.artfultom.vecenta.generation.JsonFormatDto;
+import io.github.artfultom.vecenta.generation.Data;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,6 +19,7 @@ public class DefaultValidateStrategyTest {
     @Test
     public void isCorrectFileName() throws ValidateException {
         strategy.check("Name.1.json");
+        strategy.check("Name.1.yml");
 
         ValidateException ex1 = Assert.assertThrows(ValidateException.class, () -> strategy.check((String) null));
         Assert.assertEquals("File name is empty.", ex1.getMessage());
@@ -26,27 +27,39 @@ public class DefaultValidateStrategyTest {
         ValidateException ex2 = Assert.assertThrows(ValidateException.class, () -> strategy.check(""));
         Assert.assertEquals("File name is empty.", ex2.getMessage());
 
-        ValidateException ex3 = Assert.assertThrows(ValidateException.class, () -> strategy.check("Name.json"));
-        Assert.assertEquals("Incorrect file name: Name.json. It must have tree parts.", ex3.getMessage());
+        ValidateException ex31 = Assert.assertThrows(ValidateException.class, () -> strategy.check("Name.json"));
+        Assert.assertEquals("Incorrect file name: Name.json. It must have tree parts.", ex31.getMessage());
 
-        ValidateException ex4 = Assert.assertThrows(ValidateException.class, () -> strategy.check(".1.json"));
-        Assert.assertEquals("Incorrect file name: .1.json. Server name is empty.", ex4.getMessage());
+        ValidateException ex32 = Assert.assertThrows(ValidateException.class, () -> strategy.check("Name.yml"));
+        Assert.assertEquals("Incorrect file name: Name.yml. It must have tree parts.", ex32.getMessage());
 
-        ValidateException ex5 = Assert.assertThrows(ValidateException.class, () -> strategy.check("Name..json"));
-        Assert.assertEquals("Incorrect file name: Name..json. Version is empty.", ex5.getMessage());
+        ValidateException ex41 = Assert.assertThrows(ValidateException.class, () -> strategy.check(".1.json"));
+        Assert.assertEquals("Incorrect file name: .1.json. Server name is empty.", ex41.getMessage());
+
+        ValidateException ex42 = Assert.assertThrows(ValidateException.class, () -> strategy.check(".1.yml"));
+        Assert.assertEquals("Incorrect file name: .1.yml. Server name is empty.", ex42.getMessage());
+
+        ValidateException ex51 = Assert.assertThrows(ValidateException.class, () -> strategy.check("Name..json"));
+        Assert.assertEquals("Incorrect file name: Name..json. Version is empty.", ex51.getMessage());
+
+        ValidateException ex52 = Assert.assertThrows(ValidateException.class, () -> strategy.check("Name..yml"));
+        Assert.assertEquals("Incorrect file name: Name..yml. Version is empty.", ex52.getMessage());
 
         ValidateException ex6 = Assert.assertThrows(ValidateException.class, () -> strategy.check("Name.1."));
         Assert.assertEquals("Incorrect file name: Name.1.. It must have tree parts.", ex6.getMessage());
 
         ValidateException ex7 = Assert.assertThrows(ValidateException.class, () -> strategy.check("Name.1.test"));
-        Assert.assertEquals("Incorrect file name: Name.1.test. It must be json.", ex7.getMessage());
+        Assert.assertEquals("Incorrect file name: Name.1.test. It must be json or yml.", ex7.getMessage());
 
-        ValidateException ex8 = Assert.assertThrows(ValidateException.class, () -> strategy.check("Name.A.json"));
-        Assert.assertEquals("Incorrect file name: Name.A.json. Version is incorrect.", ex8.getMessage());
+        ValidateException ex81 = Assert.assertThrows(ValidateException.class, () -> strategy.check("Name.A.json"));
+        Assert.assertEquals("Incorrect file name: Name.A.json. Version is incorrect.", ex81.getMessage());
+
+        ValidateException ex82 = Assert.assertThrows(ValidateException.class, () -> strategy.check("Name.A.yml"));
+        Assert.assertEquals("Incorrect file name: Name.A.yml. Version is incorrect.", ex82.getMessage());
     }
 
     @Test
-    public void isCorrectDto() throws URISyntaxException, IOException, ValidateException {
+    public void isCorrectData() throws URISyntaxException, IOException, ValidateException {
         URL res = getClass().getResource("/validation/Server.1.json");
         Assert.assertNotNull(res);
 
@@ -55,21 +68,21 @@ public class DefaultValidateStrategyTest {
         Assert.assertNotNull(body);
 
         ObjectMapper mapper = new ObjectMapper();
-        JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
-        Assert.assertNotNull(dto);
+        Data data = mapper.readValue(body, Data.class);
+        Assert.assertNotNull(data);
 
-        strategy.check(dto);
+        strategy.check(data);
     }
 
     @Test
-    public void isCorrectWrongDto() throws URISyntaxException, IOException {
-        checkWrongDto("/validation/Server_wrong_model.1.json", "Incorrect type WRONG_MODEL_NAME.");
-        checkWrongDto("/validation/Server_wrong_recursion.1.json", "There is a circle!");
-        checkWrongDto("/validation/Server_wrong_duplicates.1.json", "Duplicates of models.");
-        checkWrongDto("/validation/Server_wrong_return.1.json", "Incorrect type WRONG_MODEL_NAME.");
+    public void isCorrectWrongData() throws URISyntaxException, IOException {
+        checkWrongData("/validation/Server_wrong_model.1.json", "Incorrect type WRONG_MODEL_NAME.");
+        checkWrongData("/validation/Server_wrong_recursion.1.json", "There is a circle!");
+        checkWrongData("/validation/Server_wrong_duplicates.1.json", "Duplicates of models.");
+        checkWrongData("/validation/Server_wrong_return.1.json", "Incorrect type WRONG_MODEL_NAME.");
     }
 
-    private void checkWrongDto(String filename, String errorMsg) throws URISyntaxException, IOException {
+    private void checkWrongData(String filename, String errorMsg) throws URISyntaxException, IOException {
         URL res = getClass().getResource(filename);
         Assert.assertNotNull(res);
 
@@ -78,10 +91,10 @@ public class DefaultValidateStrategyTest {
         Assert.assertNotNull(body);
 
         ObjectMapper mapper = new ObjectMapper();
-        JsonFormatDto dto = mapper.readValue(body, JsonFormatDto.class);
-        Assert.assertNotNull(dto);
+        Data data = mapper.readValue(body, Data.class);
+        Assert.assertNotNull(data);
 
-        ValidateException ex = Assert.assertThrows(ValidateException.class, () -> strategy.check(dto));
+        ValidateException ex = Assert.assertThrows(ValidateException.class, () -> strategy.check(data));
         Assert.assertEquals(errorMsg, ex.getMessage());
     }
 }
