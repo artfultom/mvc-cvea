@@ -15,7 +15,7 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
       - name: Publish package
-        run: ./gradlew clean build publish
+        run: ./gradlew -Prelease clean build publish
         env:
           PASS: ${{ secrets.PASS }}
           USER: ${{ secrets.USER }}
