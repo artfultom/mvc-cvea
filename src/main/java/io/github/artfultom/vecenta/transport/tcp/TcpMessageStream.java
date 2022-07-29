@@ -1,5 +1,6 @@
 package io.github.artfultom.vecenta.transport.tcp;
 
+import io.github.artfultom.vecenta.transport.MessageHandler;
 import io.github.artfultom.vecenta.transport.MessageStream;
 
 import java.io.DataInputStream;
@@ -10,9 +11,13 @@ import java.net.Socket;
 
 public class TcpMessageStream implements MessageStream {
 
-    DataInputStream in;
+    private final DataInputStream in;
 
-    DataOutputStream out;
+    private final DataOutputStream out;
+
+    private MessageHandler getHandler;
+
+    private MessageHandler sendHandler;
 
     public TcpMessageStream(Socket socket) throws IOException {
         this.in = new DataInputStream(socket.getInputStream());
@@ -20,10 +25,26 @@ public class TcpMessageStream implements MessageStream {
     }
 
     @Override
+    public void setGetHandler(MessageHandler handler) {
+        this.getHandler = handler;
+    }
+
+    @Override
+    public void setSendHandler(MessageHandler handler) {
+        this.sendHandler = handler;
+    }
+
+    @Override
     public byte[] getMessage() throws IOException {
         try {
             int size = in.readInt();
-            return in.readNBytes(size);
+            byte[] bytes = in.readNBytes(size);
+
+            if (getHandler != null) {
+                bytes = getHandler.handle(bytes);
+            }
+
+            return bytes;
         } catch (EOFException e) {
             return new byte[0];
         }
@@ -31,6 +52,10 @@ public class TcpMessageStream implements MessageStream {
 
     @Override
     public void sendMessage(byte[] resp) throws IOException {
+        if (sendHandler != null) {
+            resp = sendHandler.handle(resp);
+        }
+
         out.writeInt(resp.length);
         out.write(resp);
         out.flush();

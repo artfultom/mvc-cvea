@@ -41,9 +41,12 @@ public class TcpServer extends AbstractServer {
                 @Override
                 public void run() {
                     Socket socket;
+                    long id;
+
                     try {
                         socket = listener.accept();
-                        log.info(String.format("Client #%s is accepted.", clientId.getAndIncrement()));
+                        id = clientId.getAndIncrement();
+                        log.info(String.format("Client #%s is accepted.", id));
                     } catch (SocketException e) {
                         return;
                     } catch (IOException e) {
@@ -58,6 +61,8 @@ public class TcpServer extends AbstractServer {
                     executionPool.execute(() -> {
                         try {
                             MessageStream stream = new TcpMessageStream(socket);
+                            stream.setGetHandler(getHandler);
+                            stream.setSendHandler(sendHandler);
 
                             if (!socket.isClosed() && !listener.isClosed()) {
                                 handshake(stream);

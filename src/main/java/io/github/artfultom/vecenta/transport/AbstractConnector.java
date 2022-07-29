@@ -12,7 +12,24 @@ import java.nio.ByteBuffer;
 public abstract class AbstractConnector implements Connector {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractConnector.class);
+
     protected ReadWriteStrategy strategy;
+
+    protected MessageStream stream;
+
+    @Override
+    public void setGetHandler(MessageHandler handler) {
+        if (this.stream != null) {
+            this.stream.setGetHandler(handler);
+        }
+    }
+
+    @Override
+    public void setSendHandler(MessageHandler handler) {
+        if (this.stream != null) {
+            this.stream.setSendHandler(handler);
+        }
+    }
 
     protected synchronized void handshake(MessageStream stream) throws ConnectionException {
         int capacity = 0;

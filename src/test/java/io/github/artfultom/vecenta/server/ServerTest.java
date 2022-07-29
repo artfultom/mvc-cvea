@@ -9,9 +9,9 @@ import io.github.artfultom.vecenta.generated.v1.math.Model3;
 import io.github.artfultom.vecenta.generated.v1.math.TestClient;
 import io.github.artfultom.vecenta.generation.FileGenerator;
 import io.github.artfultom.vecenta.generation.config.GenerateConfiguration;
-import io.github.artfultom.vecenta.generation.config.GenerateMode;
 import io.github.artfultom.vecenta.matcher.ServerMatcher;
 import io.github.artfultom.vecenta.transport.Connector;
+import io.github.artfultom.vecenta.transport.MessageHandler;
 import io.github.artfultom.vecenta.transport.Server;
 import io.github.artfultom.vecenta.transport.error.ErrorType;
 import io.github.artfultom.vecenta.transport.tcp.TcpConnector;
@@ -148,25 +148,7 @@ public class ServerTest {
     }
 
     @Test
-    public void testServerFail() throws URISyntaxException, IOException, ConvertException, ConnectionException {
-        URL res = getClass().getResource("/transfer_data");
-        assertNotNull(res);
-
-        String pack = "io.github.artfultom.vecenta.generated";
-        GenerateConfiguration config = new GenerateConfiguration(
-                Path.of(res.toURI()),
-                Path.of("src", "test", "java"),
-                pack,
-                pack,
-                pack,
-                pack,
-                GenerateMode.CLIENT
-        );
-
-        Set<Path> files = new FileGenerator(config).generateFiles();
-        assertNotNull(files);
-        assertEquals(6, files.size());
-
+    public void testServerFail() throws ConvertException, ConnectionException {
         try (Server server = new TcpServer(); Connector connector = new TcpConnector()) {
             int port = 5601;
 
@@ -179,6 +161,39 @@ public class ServerTest {
             Assert.fail("Must have an exception.");
         } catch (ProtocolException e) {
             Assert.assertEquals(ErrorType.WRONG_METHOD_NAME, e.getError());
+        }
+    }
+
+    @Test
+    public void testHandlers() throws ConnectionException, ProtocolException, ConvertException {
+        ServerMatcher matcher = new ServerMatcher();
+        String pack = "io.github.artfultom.vecenta.generated";
+        matcher.register(pack);
+
+        MessageHandler reverseHandler = bytes -> {
+            byte[] result = new byte[bytes.length];
+            for (int i = 0; i < bytes.length; i++) {
+                result[i] = bytes[bytes.length - 1 - i];
+            }
+
+            return result;
+        };
+
+        try (Server server = new TcpServer(); Connector connector = new TcpConnector()) {
+            int port = 5602;
+
+            server.start(port, matcher);
+            server.setGetHandler(reverseHandler);
+            server.setSendHandler(reverseHandler);
+
+            connector.connect("localhost", port);
+            connector.setGetHandler(reverseHandler);
+            connector.setSendHandler(reverseHandler);
+
+            TestClient client = new TestClient(connector);
+            int result = client.sum(3, 2);
+
+            Assert.assertEquals(5, result);
         }
     }
 }

@@ -10,6 +10,10 @@ public interface Connector extends AutoCloseable, Cloneable {
 
     Response send(Request request) throws ConnectionException;
 
+    void setGetHandler(MessageHandler handler);
+
+    void setSendHandler(MessageHandler handler);
+
     @Override
     void close() throws ConnectionException;
 }

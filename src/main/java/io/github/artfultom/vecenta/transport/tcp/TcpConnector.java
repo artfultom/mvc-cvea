@@ -4,7 +4,6 @@ import io.github.artfultom.vecenta.exceptions.ConnectionException;
 import io.github.artfultom.vecenta.matcher.DefaultReadWriteStrategy;
 import io.github.artfultom.vecenta.matcher.ReadWriteStrategy;
 import io.github.artfultom.vecenta.transport.AbstractConnector;
-import io.github.artfultom.vecenta.transport.MessageStream;
 import io.github.artfultom.vecenta.transport.message.Request;
 import io.github.artfultom.vecenta.transport.message.Response;
 
@@ -19,8 +18,6 @@ public class TcpConnector extends AbstractConnector {
     private int port;
 
     private Socket socket;
-
-    private MessageStream stream;
 
     public TcpConnector() {
         this.strategy = new DefaultReadWriteStrategy();

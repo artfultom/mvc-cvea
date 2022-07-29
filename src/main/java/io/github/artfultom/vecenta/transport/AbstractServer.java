@@ -11,7 +11,22 @@ import java.nio.charset.StandardCharsets;
 public abstract class AbstractServer implements Server {
 
     public static final int PROTOCOL_VERSION = 1;
+
     public static final String PROTOCOL_NAME = "vcea";
+
+    protected MessageHandler getHandler;
+
+    protected MessageHandler sendHandler;
+
+    @Override
+    public void setGetHandler(MessageHandler handler) {
+        this.getHandler = handler;
+    }
+
+    @Override
+    public void setSendHandler(MessageHandler handler) {
+        this.sendHandler = handler;
+    }
 
     protected void handshake(MessageStream stream) throws ConnectionException, ProtocolException {
         try {
