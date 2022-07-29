@@ -86,14 +86,14 @@ try (Server server = new TcpServer()) {
 }
 ```
 
-## Using of client.
+## Using of the client.
 ```
 try (Connector connector = new TcpConnector()) {
   int port = 5550;
   connector.connect("127.0.0.1", port); // in this case ip is local
   TestClient client = new TestClient(connector);
 
-  int result = client.sum(2, 3);  // an example. Method sum() will be executed on the server.
+  int result = client.sum(2, 3);  // method sum() will be executed on the server.
   System.out.println(result);
 } catch (ConnectionException | ProtocolException | ConvertException e) {
   ...
