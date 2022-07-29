@@ -72,13 +72,6 @@ publishing {
             }
         } else {
             maven {
-                url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-                credentials {
-                    username = System.getenv("USER")
-                    password = System.getenv("PASS")
-                }
-            }
-            maven {
                 url = "https://s01.oss.sonatype.org/content/repositories/releases/"
                 credentials {
                     username = System.getenv("USER")
