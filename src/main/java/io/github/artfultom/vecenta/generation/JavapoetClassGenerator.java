@@ -336,25 +336,29 @@ public class JavapoetClassGenerator implements ClassGenerator {
                         methodBuilder.addStatement("$T resp = connector.send(req)", Response.class);
                         CodeBlock.Builder exceptionBlock = CodeBlock.builder()
                                 .beginControlFlow("if (resp.getErrorType() != null)")
-                                .beginControlFlow("if (resp.getErrorType() == $T.CHECKED_ERROR)", ErrorType.class)
-                                .beginControlFlow("switch(resp.getErrorMsg())");
+                                .beginControlFlow("if (resp.getErrorType() == $T.CHECKED_ERROR)", ErrorType.class);
 
-                        for (String error : method.getErrors()) {
-                            JavaFile ex = exceptions.get(error);
-                            if (ex == null) {
-                                log.error(String.format("Cannot find the exception: %s.", error));
-                            } else {
-                                exceptionBlock.addStatement(
-                                        "case $S: throw new $T()",
-                                        error,
-                                        ClassName.get(ex.packageName, ex.typeSpec.name).box()
-                                );
+                        if (method.getErrors().isEmpty()) {
+                            exceptionBlock.addStatement("throw new $T()", RuntimeException.class);
+                        } else {
+                            exceptionBlock.beginControlFlow("switch(resp.getErrorMsg())");
+                            for (String error : method.getErrors()) {
+                                JavaFile ex = exceptions.get(error);
+                                if (ex == null) {
+                                    log.error(String.format("Cannot find the exception: %s.", error));
+                                } else {
+                                    exceptionBlock.addStatement(
+                                            "case $S: throw new $T()",
+                                            error,
+                                            ClassName.get(ex.packageName, ex.typeSpec.name).box()
+                                    );
+                                }
                             }
+                            exceptionBlock.addStatement("default: throw new $T()", RuntimeException.class)
+                                    .endControlFlow();
                         }
 
-                        exceptionBlock.addStatement("default: throw new $T()", RuntimeException.class)
-                                .endControlFlow()
-                                .endControlFlow()
+                        exceptionBlock.endControlFlow()
                                 .beginControlFlow("if (resp.getErrorType() == $T.UNKNOWN_METHOD_ERROR)", ErrorType.class)
                                 .addStatement("throw new $T()", RuntimeException.class)
                                 .endControlFlow()

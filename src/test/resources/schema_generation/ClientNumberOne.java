@@ -54,9 +54,7 @@ public class ClientNumberOne {
         Response resp = connector.send(req);
         if (resp.getErrorType() != null) {
             if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
-                switch(resp.getErrorMsg()) {
-                    default: throw new RuntimeException();
-                }
+                throw new RuntimeException();
             }
             if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
                 throw new RuntimeException();
@@ -78,9 +76,7 @@ public class ClientNumberOne {
         Response resp = connector.send(req);
         if (resp.getErrorType() != null) {
             if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
-                switch(resp.getErrorMsg()) {
-                    default: throw new RuntimeException();
-                }
+                throw new RuntimeException();
             }
             if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
                 throw new RuntimeException();
@@ -97,9 +93,7 @@ public class ClientNumberOne {
         Response resp = connector.send(req);
         if (resp.getErrorType() != null) {
             if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
-                switch(resp.getErrorMsg()) {
-                    default: throw new RuntimeException();
-                }
+                throw new RuntimeException();
             }
             if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
                 throw new RuntimeException();
