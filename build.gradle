@@ -3,7 +3,7 @@ apply plugin: "maven-publish"
 apply plugin: "signing"
 
 group = "io.github.artfultom"
-version = "0.0.5" + (project.hasProperty("snapshot") ? "-SNAPSHOT" : "")
+version = "0.0.6" + (project.hasProperty("snapshot") ? "-SNAPSHOT" : "")
 
 java {
     withJavadocJar()
@@ -62,13 +62,28 @@ publishing {
         }
     }
     repositories {
-        maven {
-            var releasesUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            var snapshotsUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            url = project.hasProperty("snapshot") ? snapshotsUrl : releasesUrl
-            credentials {
-                username = System.getenv("USER")
-                password = System.getenv("PASS")
+        if (project.hasProperty("snapshot")) {
+            maven {
+                url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                credentials {
+                    username = System.getenv("USER")
+                    password = System.getenv("PASS")
+                }
+            }
+        } else {
+            maven {
+                url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                credentials {
+                    username = System.getenv("USER")
+                    password = System.getenv("PASS")
+                }
+            }
+            maven {
+                url = "https://s01.oss.sonatype.org/content/repositories/releases/"
+                credentials {
+                    username = System.getenv("USER")
+                    password = System.getenv("PASS")
+                }
             }
         }
     }
