@@ -12,7 +12,7 @@ public abstract class AbstractServer implements Server {
 
     public static final int PROTOCOL_VERSION = 1;
 
-    public static final String PROTOCOL_NAME = "vcea";
+    public static final String PROTOCOL_NAME = "PSRP";   // Pretty Simple RPC Protocol
 
     protected MessageHandler getHandler;
 
@@ -32,7 +32,7 @@ public abstract class AbstractServer implements Server {
         try {
             byte[] handshake = stream.getMessage();
 
-            if (handshake.length > 4) {
+            if (handshake.length > PROTOCOL_NAME.length()) {
                 byte[] protocolNameArr = new byte[PROTOCOL_NAME.length()];
                 ByteBuffer buf = ByteBuffer.wrap(handshake);
                 buf.get(protocolNameArr);
