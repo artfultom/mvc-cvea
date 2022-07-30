@@ -27,7 +27,7 @@ public class Configuration {
                 return value;
             }
         } catch (IOException e) {
-            log.error(String.format("Cannot find property %s", property));
+            log.error(String.format("Cannot find property %s.", property));
         }
 
         throw new PropertyNotFoundException(property);

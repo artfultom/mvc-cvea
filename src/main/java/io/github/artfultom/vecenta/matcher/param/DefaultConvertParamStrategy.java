@@ -72,7 +72,9 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
 
             Model model = in.getClass().getAnnotation(Model.class);
             if (model == null) {
-                throw new ConvertException("Cannot find an order of fields in model " + in.getClass().getName());
+                throw new ConvertException(
+                        String.format("Cannot find an order of fields in model %s.", in.getClass().getName())
+                );
             }
 
             Map<String, Method> methodMap = ReflectionUtils.getPublicGetters(in.getClass()).stream()
@@ -95,9 +97,9 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
 
             return out.toByteArray();
         } catch (IOException e) {
-            throw new ConvertException("Cannot open binary stream for type " + in.getClass().getName(), e);
+            throw new ConvertException(String.format("Cannot open binary stream for type %s.", in.getClass().getName()), e);
         } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new ConvertException("Cannot invoke method. Type " + in.getClass().getName(), e);
+            throw new ConvertException(String.format("Cannot invoke method. Type %s.", in.getClass().getName()), e);
         }
     }
 
@@ -133,7 +135,9 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
 
                 Model model = target.getAnnotation(Model.class);
                 if (model == null) {
-                    throw new ConvertException("Cannot find an order of fields in model " + target.getName());
+                    throw new ConvertException(
+                            String.format("Cannot find an order of fields in model %s.", target.getName())
+                    );
                 }
 
                 Map<String, Method> methodMap = ReflectionUtils.getPublicSetters(target).stream()
@@ -169,11 +173,13 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                         IllegalAccessException |
                         NoSuchMethodException e
                 ) {
-                    throw new ConvertException("Cannot invoke method. Type " + target.getName(), e);
+                    throw new ConvertException(String.format("Cannot invoke method. Type %s.", target.getName()), e);
                 }
             case LIST:
                 if (firstElementClass == null) {
-                    throw new ConvertException("Element class must not be null. Target=" + target.getName() + "; type=" + type);
+                    throw new ConvertException(
+                            String.format("Element class must not be null. Target=%s; type=%s.", target.getName(), type)
+                    );
                 }
 
                 ByteBuffer listBuffer = ByteBuffer.wrap(in);
@@ -192,18 +198,24 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                 if (target.isInstance(resultList)) {
                     return target.cast(resultList);
                 } else {
-                    throw new ConvertException(resultList + " must be an instance of " + target.getName());
+                    throw new ConvertException(
+                            String.format("%s must be an instance of %s.", resultList, target.getName())
+                    );
                 }
             case MAP:
                 if (firstElementClass == null) {
-                    throw new ConvertException("Element class must not be null. Target=" + target.getName() + "; type=" + type);
+                    throw new ConvertException(
+                            String.format("Element class must not be null. Target=%s; type=%s.", target.getName(), type)
+                    );
                 }
 
                 Class<?> secondElementClass = getElementClass(collectionType.getSecond());
                 if (secondElementClass == null) {
                     CollectionType secondCollectionType = CollectionType.get(collectionType.getSecond());
                     if (secondCollectionType == null) {
-                        throw new ConvertException("Unknown CollectionType for " + collectionType.getSecond());
+                        throw new ConvertException(
+                                String.format("Unknown CollectionType for %s.", collectionType.getSecond())
+                        );
                     }
 
                     switch (secondCollectionType) {
@@ -214,7 +226,9 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                             secondElementClass = Map.class;
                             break;
                         default:
-                            throw new ConvertException("Unknown CollectionType for " + collectionType.getSecond());
+                            throw new ConvertException(
+                                    String.format("Unknown CollectionType for %s.", collectionType.getSecond())
+                            );
                     }
                 }
 
@@ -241,10 +255,12 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                 if (target.isInstance(resultMap)) {
                     return target.cast(resultMap);
                 } else {
-                    throw new ConvertException(resultMap + " must be an instance of " + target.getName());
+                    throw new ConvertException(
+                            String.format("%s must be an instance of %s.", resultMap, target.getName())
+                    );
                 }
             default:
-                throw new ConvertException("Unknown type of CollectionType - " + collectionType);
+                throw new ConvertException(String.format("Unknown type of CollectionType - %s.", collectionType));
         }
     }
 

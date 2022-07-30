@@ -50,7 +50,7 @@ public class ServerMatcher {
                 register(clazz);
             }
         } catch (IOException e) {
-            log.error("Cannot register a server class in package " + pack, e);
+            log.error(String.format("Cannot register a server class in package %s.", pack), e);
         }
     }
 
@@ -93,7 +93,7 @@ public class ServerMatcher {
                                 IllegalAccessException | InstantiationException | NoSuchMethodException |
                                 ConvertException e
                         ) {
-                            log.error("Cannot register a server class " + serverClass.getName(), e);
+                            log.error(String.format("Cannot register a server class %s.", serverClass.getName()), e);
                         } catch (InvocationTargetException e) {
                             Throwable target = e.getTargetException();
                             RpcError error = target.getClass().getAnnotation(RpcError.class);

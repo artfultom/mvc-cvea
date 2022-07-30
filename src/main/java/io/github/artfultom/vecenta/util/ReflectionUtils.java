@@ -142,7 +142,7 @@ public class ReflectionUtils {
                         try {
                             classes.add(Class.forName(name));
                         } catch (ClassNotFoundException e) {
-                            log.error("Cannot find class " + name, e);
+                            log.error(String.format("Cannot find class %s.", name), e);
                         }
                     }
                 }

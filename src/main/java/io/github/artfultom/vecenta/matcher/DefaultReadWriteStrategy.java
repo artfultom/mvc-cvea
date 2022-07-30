@@ -37,7 +37,7 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
 
             return out.toByteArray();
         } catch (IOException e) {
-            log.error("Cannot convert request to bytes", e);
+            log.error("Cannot convert request to bytes.", e);
         }
 
         return new byte[0];
@@ -67,7 +67,7 @@ public class DefaultReadWriteStrategy implements ReadWriteStrategy {
 
             return out.toByteArray();
         } catch (IOException e) {
-            log.error("Cannot convert response to bytes", e);
+            log.error("Cannot convert response to bytes.", e);
         }
 
         return new byte[0];
