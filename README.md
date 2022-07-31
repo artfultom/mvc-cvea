@@ -4,7 +4,7 @@
 
 ```
 dependencies {
-    implementation 'io.github.artfultom:vecenta:0.0.5-SNAPSHOT'
+    implementation 'io.github.artfultom:vecenta:0.0.6'
 }
 ```
 
