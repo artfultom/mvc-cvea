@@ -104,7 +104,7 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
     }
 
     @Override
-    public <T> T convertToObject(
+    public <T> T convertToObject( // TODO refactor
             byte[] in,
             String type,
             Class<T> target
@@ -118,8 +118,6 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
             return null;
         }
 
-        Class<?> firstElementClass = getElementClass(collectionType.getFirst());
-
         switch (collectionType) {
             case SIMPLE:
                 TypeConverter converter = TypeConverter.get(type);
@@ -129,7 +127,7 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                     if (target.isInstance(obj)) {
                         return target.cast(obj);
                     } else {
-                        throw new ConvertException(String.format("%s must be an instance of %s", obj, target.getName()));
+                        throw new ConvertException(String.format("%s must be an instance of %s.", obj, target.getName()));
                     }
                 }
 
@@ -176,12 +174,6 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                     throw new ConvertException(String.format("Cannot invoke method. Type %s.", target.getName()), e);
                 }
             case LIST:
-                if (firstElementClass == null) {
-                    throw new ConvertException(
-                            String.format("Element class must not be null. Target=%s; type=%s.", target.getName(), type)
-                    );
-                }
-
                 ByteBuffer listBuffer = ByteBuffer.wrap(in);
 
                 int listSize = listBuffer.getInt();
@@ -192,7 +184,22 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                     byte[] listByteArray = new byte[size];
                     listBuffer.get(listByteArray);
 
-                    resultList.add(convertToObject(listByteArray, collectionType.getFirst(), firstElementClass));
+                    Class<?> elementClass = null;
+                    switch (CollectionType.get(collectionType.getFirst(type))) {
+                        case SIMPLE:
+                            elementClass = getElementClass(collectionType.getFirst(type));
+                            break;
+                        case LIST:
+                            elementClass = List.class;
+                            break;
+                        case MAP:
+                            elementClass = Map.class;
+                            break;
+                        default:
+                    }
+
+                    Object result = convertToObject(listByteArray, collectionType.getFirst(type), elementClass);
+                    resultList.add(result);
                 }
 
                 if (target.isInstance(resultList)) {
@@ -203,31 +210,32 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                     );
                 }
             case MAP:
-                if (firstElementClass == null) {
+                Class<?> mapKeyClass = getElementClass(collectionType.getFirst(type));
+                if (mapKeyClass == null) {
                     throw new ConvertException(
                             String.format("Element class must not be null. Target=%s; type=%s.", target.getName(), type)
                     );
                 }
 
-                Class<?> secondElementClass = getElementClass(collectionType.getSecond());
-                if (secondElementClass == null) {
-                    CollectionType secondCollectionType = CollectionType.get(collectionType.getSecond());
+                Class<?> mapValClass = getElementClass(collectionType.getSecond(type));
+                if (mapValClass == null) {
+                    CollectionType secondCollectionType = CollectionType.get(collectionType.getSecond(type));
                     if (secondCollectionType == null) {
                         throw new ConvertException(
-                                String.format("Unknown CollectionType for %s.", collectionType.getSecond())
+                                String.format("Unknown CollectionType for %s.", collectionType.getSecond(type))
                         );
                     }
 
                     switch (secondCollectionType) {
                         case LIST:
-                            secondElementClass = List.class;
+                            mapValClass = List.class;
                             break;
                         case MAP:
-                            secondElementClass = Map.class;
+                            mapValClass = Map.class;
                             break;
                         default:
                             throw new ConvertException(
-                                    String.format("Unknown CollectionType for %s.", collectionType.getSecond())
+                                    String.format("Unknown CollectionType for %s.", collectionType.getSecond(type))
                             );
                     }
                 }
@@ -247,8 +255,8 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                     mapBuffer.get(valArray);
 
                     resultMap.put(
-                            convertToObject(keyArray, collectionType.getFirst(), firstElementClass),
-                            convertToObject(valArray, collectionType.getSecond(), secondElementClass)
+                            convertToObject(keyArray, collectionType.getFirst(type), mapKeyClass),
+                            convertToObject(valArray, collectionType.getSecond(type), mapValClass)
                     );
                 }
 

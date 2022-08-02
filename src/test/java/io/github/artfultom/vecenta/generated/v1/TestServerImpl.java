@@ -18,33 +18,46 @@ public class TestServerImpl implements TestServer {
     }
 
     @Override
-    public Model3 echo(Model3 a) {
+    public Model3 echo1(Model3 a) {
         return a;
     }
 
     @Override
-    public List<Integer> echo(List<Integer> a) {
+    public List<Integer> echo2(List<Integer> a) {
         return a;
     }
 
     @Override
-    public List<Model3> echo(List<Model3> a, List<Model3> b) {
+    public List<Model3> echo3(List<Model3> a, List<Model3> b) {
         a.addAll(b);
 
         return a;
     }
 
     @Override
-    public Map<Integer, Model3> echo(Map<Integer, Model3> a) {
+    public Map<Integer, Model3> echo4(Map<Integer, Model3> a) {
         return a;
     }
 
     @Override
-    public Map<Integer, List<Model3>> echo(Map<Integer, List<Model3>> a, Map<Integer, List<Model3>> b) {
+    public Map<Integer, List<Model3>> echo5(Map<Integer, List<Model3>> a, Map<Integer, List<Model3>> b) {
         a.putAll(b);
 
         return a;
     }
+
+    @Override
+    public List<List<String>> echo6(List<List<String>> a) {
+        return a;
+    }
+
+    @Override
+    public Map<Integer, List<List<Model3>>> echo7(Map<Integer, List<List<Model3>>> a, Map<Integer, List<List<Model3>>> b) {
+        a.putAll(b);
+
+        return a;
+    }
+
 
     @Override
     public Integer supply() {

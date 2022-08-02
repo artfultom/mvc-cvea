@@ -39,7 +39,7 @@
               "out": "string"
             },
             {
-              "name": "echo",
+              "name": "echo1",
               "in": [
                 {
                   "name": "a",
@@ -49,7 +49,7 @@
               "out": "Model3"
             },
             {
-              "name": "echo",
+              "name": "echo2",
               "in": [
                 {
                   "name": "a",
@@ -59,7 +59,7 @@
               "out": "[int32]"
             },
             {
-              "name": "echo",
+              "name": "echo3",
               "in": [
                 {
                   "name": "a",
@@ -73,7 +73,7 @@
               "out": "[Model3]"
             },
             {
-              "name": "echo",
+              "name": "echo4",
               "in": [
                 {
                   "name": "a",
@@ -83,7 +83,7 @@
               "out": "[int32]Model3"
             },
             {
-              "name": "echo",
+              "name": "echo5",
               "in": [
                 {
                   "name": "a",
@@ -95,6 +95,30 @@
                 }
               ],
               "out": "[int32][Model3]"
+            },
+            {
+              "name": "echo6",
+              "in": [
+                {
+                  "name": "a",
+                  "type": "[[string]]"
+                }
+              ],
+              "out": "[[string]]"
+            },
+            {
+              "name": "echo7",
+              "in": [
+                {
+                  "name": "a",
+                  "type": "[int32][[Model3]]"
+                },
+                {
+                  "name": "b",
+                  "type": "[int32][[Model3]]"
+                }
+              ],
+              "out": "[int32][[Model3]]"
             },
             {
               "name": "supply",

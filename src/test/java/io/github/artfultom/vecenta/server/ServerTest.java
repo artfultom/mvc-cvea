@@ -111,31 +111,42 @@ public class ServerTest {
             model.setField3("test");
             model.setField4(true);
 
-            Model3 result3 = client.echo(model);
+            Model3 result3 = client.echo1(model);
             Assert.assertEquals(model.getField1(), result3.getField1());
             Assert.assertEquals(model.getField2(), result3.getField2());
             Assert.assertEquals(model.getField3(), result3.getField3());
             Assert.assertEquals(model.getField4(), result3.getField4());
 
             List<Integer> list = List.of(1, 2, 3);
-            List<Integer> result4 = client.echo(list);
+            List<Integer> result4 = client.echo2(list);
             Assert.assertEquals(list, result4);
 
-            List<Model3> result5 = client.echo(List.of(new Model3()), List.of(new Model3()));
+            List<Model3> result5 = client.echo3(List.of(new Model3()), List.of(new Model3()));
             Assert.assertEquals(2, result5.size());
 
-            Map<Integer, Model3> result6 = client.echo(Map.of(1, new Model3()));
+            Map<Integer, Model3> result6 = client.echo4(Map.of(1, new Model3()));
             Assert.assertEquals(1, result6.size());
 
-            Map<Integer, List<Model3>> result7 = client.echo(
+            Map<Integer, List<Model3>> result7 = client.echo5(
                     Map.of(1, List.of(new Model3())),
                     Map.of(2, List.of(new Model3()))
             );
             Assert.assertEquals(2, result7.size());
 
-            Integer result8 = client.supply();
-            Assert.assertNotNull(result8);
-            Assert.assertEquals(42, result8.intValue());
+            List<List<String>> result8 = client.echo6(List.of(List.of("TEST")));
+            Assert.assertEquals(1, result8.size());
+            Assert.assertEquals(1, result8.get(0).size());
+            Assert.assertEquals("TEST", result8.get(0).get(0));
+
+            Map<Integer, List<List<Model3>>> result9 = client.echo7(
+                    Map.of(1, List.of(List.of(model))),
+                    Map.of(2, List.of(List.of(model)))
+            );
+            Assert.assertEquals(2, result9.size());
+
+            Integer result10 = client.supply();
+            Assert.assertNotNull(result10);
+            Assert.assertEquals(42, result10.intValue());
 
             client.consume(42);
 

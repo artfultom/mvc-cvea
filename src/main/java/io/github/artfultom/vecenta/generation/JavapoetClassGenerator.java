@@ -445,10 +445,10 @@ public class JavapoetClassGenerator implements ClassGenerator {
             return null;
         }
 
-        TypeConverter converter = TypeConverter.get(collectionType.getFirst());
+        TypeConverter converter = TypeConverter.get(collectionType.getFirst(name));
         Class<?> type = converter == null ? null : converter.getClazz();
         if (type == null) {
-            String capitalType = StringUtils.capitalizeFirstLetter(collectionType.getFirst());
+            String capitalType = StringUtils.capitalizeFirstLetter(collectionType.getFirst(name));
 
             result = ClassName.get(pack, capitalType).box();
         } else {
@@ -463,7 +463,7 @@ public class JavapoetClassGenerator implements ClassGenerator {
             result = ParameterizedTypeName.get(
                     ClassName.get(Map.class),
                     result,
-                    getTypeName(pack, collectionType.getSecond())
+                    getTypeName(pack, collectionType.getSecond(name))
             );
         }
 
@@ -471,36 +471,36 @@ public class JavapoetClassGenerator implements ClassGenerator {
     }
 
     private TypeName getModelTypeName(String client, String entity, String name) {
-        TypeName firstTypeName = null;
-
         CollectionType collectionType = CollectionType.get(name);
         if (collectionType == null) {
             return null;
         }
 
-        TypeConverter converter = TypeConverter.get(collectionType.getFirst());
-        Class<?> firstType = converter == null ? null : converter.getClazz();
-        if (firstType == null) {
-            JavaFile model = models.get(String.format("%s.%s.%s", client, entity, collectionType.getFirst()));
-            if (model == null) {
-                return null;
-            }
-
-            firstTypeName = ClassName.get(model.packageName, model.typeSpec.name).box();
-        } else {
-            firstTypeName = TypeName.get(firstType);
-        }
-
         switch (collectionType) {
             case SIMPLE:
-                return firstTypeName;
+                TypeConverter converter = TypeConverter.get(collectionType.getFirst(name));
+                Class<?> type = converter == null ? null : converter.getClazz();
+                if (type == null) {
+                    JavaFile model = models.get(String.format("%s.%s.%s", client, entity, collectionType.getFirst(name)));
+                    if (model == null) {
+                        return null;
+                    }
+
+                    return ClassName.get(model.packageName, model.typeSpec.name).box();
+                } else {
+                    return TypeName.get(type);
+                }
             case LIST:
-                return ParameterizedTypeName.get(ClassName.get(List.class), firstTypeName);
+                TypeName listElementType = getModelTypeName(client, entity, collectionType.getFirst(name));
+                return ParameterizedTypeName.get(ClassName.get(List.class), listElementType);
             case MAP:
+                TypeName mapKeyType = getModelTypeName(client, entity, collectionType.getFirst(name));
+                TypeName mapValType = getModelTypeName(client, entity, collectionType.getSecond(name));
+
                 return ParameterizedTypeName.get(
                         ClassName.get(Map.class),
-                        firstTypeName,
-                        getModelTypeName(client, entity, collectionType.getSecond())
+                        mapKeyType,
+                        mapValType
                 );
             default:
                 return null;

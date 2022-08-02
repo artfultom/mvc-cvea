@@ -69,8 +69,8 @@ public class TestClient {
         return convertParamStrategy.convertToObject(result, "string", String.class);
     }
 
-    public Model3 echo(Model3 a) throws ConnectionException, ConvertException, ProtocolException {
-        String name = "math.echo(TestClient.math.Model3)->TestClient.math.Model3";
+    public Model3 echo1(Model3 a) throws ConnectionException, ConvertException, ProtocolException {
+        String name = "math.echo1(TestClient.math.Model3)->TestClient.math.Model3";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(a));
         Request req = new Request(name, arguments);
@@ -90,9 +90,9 @@ public class TestClient {
         return convertParamStrategy.convertToObject(result, "TestClient.math.Model3", Model3.class);
     }
 
-    public List<Integer> echo(List<Integer> a) throws ConnectionException, ConvertException,
+    public List<Integer> echo2(List<Integer> a) throws ConnectionException, ConvertException,
             ProtocolException {
-        String name = "math.echo([int32])->[int32]";
+        String name = "math.echo2([int32])->[int32]";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(a));
         Request req = new Request(name, arguments);
@@ -112,9 +112,9 @@ public class TestClient {
         return convertParamStrategy.convertToObject(result, "[int32]", List.class);
     }
 
-    public List<Model3> echo(List<Model3> a, List<Model3> b) throws ConnectionException,
+    public List<Model3> echo3(List<Model3> a, List<Model3> b) throws ConnectionException,
             ConvertException, ProtocolException {
-        String name = "math.echo([TestClient.math.Model3],[TestClient.math.Model3])->[TestClient.math.Model3]";
+        String name = "math.echo3([TestClient.math.Model3],[TestClient.math.Model3])->[TestClient.math.Model3]";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(a));
         arguments.add(convertParamStrategy.convertToByteArray(b));
@@ -135,9 +135,9 @@ public class TestClient {
         return convertParamStrategy.convertToObject(result, "[TestClient.math.Model3]", List.class);
     }
 
-    public Map<Integer, Model3> echo(Map<Integer, Model3> a) throws ConnectionException,
+    public Map<Integer, Model3> echo4(Map<Integer, Model3> a) throws ConnectionException,
             ConvertException, ProtocolException {
-        String name = "math.echo([int32]TestClient.math.Model3)->[int32]TestClient.math.Model3";
+        String name = "math.echo4([int32]TestClient.math.Model3)->[int32]TestClient.math.Model3";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(a));
         Request req = new Request(name, arguments);
@@ -157,10 +157,10 @@ public class TestClient {
         return convertParamStrategy.convertToObject(result, "[int32]TestClient.math.Model3", Map.class);
     }
 
-    public Map<Integer, List<Model3>> echo(Map<Integer, List<Model3>> a,
+    public Map<Integer, List<Model3>> echo5(Map<Integer, List<Model3>> a,
             Map<Integer, List<Model3>> b) throws ConnectionException, ConvertException,
             ProtocolException {
-        String name = "math.echo([int32][TestClient.math.Model3],[int32][TestClient.math.Model3])->[int32][TestClient.math.Model3]";
+        String name = "math.echo5([int32][TestClient.math.Model3],[int32][TestClient.math.Model3])->[int32][TestClient.math.Model3]";
         List<byte[]> arguments = new ArrayList<>();
         arguments.add(convertParamStrategy.convertToByteArray(a));
         arguments.add(convertParamStrategy.convertToByteArray(b));
@@ -179,6 +179,52 @@ public class TestClient {
 
         byte[] result = resp.getResult();
         return convertParamStrategy.convertToObject(result, "[int32][TestClient.math.Model3]", Map.class);
+    }
+
+    public List<List<String>> echo6(List<List<String>> a) throws ConnectionException,
+            ConvertException, ProtocolException {
+        String name = "math.echo6([[string]])->[[string]]";
+        List<byte[]> arguments = new ArrayList<>();
+        arguments.add(convertParamStrategy.convertToByteArray(a));
+        Request req = new Request(name, arguments);
+
+        Response resp = connector.send(req);
+        if (resp.getErrorType() != null) {
+            if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
+                throw new RuntimeException();
+            }
+            if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
+                throw new RuntimeException();
+            }
+            throw new ProtocolException(resp.getErrorType());
+        }
+
+        byte[] result = resp.getResult();
+        return convertParamStrategy.convertToObject(result, "[[string]]", List.class);
+    }
+
+    public Map<Integer, List<List<Model3>>> echo7(Map<Integer, List<List<Model3>>> a,
+            Map<Integer, List<List<Model3>>> b) throws ConnectionException, ConvertException,
+            ProtocolException {
+        String name = "math.echo7([int32][[TestClient.math.Model3]],[int32][[TestClient.math.Model3]])->[int32][[TestClient.math.Model3]]";
+        List<byte[]> arguments = new ArrayList<>();
+        arguments.add(convertParamStrategy.convertToByteArray(a));
+        arguments.add(convertParamStrategy.convertToByteArray(b));
+        Request req = new Request(name, arguments);
+
+        Response resp = connector.send(req);
+        if (resp.getErrorType() != null) {
+            if (resp.getErrorType() == ErrorType.CHECKED_ERROR) {
+                throw new RuntimeException();
+            }
+            if (resp.getErrorType() == ErrorType.UNKNOWN_METHOD_ERROR) {
+                throw new RuntimeException();
+            }
+            throw new ProtocolException(resp.getErrorType());
+        }
+
+        byte[] result = resp.getResult();
+        return convertParamStrategy.convertToObject(result, "[int32][[TestClient.math.Model3]]", Map.class);
     }
 
     public Integer supply() throws ConnectionException, ConvertException, ProtocolException {

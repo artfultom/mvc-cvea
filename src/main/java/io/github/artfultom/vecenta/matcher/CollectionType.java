@@ -5,51 +5,83 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum CollectionType {
-    SIMPLE,
-    LIST,
-    MAP;
+    SIMPLE {
+        @Override
+        public String getFirst(String type) {
+            return type;
+        }
 
-    private String first;
+        @Override
+        public String getSecond(String type) {
+            return null;
+        }
+    },
+    LIST {
+        @Override
+        public String getFirst(String type) {
+            return type.substring(1, type.length() - 1);
+        }
 
-    private String second;
+        @Override
+        public String getSecond(String type) {
+            return null;
+        }
+    },
+    MAP {
+        @Override
+        public String getFirst(String type) {
+            List<String> names = Arrays.stream(type.split("[\\p{Ps}\\p{Pe}]"))
+                    .filter(word -> !word.isEmpty())
+                    .collect(Collectors.toList());
 
-    public String getFirst() {
-        return first;
-    }
+            String result = type.substring(1).split("]")[0];
+            if (!names.get(0).equals(result)) {
+                return null;
+            }
 
-    public String getSecond() {
-        return second;
-    }
+            return result;
+        }
+
+        @Override
+        public String getSecond(String type) {
+            List<String> names = Arrays.stream(type.split("[\\p{Ps}\\p{Pe}]"))
+                    .filter(word -> !word.isEmpty())
+                    .collect(Collectors.toList());
+
+            String result = type.substring(type.indexOf("]") + 1);
+            if (!result.contains(names.get(1))) {
+                return null;
+            }
+
+            return result;
+        }
+    };
+
+    public abstract String getFirst(String type);
+
+    public abstract String getSecond(String type);
 
     public static CollectionType get(String type) {
         if (type == null || type.isEmpty()) {
             return null;
         }
 
-        if (type.startsWith("[")) {
-            List<String> names = Arrays.stream(type.substring(1).split("]", 2))
-                    .filter(name -> !name.isEmpty())
-                    .collect(Collectors.toList());
+        List<String> names = Arrays.stream(type.split("[\\p{Ps}\\p{Pe}]"))
+                .filter(word -> !word.isEmpty())
+                .collect(Collectors.toList());
 
-            if (names.size() == 1) {
-                CollectionType result = CollectionType.LIST;
-                result.first = names.get(0);
-                return result;
+        if (names.size() == 1) {
+            if (type.startsWith("[") && type.endsWith("]")) {
+                return CollectionType.LIST;
+            } else {
+                return CollectionType.SIMPLE;
             }
-
-            if (names.size() == 2) {
-                CollectionType result = CollectionType.MAP;
-                result.first = names.get(0);
-                result.second = names.get(1);
-                return result;
-            }
-
-            return null;
         }
 
-        CollectionType result = CollectionType.SIMPLE;
-        result.first = type;
+        if (names.size() == 2) {
+            return CollectionType.MAP;
+        }
 
-        return result;
+        return null;
     }
 }
