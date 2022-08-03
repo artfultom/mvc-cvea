@@ -105,9 +105,9 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
 
     @Override
     public <T> T convertToObject( // TODO refactor
-            byte[] in,
-            String type,
-            Class<T> target
+                                  byte[] in,
+                                  String type,
+                                  Class<T> target
     ) throws ConvertException {
         if (in.length == 0) {
             return null;
@@ -215,9 +215,25 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
             case MAP:
                 Class<?> mapKeyClass = getElementClass(collectionType.getFirst(type));
                 if (mapKeyClass == null) {
-                    throw new ConvertException(
-                            String.format("Element class must not be null. Target=%s; type=%s.", target.getName(), type)
-                    );
+                    CollectionType firstCollectionType = CollectionType.get(collectionType.getFirst(type));
+                    if (firstCollectionType == null) {
+                        throw new ConvertException(
+                                String.format("Unknown CollectionType for %s.", collectionType.getFirst(type))
+                        );
+                    }
+
+                    switch (firstCollectionType) {
+                        case LIST:
+                            mapKeyClass = List.class;
+                            break;
+                        case MAP:
+                            mapKeyClass = Map.class;
+                            break;
+                        default:
+                            throw new ConvertException(
+                                    String.format("Unknown CollectionType for %s.", collectionType.getFirst(type))
+                            );
+                    }
                 }
 
                 Class<?> mapValClass = getElementClass(collectionType.getSecond(type));

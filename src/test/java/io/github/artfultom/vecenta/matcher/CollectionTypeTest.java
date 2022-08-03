@@ -43,5 +43,11 @@ public class CollectionTypeTest {
         assertEquals(CollectionType.MAP, type42);
         assertEquals("test", type42.getFirst("[test][[testy]]"));
         assertEquals("[[testy]]", type42.getSecond("[test][[testy]]"));
+
+        CollectionType type43 = CollectionType.get("[[test]][[testy]]");
+        assertNotNull(type43);
+        assertEquals(CollectionType.MAP, type43);
+        assertEquals("[test]", type43.getFirst("[[test]][[testy]]"));
+        assertEquals("[[testy]]", type43.getSecond("[[test]][[testy]]"));
     }
 }

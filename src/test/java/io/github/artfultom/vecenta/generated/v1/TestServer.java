@@ -29,10 +29,10 @@ public interface TestServer {
     @RpcMethod(
             entity = "math",
             name = "echo1",
-            argumentTypes = {"TestClient.math.Model3"},
-            returnType = "TestClient.math.Model3"
+            argumentTypes = {"int32"},
+            returnType = "int32"
     )
-    Model3 echo1(Model3 a);
+    Integer echo1(Integer a);
 
     @RpcMethod(
             entity = "math",
@@ -45,43 +45,58 @@ public interface TestServer {
     @RpcMethod(
             entity = "math",
             name = "echo3",
-            argumentTypes = {"[TestClient.math.Model3]", "[TestClient.math.Model3]"},
-            returnType = "[TestClient.math.Model3]"
+            argumentTypes = {"TestClient.math.Model3"},
+            returnType = "TestClient.math.Model3"
     )
-    List<Model3> echo3(List<Model3> a, List<Model3> b);
+    Model3 echo3(Model3 a);
 
     @RpcMethod(
             entity = "math",
             name = "echo4",
-            argumentTypes = {"[int32]TestClient.math.Model3"},
-            returnType = "[int32]TestClient.math.Model3"
+            argumentTypes = {"[TestClient.math.Model3]"},
+            returnType = "[TestClient.math.Model3]"
     )
-    Map<Integer, Model3> echo4(Map<Integer, Model3> a);
+    List<Model3> echo4(List<Model3> a);
 
     @RpcMethod(
             entity = "math",
             name = "echo5",
-            argumentTypes = {"[int32][TestClient.math.Model3]", "[int32][TestClient.math.Model3]"},
-            returnType = "[int32][TestClient.math.Model3]"
+            argumentTypes = {"[int32]TestClient.math.Model3"},
+            returnType = "[int32]TestClient.math.Model3"
     )
-    Map<Integer, List<Model3>> echo5(Map<Integer, List<Model3>> a, Map<Integer, List<Model3>> b);
+    Map<Integer, Model3> echo5(Map<Integer, Model3> a);
 
     @RpcMethod(
             entity = "math",
             name = "echo6",
-            argumentTypes = {"[[string]]"},
-            returnType = "[[string]]"
+            argumentTypes = {"[int32][TestClient.math.Model3]"},
+            returnType = "[int32][TestClient.math.Model3]"
     )
-    List<List<String>> echo6(List<List<String>> a);
+    Map<Integer, List<Model3>> echo6(Map<Integer, List<Model3>> a);
 
     @RpcMethod(
             entity = "math",
             name = "echo7",
-            argumentTypes = {"[int32][[TestClient.math.Model3]]", "[int32][[TestClient.math.Model3]]"},
+            argumentTypes = {"[[string]]"},
+            returnType = "[[string]]"
+    )
+    List<List<String>> echo7(List<List<String>> a);
+
+    @RpcMethod(
+            entity = "math",
+            name = "echo8",
+            argumentTypes = {"[int32][[TestClient.math.Model3]]"},
             returnType = "[int32][[TestClient.math.Model3]]"
     )
-    Map<Integer, List<List<Model3>>> echo7(Map<Integer, List<List<Model3>>> a,
-            Map<Integer, List<List<Model3>>> b);
+    Map<Integer, List<List<Model3>>> echo8(Map<Integer, List<List<Model3>>> a);
+
+    @RpcMethod(
+            entity = "math",
+            name = "echo9",
+            argumentTypes = {"[[TestClient.math.Model3]][[TestClient.math.Model3]]"},
+            returnType = "[[TestClient.math.Model3]][[TestClient.math.Model3]]"
+    )
+    Map<List<Model3>, List<List<Model3>>> echo9(Map<List<Model3>, List<List<Model3>>> a);
 
     @RpcMethod(
             entity = "math",

@@ -43,10 +43,10 @@
               "in": [
                 {
                   "name": "a",
-                  "type": "Model3"
+                  "type": "int32"
                 }
               ],
-              "out": "Model3"
+              "out": "int32"
             },
             {
               "name": "echo2",
@@ -63,17 +63,23 @@
               "in": [
                 {
                   "name": "a",
-                  "type": "[Model3]"
-                },
+                  "type": "Model3"
+                }
+              ],
+              "out": "Model3"
+            },
+            {
+              "name": "echo4",
+              "in": [
                 {
-                  "name": "b",
+                  "name": "a",
                   "type": "[Model3]"
                 }
               ],
               "out": "[Model3]"
             },
             {
-              "name": "echo4",
+              "name": "echo5",
               "in": [
                 {
                   "name": "a",
@@ -83,21 +89,17 @@
               "out": "[int32]Model3"
             },
             {
-              "name": "echo5",
+              "name": "echo6",
               "in": [
                 {
                   "name": "a",
-                  "type": "[int32][Model3]"
-                },
-                {
-                  "name": "b",
                   "type": "[int32][Model3]"
                 }
               ],
               "out": "[int32][Model3]"
             },
             {
-              "name": "echo6",
+              "name": "echo7",
               "in": [
                 {
                   "name": "a",
@@ -107,18 +109,24 @@
               "out": "[[string]]"
             },
             {
-              "name": "echo7",
+              "name": "echo8",
               "in": [
                 {
                   "name": "a",
                   "type": "[int32][[Model3]]"
-                },
-                {
-                  "name": "b",
-                  "type": "[int32][[Model3]]"
                 }
               ],
               "out": "[int32][[Model3]]"
+            },
+            {
+              "name": "echo9",
+              "in": [
+                {
+                  "name": "a",
+                  "type": "[[Model3]][[Model3]]"
+                }
+              ],
+              "out": "[[Model3]][[Model3]]"
             },
             {
               "name": "supply",

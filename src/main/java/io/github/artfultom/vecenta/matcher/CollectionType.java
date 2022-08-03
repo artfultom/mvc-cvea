@@ -34,8 +34,9 @@ public enum CollectionType {
                     .filter(word -> !word.isEmpty())
                     .collect(Collectors.toList());
 
-            String result = type.substring(1).split("]")[0];
-            if (!names.get(0).equals(result)) {
+
+            String result = type.substring(1, type.indexOf(names.get(0)) * 2 + names.get(0).length() - 1);
+            if (!result.contains(names.get(0))) {
                 return null;
             }
 
@@ -48,7 +49,7 @@ public enum CollectionType {
                     .filter(word -> !word.isEmpty())
                     .collect(Collectors.toList());
 
-            String result = type.substring(type.indexOf("]") + 1);
+            String result = type.substring(type.indexOf(names.get(0)) * 2 + names.get(0).length());
             if (!result.contains(names.get(1))) {
                 return null;
             }

@@ -105,48 +105,9 @@ public class ServerTest {
             String result2 = client.concat("test", "1", "2");
             Assert.assertEquals("test12", result2);
 
-            Model3 model = new Model3();
-            model.setField1(1);
-            model.setField2((short) 2);
-            model.setField3("test");
-            model.setField4(true);
-
-            Model3 result3 = client.echo1(model);
-            Assert.assertEquals(model.getField1(), result3.getField1());
-            Assert.assertEquals(model.getField2(), result3.getField2());
-            Assert.assertEquals(model.getField3(), result3.getField3());
-            Assert.assertEquals(model.getField4(), result3.getField4());
-
-            List<Integer> list = List.of(1, 2, 3);
-            List<Integer> result4 = client.echo2(list);
-            Assert.assertEquals(list, result4);
-
-            List<Model3> result5 = client.echo3(List.of(new Model3()), List.of(new Model3()));
-            Assert.assertEquals(2, result5.size());
-
-            Map<Integer, Model3> result6 = client.echo4(Map.of(1, new Model3()));
-            Assert.assertEquals(1, result6.size());
-
-            Map<Integer, List<Model3>> result7 = client.echo5(
-                    Map.of(1, List.of(new Model3())),
-                    Map.of(2, List.of(new Model3()))
-            );
-            Assert.assertEquals(2, result7.size());
-
-            List<List<String>> result8 = client.echo6(List.of(List.of("TEST")));
-            Assert.assertEquals(1, result8.size());
-            Assert.assertEquals(1, result8.get(0).size());
-            Assert.assertEquals("TEST", result8.get(0).get(0));
-
-            Map<Integer, List<List<Model3>>> result9 = client.echo7(
-                    Map.of(1, List.of(List.of(model))),
-                    Map.of(2, List.of(List.of(model)))
-            );
-            Assert.assertEquals(2, result9.size());
-
-            Integer result10 = client.supply();
-            Assert.assertNotNull(result10);
-            Assert.assertEquals(42, result10.intValue());
+            Integer result3 = client.supply();
+            Assert.assertNotNull(result3);
+            Assert.assertEquals(42, result3.intValue());
 
             client.consume(42);
 
@@ -155,6 +116,94 @@ public class ServerTest {
             Assert.assertThrows(FileNotFoundException.class, client::error2);
 
             Assert.assertThrows(EtcException.class, client::error3);
+        }
+    }
+
+    @Test
+    public void testServerEcho() throws URISyntaxException, IOException, ProtocolException, ConvertException, ConnectionException {
+        URL res = getClass().getResource("/transfer_data");
+        assertNotNull(res);
+
+        String pack = "io.github.artfultom.vecenta.generated";
+        GenerateConfiguration config = new GenerateConfiguration(
+                Path.of(res.toURI()),
+                Path.of("src", "test", "java"),
+                pack,
+                pack,
+                pack,
+                pack
+        );
+
+        Set<Path> files = new FileGenerator(config).generateFiles();
+        assertNotNull(files);
+        assertEquals(7, files.size());
+
+        ServerMatcher matcher = new ServerMatcher();
+        matcher.register(pack);
+
+        try (Server server = new TcpServer(); Connector connector = new TcpConnector()) {
+            int port = 5600;
+
+            server.start(port, matcher);
+
+            connector.connect("localhost", port);
+            TestClient client = new TestClient(connector);
+
+            Model3 model = new Model3();
+            model.setField1(1);
+            model.setField2((short) 2);
+            model.setField3("test");
+            model.setField4(true);
+
+            int result1 = client.echo1(42);
+            assertEquals(42, result1);
+
+            List<Integer> result2 = client.echo2(List.of(1));
+            assertEquals(List.of(1), result2);
+
+            Model3 result3 = client.echo3(model);
+            assertNotNull(result3);
+            assertEquals(model.getField1(), result3.getField1());
+            assertEquals(model.getField2(), result3.getField2());
+            assertEquals(model.getField3(), result3.getField3());
+            assertEquals(model.getField4(), result3.getField4());
+
+            List<Model3> result4 = client.echo4(List.of(model));
+            assertNotNull(result4);
+            assertEquals(1, result4.size());
+            assertEquals(model.getField1(), result4.get(0).getField1());
+            assertEquals(model.getField2(), result4.get(0).getField2());
+            assertEquals(model.getField3(), result4.get(0).getField3());
+            assertEquals(model.getField4(), result4.get(0).getField4());
+
+            Map<Integer, Model3> result5 = client.echo5(Map.of(1, model));
+            assertNotNull(result5);
+            assertEquals(1, result5.size());
+            assertEquals(model.getField1(), result5.get(1).getField1());
+            assertEquals(model.getField2(), result5.get(1).getField2());
+            assertEquals(model.getField3(), result5.get(1).getField3());
+            assertEquals(model.getField4(), result5.get(1).getField4());
+
+            Map<Integer, List<Model3>> result6 = client.echo6(Map.of(1, List.of(model)));
+            assertNotNull(result6);
+            assertEquals(1, result6.size());
+            assertEquals(1, result6.get(1).size());
+
+            List<List<String>> result7 = client.echo7(List.of(List.of("TEST")));
+            assertNotNull(result7);
+            assertEquals(1, result7.size());
+            assertEquals(1, result7.get(0).size());
+            assertEquals("TEST", result7.get(0).get(0));
+
+            Map<Integer, List<List<Model3>>> result8 = client.echo8(Map.of(1, List.of(List.of(model))));
+            assertNotNull(result8);
+            assertEquals(1, result8.size());
+            assertEquals(1, result8.get(1).size());
+            assertEquals(1, result8.get(1).get(0).size());
+
+            Map<List<Model3>, List<List<Model3>>> result9 = client.echo9(Map.of(List.of(model), List.of(List.of(model))));
+            assertNotNull(result9);
+            assertEquals(1, result9.size());
         }
     }
 
