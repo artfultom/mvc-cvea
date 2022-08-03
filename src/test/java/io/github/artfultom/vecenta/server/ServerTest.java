@@ -142,7 +142,7 @@ public class ServerTest {
         matcher.register(pack);
 
         try (Server server = new TcpServer(); Connector connector = new TcpConnector()) {
-            int port = 5600;
+            int port = 5603;
 
             server.start(port, matcher);
 
