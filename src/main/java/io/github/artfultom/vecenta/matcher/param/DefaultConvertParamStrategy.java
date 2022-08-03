@@ -196,6 +196,9 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                             elementClass = Map.class;
                             break;
                         default:
+                            throw new ConvertException(
+                                    String.format("Unknown CollectionType for %s.", collectionType.getFirst(type))
+                            );
                     }
 
                     Object result = convertToObject(listByteArray, collectionType.getFirst(type), elementClass);
