@@ -3,7 +3,7 @@ apply plugin: "maven-publish"
 apply plugin: "signing"
 
 group = "io.github.artfultom"
-version = "0.0.6" + (project.hasProperty("release") ? "" : "-SNAPSHOT")
+version = "0.0.7" + (project.hasProperty("release") ? "" : "-SNAPSHOT")
 
 java {
     withJavadocJar()
