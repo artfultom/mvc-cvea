@@ -104,10 +104,10 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
     }
 
     @Override
-    public <T> T convertToObject( // TODO refactor
-                                  byte[] in,
-                                  String type,
-                                  Class<T> target
+    public <T> T convertToObject(
+            byte[] in,
+            String type,
+            Class<T> target
     ) throws ConvertException {
         if (in.length == 0) {
             return null;
@@ -184,22 +184,8 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                     byte[] listByteArray = new byte[size];
                     listBuffer.get(listByteArray);
 
-                    Class<?> elementClass = null;
-                    switch (CollectionType.get(collectionType.getFirst(type))) {
-                        case SIMPLE:
-                            elementClass = getElementClass(collectionType.getFirst(type));
-                            break;
-                        case LIST:
-                            elementClass = List.class;
-                            break;
-                        case MAP:
-                            elementClass = Map.class;
-                            break;
-                        default:
-                            throw new ConvertException(
-                                    String.format("Unknown CollectionType for %s.", collectionType.getFirst(type))
-                            );
-                    }
+                    String first = collectionType.getFirst(type);
+                    Class<?> elementClass = getElementClass(CollectionType.get(first), first);
 
                     Object result = convertToObject(listByteArray, collectionType.getFirst(type), elementClass);
                     resultList.add(result);
@@ -213,51 +199,21 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
                     );
                 }
             case MAP:
-                Class<?> mapKeyClass = getElementClass(collectionType.getFirst(type));
-                if (mapKeyClass == null) {
-                    CollectionType firstCollectionType = CollectionType.get(collectionType.getFirst(type));
-                    if (firstCollectionType == null) {
-                        throw new ConvertException(
-                                String.format("Unknown CollectionType for %s.", collectionType.getFirst(type))
-                        );
-                    }
-
-                    switch (firstCollectionType) {
-                        case LIST:
-                            mapKeyClass = List.class;
-                            break;
-                        case MAP:
-                            mapKeyClass = Map.class;
-                            break;
-                        default:
-                            throw new ConvertException(
-                                    String.format("Unknown CollectionType for %s.", collectionType.getFirst(type))
-                            );
-                    }
+                CollectionType firstCollectionType = CollectionType.get(collectionType.getFirst(type));
+                if (firstCollectionType == null) {
+                    throw new ConvertException(
+                            String.format("Unknown CollectionType for %s.", collectionType.getFirst(type))
+                    );
+                }
+                CollectionType secondCollectionType = CollectionType.get(collectionType.getSecond(type));
+                if (secondCollectionType == null) {
+                    throw new ConvertException(
+                            String.format("Unknown CollectionType for %s.", collectionType.getSecond(type))
+                    );
                 }
 
-                Class<?> mapValClass = getElementClass(collectionType.getSecond(type));
-                if (mapValClass == null) {
-                    CollectionType secondCollectionType = CollectionType.get(collectionType.getSecond(type));
-                    if (secondCollectionType == null) {
-                        throw new ConvertException(
-                                String.format("Unknown CollectionType for %s.", collectionType.getSecond(type))
-                        );
-                    }
-
-                    switch (secondCollectionType) {
-                        case LIST:
-                            mapValClass = List.class;
-                            break;
-                        case MAP:
-                            mapValClass = Map.class;
-                            break;
-                        default:
-                            throw new ConvertException(
-                                    String.format("Unknown CollectionType for %s.", collectionType.getSecond(type))
-                            );
-                    }
-                }
+                Class<?> mapKeyClass = getElementClass(firstCollectionType, collectionType.getFirst(type));
+                Class<?> mapValClass = getElementClass(secondCollectionType, collectionType.getSecond(type));
 
                 ByteBuffer mapBuffer = ByteBuffer.wrap(in);
 
@@ -291,13 +247,24 @@ public class DefaultConvertParamStrategy extends AbstractConvertParamStrategy {
         }
     }
 
-    private Class<?> getElementClass(String type) {
-        TypeConverter typeConverter = TypeConverter.get(type);
+    private Class<?> getElementClass(CollectionType collectionType, String type) throws ConvertException {
+        switch (collectionType) {
+            case SIMPLE:
+                TypeConverter typeConverter = TypeConverter.get(collectionType.getFirst(type));
 
-        if (typeConverter == null) {
-            return models.get(type);
-        } else {
-            return typeConverter.getClazz();
+                if (typeConverter == null) {
+                    return models.get(type);
+                } else {
+                    return typeConverter.getClazz();
+                }
+            case LIST:
+                return List.class;
+            case MAP:
+                return Map.class;
+            default:
+                throw new ConvertException(
+                        String.format("Unknown CollectionType for %s.", collectionType.getFirst(type))
+                );
         }
     }
 }
