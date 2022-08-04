@@ -3,8 +3,12 @@
 ## Installation
 
 ```
+repositories {
+    mavenCentral()
+}
+
 dependencies {
-    implementation 'io.github.artfultom:vecenta:0.0.6'
+    implementation 'io.github.artfultom:vecenta:0.0.7'
 }
 ```
 
@@ -52,7 +56,7 @@ You should use vecenta-gradle-plugin.
 
 ```
 plugins {
-    id 'vecenta-gradle-plugin' version '0.0.5-SNAPSHOT'
+    id 'io.github.artfultom.vecenta.tools.vecenta-gradle-plugin' version '0.0.7'
 }
 ```
 
