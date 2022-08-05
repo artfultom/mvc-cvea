@@ -17,7 +17,7 @@ An example:
 ```
 ./TestServer.1.json
 ```
-The filename consists of NAME_OF_SERVER.VERSION.json. The generated server interface will have a name "TestServer.java". Then it must be implemented.
+The filename consists of **NAME_OF_SERVER.VERSION.json**. The generated server interface will have a name "TestServer.java". Then it must be implemented.
 
 ```
 {
@@ -52,7 +52,7 @@ The filename consists of NAME_OF_SERVER.VERSION.json. The generated server inter
 "TestClient.java" is a name of generated client class. Entity groups methods in the same package.
 
 ## Code generation.
-You should use vecenta-gradle-plugin.
+You should use [vecenta-gradle-plugin](https://github.com/artfultom/vecenta-gradle-plugin).
 
 ```
 plugins {
@@ -62,12 +62,12 @@ plugins {
 
 ```
 generate {
-    clientPackage = 'test.client'             // a package for generated client classes
-    serverPackage = 'test.server'             // a package for generated server classes
-    exceptionPackage = 'test.exception'       // a package for generated exception classes
-    modelPackage = 'test.model'               // a package for generated model classes
-    schemaDir = ''                            // a directory with json-schema
-    targetDir = "$projectDir/src/main/java/"  // a directory for generated sources
+    clientPackage = "test.client"                   // a package for generated client classes
+    serverPackage = "test.server"                   // a package for generated server classes
+    exceptionPackage = "test.exception"             // a package for generated exception classes
+    modelPackage = "test.model"                     // a package for generated model classes
+    schemaDir = "$projectDir/src/main/resources"    // a directory with json-schema
+    targetDir = "$projectDir/src/main/java/"        // a directory for generated sources
 }
 ```
 
